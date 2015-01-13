@@ -87,12 +87,6 @@
             </dependency>
 
             <dependency>
-                <groupId>org.testng</groupId>
-                <artifactId>testng</artifactId>
-                <version>${version.org.testng}</version>
-            </dependency>
-
-            <dependency>
                 <groupId>org.wildfly</groupId>
                 <artifactId>wildfly-controller</artifactId>
                 <version>${version.org.wildfly}</version>

@@ -1,0 +1,31 @@
+# Java binary class files
+*.class
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.ear
+# do NOT ignore *.war - we have a directory that needs to have a .war extension
+#*.war
+
+# virtual machine crash logs
+hs_err_pid*
+
+# maven target directories
+target/
+
+# IDE files
+.project
+.classpath
+.settings
+.idea
+*.ipr
+*.iml
+*.iws
+nb-configuration.xml
+
+# KDE
+.directory
+

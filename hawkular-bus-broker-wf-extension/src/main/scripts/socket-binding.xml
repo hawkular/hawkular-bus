@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<socket-binding name="org.hawkular.bus.broker" port="17173" />

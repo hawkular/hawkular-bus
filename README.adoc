@@ -1,0 +1,4 @@
+= hawkular-bus
+:source-language: java
+
+Hawkular messaging framework used for communicating between Hawkular components.

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<assembly>
+    <id>module</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <baseDirectory>${project.build.finalName}</baseDirectory>
+    <fileSets>
+        <!-- the files which only go in the zip, not in the jar -->
+        <fileSet>
+            <directory>${basedir}/src/main/module-resources</directory>
+            <outputDirectory>/org/apache/activemq/ra</outputDirectory>
+            <includes>
+                <include>**</include>
+            </includes>
+            <filtered>true</filtered>
+            <fileMode>0644</fileMode>
+            <directoryMode>0755</directoryMode>
+        </fileSet>
+    </fileSets>
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>/org/apache/activemq/ra/main</outputDirectory>
+            <useProjectArtifact>false</useProjectArtifact>
+            <unpack>true</unpack>
+            <unpackOptions>
+                <includes>
+                    <include>*</include>
+                    <include>META-INF/ra.xml</include>
+                </includes>
+                <!-- exclude the jars that will be included as module dependencies in module.xml -->
+                <excludes>
+                    <exclude>commons-logging*</exclude>
+                    <exclude>commons-pool*</exclude>
+                    <exclude>geronimo*</exclude>
+                    <exclude>log4j*</exclude>
+                    <exclude>slf4j*</exclude>
+                </excludes>
+            </unpackOptions>
+        </dependencySet>
+    </dependencySets>
+</assembly>
+

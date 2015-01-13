@@ -86,8 +86,9 @@
                                 <phase>install</phase>
                                 <configuration>
                                     <target>
-                                        <property name="org.hawkular.wildfly.home" value="${basedir}/../../../hawkular-platform/hawkular-platform-distro/target/wildfly-${version.org.wildfly}" />
-                                        <copy file="${project.build.directory}/${project.build.finalName}.war" todir="${org.hawkular.wildfly.home}/standalone/deployments" />
+                                        <property name="org.hawkular.wildfly.home" value="${basedir}/../../../hawkular-nest/hawkular-nest-distro/target/wildfly-${version.org.wildfly}" />
+                                        <property name="org.hawkular.wildfly.deployments" value="standalone/deployments" />
+                                        <copy file="${project.build.directory}/${project.build.finalName}.war" todir="${org.hawkular.wildfly.home}/${org.hawkular.wildfly.deployments}" />
                                     </target>
                                 </configuration>
                                 <goals>

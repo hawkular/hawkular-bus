@@ -28,7 +28,7 @@
         <module>hawkular-bus-broker-wf-extension</module>
         <module>hawkular-bus-ra-wf-module</module>
         <module>hawkular-bus-samples</module>
-        <module>hawkular-nest-parent</module>
+        <module>hawkular-nest</module>
     </modules>
 
     <dependencyManagement>

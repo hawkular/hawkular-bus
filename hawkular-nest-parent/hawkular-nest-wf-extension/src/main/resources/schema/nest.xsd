@@ -1,0 +1,27 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="urn:org.hawkular.nest:nest:1.0"
+           xmlns="urn:org.hawkular.nest:nest:1.0"
+           elementFormDefault="qualified"
+           attributeFormDefault="unqualified"
+           version="1.0">
+
+    <xs:element name="subsystem" type="subsystemType"/>
+
+    <xs:complexType name="subsystemType">
+        <xs:attribute name="enabled" type="xs:boolean" use="optional" default="false"/>
+        <xs:all>
+            <xs:element name="nest-name" type="xs:string" use="required" />
+            <xs:element name="custom-configuration" type="customConfigurationType" use="optional" />
+        </xs:all>
+    </xs:complexType>
+
+   <xs:complexType name="customConfigurationType">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+         <xs:element name="property" type="propertyType"/>
+      </xs:choice>
+   </xs:complexType>
+   <xs:complexType name="propertyType">
+      <xs:attribute name="name" use="required"/>
+      <xs:attribute name="value" use="required"/>
+   </xs:complexType>
+</xs:schema>

@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.hawkular.bus</groupId>
         <artifactId>hawkular-bus-parent</artifactId>
-        <version>0.1</version>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>hawkular-bus-mdb</artifactId>

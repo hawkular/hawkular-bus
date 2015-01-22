@@ -7,12 +7,12 @@
     <parent>
         <groupId>org.hawkular.bus</groupId>
         <artifactId>hawkular-bus-parent</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0.Alpha1-SNAPSHOT</version>
     </parent>
 
     <groupId>org.hawkular.nest</groupId>
     <artifactId>hawkular-nest-parent</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0.Alpha1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Hawkular Nest Root Parent</name>
     <inceptionYear>2015</inceptionYear>

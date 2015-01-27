@@ -184,6 +184,7 @@ public class SubsystemParsingTestCase extends SubsystemBaseParsingTestCase {
         List<Property> attributes = content.get("attributes").asPropertyList();
 
         List<String> expectedAttributes = Arrays.asList( //
+                BrokerSubsystemExtension.DISCOVERY_SOCKET_BINDING_ELEMENT, //
                 BrokerSubsystemExtension.CONNECTOR_SOCKET_BINDING_ATTR, //
                 BrokerSubsystemExtension.CONNECTOR_NAME_ATTR, //
                 BrokerSubsystemExtension.CONNECTOR_PROTOCOL_ATTR, //

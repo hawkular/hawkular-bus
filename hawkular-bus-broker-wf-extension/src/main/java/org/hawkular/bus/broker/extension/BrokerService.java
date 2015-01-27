@@ -37,6 +37,12 @@ public class BrokerService implements Service<BrokerService> {
     final InjectedValue<SocketBinding> connectorSocketBinding = new InjectedValue<SocketBinding>();
 
     /**
+     * Our subsystem add-step handler will inject this as a dependency for us. This object will provide the multicast
+     * address and port for the broker's network connector which is used to discover other brokers.
+     */
+    final InjectedValue<SocketBinding> discoverySocketBinding = new InjectedValue<SocketBinding>();
+
+    /**
      * The broker configuration file that is used to completely configure the broker. This is the "out-of-box"
      * configuration that can be customized with overrides via {@link #customConfigProperties}.
      */
@@ -111,11 +117,11 @@ public class BrokerService implements Service<BrokerService> {
         log.info("Starting the broker now");
         try {
             // make sure we pre-configure the broker with some settings taken from our runtime environment
+
+            // get the socket the transport connector is to bind to - make sure we do not bind "to all"
             SocketBinding connectorSocketBindingValue = connectorSocketBinding.getValue();
             String connectorAddress = connectorSocketBindingValue.getAddress().getHostAddress();
             String connectorPort = String.valueOf(connectorSocketBindingValue.getAbsolutePort());
-
-            // just pick one if we weren't given one - we don't want to bind "to all"
             if (connectorAddress.equals("0.0.0.0") || connectorAddress.equals("::/128")) {
                 connectorAddress = InetAddress.getLocalHost().getCanonicalHostName();
             }
@@ -123,6 +129,13 @@ public class BrokerService implements Service<BrokerService> {
             customConfigProperties.put(BrokerSubsystemExtension.BROKER_CONNECTOR_ADDRESS_SYSPROP, connectorAddress);
             customConfigProperties.put(BrokerSubsystemExtension.BROKER_CONNECTOR_PORT_SYSPROP, connectorPort);
             log.info("Broker told to bind socket to [" + connectorAddress + ":" + connectorPort + "]");
+
+            SocketBinding discoverySocketBindingValue = discoverySocketBinding.getValue();
+            String discoveryAddress = discoverySocketBindingValue.getMulticastAddress().getHostAddress();
+            String discoveryPort = String.valueOf(discoverySocketBindingValue.getMulticastPort());
+            customConfigProperties.put(BrokerSubsystemExtension.BROKER_DISCOVERY_ADDRESS_SYSPROP, discoveryAddress);
+            customConfigProperties.put(BrokerSubsystemExtension.BROKER_DISCOVERY_PORT_SYSPROP, discoveryPort);
+            log.info("Broker told to discover other brokers via [" + discoveryAddress + ":" + discoveryPort + "]");
 
             ServerEnvironment env = envServiceValue.getValue();
             BrokerConfigurationSetup configSetup = new BrokerConfigurationSetup(configurationFile, customConfigProperties, env);

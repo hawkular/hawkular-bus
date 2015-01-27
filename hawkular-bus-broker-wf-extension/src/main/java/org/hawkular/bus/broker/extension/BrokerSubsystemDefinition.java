@@ -54,8 +54,16 @@ public class BrokerSubsystemDefinition extends SimpleResourceDefinition {
             .setDefaultValue(new ModelNode(BrokerSubsystemExtension.CONNECTOR_PROTOCOL_DEFAULT)).setAllowNull(true).build();
 
     protected static final SimpleAttributeDefinition SOCKET_BINDING_ATTRIBDEF = new SimpleAttributeDefinitionBuilder(
-            BrokerSubsystemExtension.CONNECTOR_SOCKET_BINDING_ATTR, ModelType.STRING).setFlags(AttributeAccess.Flag.RESTART_RESOURCE_SERVICES)
-            .setDefaultValue(new ModelNode("org.hawkular.bus.broker")).setValidator(new StringLengthValidator(1)).setAllowNull(false).build();
+            BrokerSubsystemExtension.CONNECTOR_SOCKET_BINDING_ATTR, ModelType.STRING)
+            .setFlags(AttributeAccess.Flag.RESTART_RESOURCE_SERVICES)
+            .setDefaultValue(new ModelNode(BrokerSubsystemExtension.CONNECTOR_SOCKET_BINDING_DEFAULT))
+            .setValidator(new StringLengthValidator(1)).setAllowNull(false).build();
+
+    protected static final SimpleAttributeDefinition DISCOVERY_SOCKET_BINDING_ATTRIBDEF = new SimpleAttributeDefinitionBuilder(
+            BrokerSubsystemExtension.DISCOVERY_SOCKET_BINDING_ELEMENT, ModelType.STRING)
+            .setFlags(AttributeAccess.Flag.RESTART_RESOURCE_SERVICES)
+            .setDefaultValue(new ModelNode(BrokerSubsystemExtension.DISCOVERY_SOCKET_BINDING_DEFAULT))
+            .setValidator(new StringLengthValidator(1)).setAllowNull(false).build();
 
     // operation parameters
     protected static final SimpleAttributeDefinition START_OP_PARAM_RESTART = new SimpleAttributeDefinitionBuilder("restart", ModelType.BOOLEAN)
@@ -77,6 +85,7 @@ public class BrokerSubsystemDefinition extends SimpleResourceDefinition {
         registerReloadRequiredWriteAttributeHandler(rr, CONNECTOR_NAME_ATTRIBDEF);
         registerReloadRequiredWriteAttributeHandler(rr, CONNECTOR_PROTOCOL_ATTRIBDEF);
         registerReloadRequiredWriteAttributeHandler(rr, SOCKET_BINDING_ATTRIBDEF);
+        registerReloadRequiredWriteAttributeHandler(rr, DISCOVERY_SOCKET_BINDING_ATTRIBDEF);
     }
 
     private void registerReloadRequiredWriteAttributeHandler(ManagementResourceRegistration rr, AttributeDefinition def) {

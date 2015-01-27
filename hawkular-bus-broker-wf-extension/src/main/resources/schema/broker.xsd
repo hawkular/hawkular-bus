@@ -19,6 +19,7 @@
             <xs:element name="org.hawkular.bus.broker.persistent" type="xs:boolean" use="optional" />
             <xs:element name="org.hawkular.bus.broker.use-jmx" type="xs:boolean"use="optional"  />
             <xs:element name="connector" type="connectorType" use="required" />
+            <xs:element name="discovery-socket-binding" type="xs:string" use="required" />
             <xs:element name="custom-configuration" type="customConfigurationType" use="optional" />
         </xs:all>
     </xs:complexType>

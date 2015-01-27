@@ -103,6 +103,7 @@ class BrokerSubsystemAdd extends AbstractAddStepHandler {
         BrokerSubsystemDefinition.CONNECTOR_NAME_ATTRIBDEF.validateAndSet(operation, model);
         BrokerSubsystemDefinition.CONNECTOR_PROTOCOL_ATTRIBDEF.validateAndSet(operation, model);
         BrokerSubsystemDefinition.SOCKET_BINDING_ATTRIBDEF.validateAndSet(operation, model);
+        BrokerSubsystemDefinition.DISCOVERY_SOCKET_BINDING_ATTRIBDEF.validateAndSet(operation, model);
         log.debug("Populating the Broker subsystem model: " + operation + "=" + model);
     }
 
@@ -154,13 +155,18 @@ class BrokerSubsystemAdd extends AbstractAddStepHandler {
 
         // install the service
         String binding = BrokerSubsystemDefinition.SOCKET_BINDING_ATTRIBDEF.resolveModelAttribute(context, model).asString();
+        String discoveryBinding = BrokerSubsystemDefinition.DISCOVERY_SOCKET_BINDING_ATTRIBDEF.resolveModelAttribute(
+                context, model).asString();
         ServiceName name = BrokerService.SERVICE_NAME;
-        ServiceController<BrokerService> controller = context.getServiceTarget() //
-                .addService(name, service) //
-                .addDependency(ServerEnvironmentService.SERVICE_NAME, ServerEnvironment.class, service.envServiceValue) //
-                .addDependency(SocketBinding.JBOSS_BINDING_NAME.append(binding), SocketBinding.class, service.connectorSocketBinding) //
-                .addListener(verificationHandler) //
-                .setInitialMode(Mode.ACTIVE) //
+        ServiceController<BrokerService> controller = context.getServiceTarget()
+                .addService(name, service)
+                .addDependency(ServerEnvironmentService.SERVICE_NAME, ServerEnvironment.class, service.envServiceValue)
+                .addDependency(SocketBinding.JBOSS_BINDING_NAME.append(binding), SocketBinding.class,
+                        service.connectorSocketBinding)
+                .addDependency(SocketBinding.JBOSS_BINDING_NAME.append(discoveryBinding), SocketBinding.class,
+                        service.discoverySocketBinding)
+                .addListener(verificationHandler)
+                .setInitialMode(Mode.ACTIVE)
                 .install();
         newControllers.add(controller);
         return;

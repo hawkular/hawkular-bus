@@ -54,6 +54,8 @@ public class BrokerSubsystemExtension implements Extension {
     protected static final String BROKER_CONNECTOR_PROTOCOL_SYSPROP = "org.hawkular.bus.broker.connector.protocol";
     protected static final String BROKER_CONNECTOR_ADDRESS_SYSPROP = "org.hawkular.bus.broker.connector.address";
     protected static final String BROKER_CONNECTOR_PORT_SYSPROP = "org.hawkular.bus.broker.connector.port";
+    protected static final String BROKER_DISCOVERY_ADDRESS_SYSPROP = "org.hawkular.bus.broker.discovery.address";
+    protected static final String BROKER_DISCOVERY_PORT_SYSPROP = "org.hawkular.bus.broker.discovery.port";
 
     // The following define the XML elements and attributes of the extension itself (these appear in WildFly's
     // standalone.xml for this extension).
@@ -76,8 +78,12 @@ public class BrokerSubsystemExtension implements Extension {
     protected static final String CONNECTOR_NAME_ATTR = BROKER_CONNECTOR_NAME_SYSPROP;
     protected static final String CONNECTOR_PROTOCOL_ATTR = BROKER_CONNECTOR_PROTOCOL_SYSPROP;
     protected static final String CONNECTOR_SOCKET_BINDING_ATTR = "socket-binding";
+    protected static final String CONNECTOR_SOCKET_BINDING_DEFAULT = "org.hawkular.bus.broker";
     protected static final String CONNECTOR_NAME_DEFAULT = "openwire";
     protected static final String CONNECTOR_PROTOCOL_DEFAULT = "tcp";
+
+    protected static final String DISCOVERY_SOCKET_BINDING_ELEMENT = "discovery-socket-binding";
+    protected static final String DISCOVERY_SOCKET_BINDING_DEFAULT = "org.hawkular.bus.broker.discovery";
 
     protected static final String CUSTOM_CONFIG_ELEMENT = "custom-configuration";
     protected static final String PROPERTY_ELEMENT = "property";
@@ -162,6 +168,9 @@ public class BrokerSubsystemExtension implements Extension {
                     opAdd.get(PERSISTENT_ELEMENT).set(new ValueExpression(reader.getElementText()));
                 } else if (elementName.equals(USE_JMX_ELEMENT)) {
                     opAdd.get(USE_JMX_ELEMENT).set(new ValueExpression(reader.getElementText()));
+                } else if (elementName.equals(DISCOVERY_SOCKET_BINDING_ELEMENT)) {
+                    // we don't support expression here, must be the actual name
+                    opAdd.get(DISCOVERY_SOCKET_BINDING_ELEMENT).set(reader.getElementText());
                 } else {
                     throw ParseUtils.unexpectedElement(reader);
                 }
@@ -192,7 +201,7 @@ public class BrokerSubsystemExtension implements Extension {
             writer.writeAttribute(BROKER_ENABLED_ATTR, node.get(BROKER_ENABLED_ATTR).asString());
             writer.writeAttribute(BROKER_CONFIG_FILE_ATTR, node.get(BROKER_CONFIG_FILE_ATTR).asString());
 
-            // our config elements
+            // our main broker config elements
             writeElement(writer, node, BROKER_NAME_ELEMENT);
             writeElement(writer, node, PERSISTENT_ELEMENT);
             writeElement(writer, node, USE_JMX_ELEMENT);
@@ -214,6 +223,9 @@ public class BrokerSubsystemExtension implements Extension {
             }
             // </connector>
             writer.writeEndElement();
+
+            // <socket-binding-element />
+            writeElement(writer, node, DISCOVERY_SOCKET_BINDING_ELEMENT);
 
             // <custom-configuration>
             writer.writeStartElement(CUSTOM_CONFIG_ELEMENT);

@@ -412,6 +412,7 @@
             <org.hawkular.bus.broker.persistent>false</org.hawkular.bus.broker.persistent>
             <org.hawkular.bus.broker.use-jmx>false</org.hawkular.bus.broker.use-jmx>
             <connector org.hawkular.bus.broker.connector.name="openwire" org.hawkular.bus.broker.connector.protocol="tcp" socket-binding="org.hawkular.bus.broker"/>
+            <discovery-socket-binding>org.hawkular.bus.broker.discovery</discovery-socket-binding>
             <custom-configuration>
                 <property name="custom-prop" value="custom-prop-val"/>
             </custom-configuration>
@@ -450,6 +451,7 @@
         <outbound-socket-binding name="mail-smtp">
             <remote-destination host="localhost" port="25"/>
         </outbound-socket-binding>
-        <socket-binding name="org.hawkular.bus.broker" port="61616"/>
+        <socket-binding name="org.hawkular.bus.broker" port="62626"/>
+        <socket-binding name="org.hawkular.bus.broker.discovery" port="0" multicast-address="224.0.0.4" multicast-port="63636"/>
     </socket-binding-group>
 </server>

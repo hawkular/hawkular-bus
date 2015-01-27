@@ -69,12 +69,12 @@ public class RPCTest {
             }
 
             // make sure the message flowed properly
-            assertFalse(future.isCancelled());
-            assertTrue(future.isDone());
             assertNotNull("Didn't receive response", receivedSpecificMessage);
             assertEquals("RESPONSE:" + specificMessage.getMessage(), receivedSpecificMessage.getMessage());
             assertEquals(specificMessage.getDetails(), receivedSpecificMessage.getDetails());
             assertEquals("RESPONSE:" + specificMessage.getSpecific(), receivedSpecificMessage.getSpecific());
+            assertFalse(future.isCancelled());
+            assertTrue(future.isDone());
 
             // use the future.get(timeout) method and make sure it returns the same
             try {
@@ -272,12 +272,12 @@ public class RPCTest {
             }
 
             // make sure the message flowed properly
-            assertFalse(future.isCancelled());
-            assertTrue(future.isDone());
             assertNotNull("Didn't receive response", receivedSpecificMessage);
             assertEquals("RESPONSE:" + specificMessage.getMessage(), receivedSpecificMessage.getMessage());
             assertEquals(specificMessage.getDetails(), receivedSpecificMessage.getDetails());
             assertEquals("RESPONSE:" + specificMessage.getSpecific(), receivedSpecificMessage.getSpecific());
+            assertFalse(future.isCancelled());
+            assertTrue(future.isDone());
 
         } finally {
             // close everything

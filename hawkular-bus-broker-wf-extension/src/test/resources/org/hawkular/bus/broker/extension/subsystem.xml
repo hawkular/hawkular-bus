@@ -10,6 +10,8 @@
                org.hawkular.bus.broker.connector.name="test-connector-name"
                org.hawkular.bus.broker.connector.protocol="test-connector-protocol" />
 
+    <discovery-socket-binding>test-discovery-socket-binding</discovery-socket-binding>
+
     <custom-configuration>
         <property name="custom-prop" value="custom-prop-val"/>
         <property name="custom-prop2" value="custom-prop-val2"/>

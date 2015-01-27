@@ -19,7 +19,7 @@
                 updateClusterClients="true"
                 updateClusterClientsOnRemove="true"
                 rebalanceClusterClients="true"
-                discoveryUri="multicast://224.0.0.4:61612?group=hawkular"
+                discoveryUri="multicast://${org.hawkular.bus.broker.discovery.address}:${org.hawkular.bus.broker.discovery.port}?group=hawkular"
             />
         </transportConnectors>
 
@@ -30,7 +30,7 @@
                  multicast://hostname:port
         -->
         <networkConnectors>
-            <networkConnector uri="multicast://224.0.0.4:61612?group=hawkular" duplex="true"/>
+            <networkConnector uri="multicast://${org.hawkular.bus.broker.discovery.address}:${org.hawkular.bus.broker.discovery.port}?group=hawkular" />
         </networkConnectors>
 
         <persistenceAdapter>

@@ -11,12 +11,57 @@
             useJmx="${org.hawkular.bus.broker.use-jmx}"
             dataDirectory="${jboss.server.data.dir}/broker"
             useShutdownHook="false">
+
         <transportConnectors>
-            <transportConnector name="${org.hawkular.bus.broker.connector.name}" uri="${org.hawkular.bus.broker.connector.protocol}://${org.hawkular.bus.broker.connector.address}:${org.hawkular.bus.broker.connector.port}" />
+            <transportConnector
+                name="${org.hawkular.bus.broker.connector.name}"
+                uri="${org.hawkular.bus.broker.connector.protocol}://${org.hawkular.bus.broker.connector.address}:${org.hawkular.bus.broker.connector.port}"
+                updateClusterClients="true"
+                updateClusterClientsOnRemove="true"
+                rebalanceClusterClients="true"
+                discoveryUri="multicast://224.0.0.4:61612?group=hawkular"
+            />
         </transportConnectors>
+
+        <!-- Define the Network of Brokers (aka clustering).
+             The "uri" attribute can be a static list of brokers:
+                 static:(tcp://hostname1:port1,tcp://hostname2:port2,...)
+             or, if multicasting is enabled on the network and you want auto-discovery of brokers:
+                 multicast://hostname:port
+        -->
+        <networkConnectors>
+            <networkConnector uri="multicast://224.0.0.4:61612?group=hawkular" duplex="true"/>
+        </networkConnectors>
 
         <persistenceAdapter>
             <kahaDB directory="${jboss.server.data.dir}/broker/kaha" />
         </persistenceAdapter>
+
+<!--
+        <plugins>
+            <simpleAuthenticationPlugin>
+                <users>
+                    <authenticationUser username="system" password="alohomora" groups="users,admins" />
+                </users>
+            </simpleAuthenticationPlugin>
+
+            <authorizationPlugin>
+                <map>
+                    <authorizationMap>
+                        <authorizationEntries>
+                            <authorizationEntry queue=">" read="admins" write="admins" admin="admins" />
+                            <authorizationEntry topic="ActiveMQ.Advisory.>" read="admins" write="admins" admin="admins" />
+                        </authorizationEntries>
+
+                        <tempDestinationAuthorizationEntry>
+                            <tempDestinationAuthorizationEntry read="admins" write="admins" admin="admins" />
+                        </tempDestinationAuthorizationEntry>
+                    </authorizationMap>
+                </map>
+            </authorizationPlugin>
+
+        </plugins>
+-->
+
     </broker>
 </beans>

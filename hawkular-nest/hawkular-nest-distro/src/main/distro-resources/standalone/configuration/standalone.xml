@@ -309,7 +309,7 @@
                     </config-property>
                     -->
                     <config-property name="ServerUrl">
-                        vm://org.hawkular.bus.broker?create=false
+                        failover:(vm://org.hawkular.bus.broker.${jboss.node.name}?create=false)
                     </config-property>
                     <connection-definitions>
                         <connection-definition class-name="org.apache.activemq.ra.ActiveMQManagedConnectionFactory" jndi-name="java:/HawkularBusConnectionFactory"
@@ -408,7 +408,7 @@
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:weld:2.0"/>
         <subsystem xmlns="urn:org.hawkular.bus:broker:1.0" configuration-file="default-broker.xml" enabled="true">
-            <org.hawkular.bus.broker.name>org.hawkular.bus.broker</org.hawkular.bus.broker.name>
+            <org.hawkular.bus.broker.name>org.hawkular.bus.broker.${jboss.node.name}</org.hawkular.bus.broker.name>
             <org.hawkular.bus.broker.persistent>false</org.hawkular.bus.broker.persistent>
             <org.hawkular.bus.broker.use-jmx>false</org.hawkular.bus.broker.use-jmx>
             <connector org.hawkular.bus.broker.connector.name="openwire" org.hawkular.bus.broker.connector.protocol="tcp" socket-binding="org.hawkular.bus.broker"/>

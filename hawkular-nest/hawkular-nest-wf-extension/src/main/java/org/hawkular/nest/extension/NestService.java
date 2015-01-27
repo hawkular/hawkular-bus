@@ -88,16 +88,16 @@ public class NestService implements Service<NestService> {
 
         log.infof("Nest name=[%s]", getNestName());
 
-        // make sure the broker is started, we need it.
+        // we don't necessarily need the broker, but if it is not started, log that fact.
         BrokerService broker = this.brokerService.getValue();
-        if (!broker.isBrokerStarted()) {
-            throw new StartException("Broker service is not started. Nest cannot start.");
-        }
-
-        try {
-            setupMessaging(broker);
-        } catch (Exception e) {
-            throw new StartException("Cannot initialize messaging client", e);
+        if (broker.isBrokerStarted()) {
+            try {
+                setupMessaging(broker);
+            } catch (Exception e) {
+                throw new StartException("Cannot initialize messaging client", e);
+            }
+        } else {
+            log.info("Broker service is not started.");
         }
 
         this.started = true;
@@ -109,7 +109,9 @@ public class NestService implements Service<NestService> {
         }
 
         try {
-            messagingConnectionContextFactory.close();
+            if (messagingConnectionContextFactory != null) {
+                messagingConnectionContextFactory.close();
+            }
         } catch (Exception e) {
             log.error("Cannot close the messaging connection context factory", e);
         }

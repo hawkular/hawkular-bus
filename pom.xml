@@ -11,6 +11,7 @@
     <name>Hawkular Bus Framework</name>
     <inceptionYear>2015</inceptionYear>
 
+    <!-- TODO remove repos -->
     <repositories>
         <!-- Conventions are described in http://community.jboss.org/wiki/MavenGettingStarted-Developers -->
         <repository>

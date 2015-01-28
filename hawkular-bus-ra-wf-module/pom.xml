@@ -59,7 +59,7 @@
                                 <configuration>
                                     <target>
                                         <property name="org.hawkular.wildfly.home" value="${basedir}/../../hawkular-agent/hawkular-agent-distro/target/wildfly-${version.org.wildfly}" />
-                                        <property name="org.hawkular.broker.bus.uri" value="failover:(vm://org.hawkular.bus.broker.${jboss.node.name}?create=false)" />
+                                        <property name="org.hawkular.broker.bus.uri" value="vm://org.hawkular.bus.broker.${jboss.node.name}?create=false" />
                                         <unzip src="${project.build.directory}/${project.build.finalName}-module.zip" dest="${org.hawkular.wildfly.home}/modules/system/layers/base" />
                                         <replaceregexp file="${org.hawkular.wildfly.home}/standalone/configuration/standalone.xml"
                                                        flags="gis"

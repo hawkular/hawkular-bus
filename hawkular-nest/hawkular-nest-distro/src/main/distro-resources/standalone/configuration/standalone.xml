@@ -309,7 +309,7 @@
                     </config-property>
                     -->
                     <config-property name="ServerUrl">
-                        failover:(vm://org.hawkular.bus.broker.${jboss.node.name}?create=false)
+                        vm://org.hawkular.bus.broker.${jboss.node.name}?create=false
                     </config-property>
                     <connection-definitions>
                         <connection-definition class-name="org.apache.activemq.ra.ActiveMQManagedConnectionFactory" jndi-name="java:/HawkularBusConnectionFactory"

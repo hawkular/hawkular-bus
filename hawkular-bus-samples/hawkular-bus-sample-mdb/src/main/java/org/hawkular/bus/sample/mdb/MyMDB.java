@@ -6,17 +6,16 @@ import javax.jms.MessageListener;
 
 import org.hawkular.bus.common.SimpleBasicMessage;
 import org.hawkular.bus.common.consumer.BasicMessageListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jboss.logging.Logger;
 
 @MessageDriven(messageListenerInterface = MessageListener.class, activationConfig = {
  @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
         @ActivationConfigProperty(propertyName = "destination", propertyValue = "ExampleQueueName"),
         @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = "MyFilter = 'fnf'") })
 public class MyMDB extends BasicMessageListener<SimpleBasicMessage> {
-    private final Logger log = LoggerFactory.getLogger(MyMDB.class);
+    private final Logger log = Logger.getLogger(MyMDB.class);
 
     protected void onBasicMessage(SimpleBasicMessage msg) {
-        log.info("===> MDB received message [{}]", msg);
+        log.infof("===> MDB received message [%s]", msg);
     };
 }

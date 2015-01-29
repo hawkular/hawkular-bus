@@ -8,8 +8,7 @@ import java.util.Arrays;
 
 import org.apache.activemq.broker.BrokerFactory;
 import org.apache.activemq.broker.BrokerService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jboss.logging.Logger;
 
 /**
  * Provides a slim wrapper around the message broker. You can simply provide a
@@ -22,7 +21,7 @@ import org.slf4j.LoggerFactory;
  * configuration and management of the broker.
  */
 public class EmbeddedBroker {
-    private final Logger log = LoggerFactory.getLogger(EmbeddedBroker.class);
+    private final Logger log = Logger.getLogger(EmbeddedBroker.class);
     private InitializationParameters initialParameters;
     private BrokerService brokerService;
 
@@ -121,7 +120,7 @@ public class EmbeddedBroker {
     }
 
     protected InitializationParameters processArguments(String[] cmdlineArgs) throws Exception {
-        log.debug("Processing arguments: {}", Arrays.asList(cmdlineArgs));
+        log.debugf("Processing arguments: %s", Arrays.asList(cmdlineArgs));
 
         String configFileArg = null;
 
@@ -167,7 +166,7 @@ public class EmbeddedBroker {
                 }
 
                 System.setProperty(name, value);
-                log.debug("System property set: {}={}", name, value);
+                    log.debugf("System property set: %s=%s", name, value);
 
                 break;
             }

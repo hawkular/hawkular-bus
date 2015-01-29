@@ -7,11 +7,10 @@ import org.hawkular.bus.common.ConnectionContextFactory;
 import org.hawkular.bus.common.Endpoint;
 import org.hawkular.bus.common.consumer.ConsumerConnectionContext;
 import org.hawkular.bus.common.consumer.RPCBasicMessageListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jboss.logging.Logger;
 
 public abstract class RPCBasicMessageDrivenBean<T extends BasicMessage, U extends BasicMessage> extends RPCBasicMessageListener<T, U> {
-    private final Logger log = LoggerFactory.getLogger(RPCBasicMessageDrivenBean.class);
+    private final Logger log = Logger.getLogger(RPCBasicMessageDrivenBean.class);
 
     /**
      * MDB subclasses need to define this usually by returning a factory that is obtained through injection:

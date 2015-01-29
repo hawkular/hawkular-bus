@@ -11,8 +11,7 @@ import javax.jms.Session;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.hawkular.bus.common.consumer.ConsumerConnectionContext;
 import org.hawkular.bus.common.producer.ProducerConnectionContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jboss.logging.Logger;
 
 /**
  * Provides convenience functionality to create {@link ProducerConnectionContext producer} or
@@ -29,7 +28,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ConnectionContextFactory {
 
-    private final Logger log = LoggerFactory.getLogger(ConnectionContextFactory.class);
+    private final Logger log = Logger.getLogger(ConnectionContextFactory.class);
     protected final ConnectionFactory connectionFactory;
     private Connection connection;
 
@@ -44,7 +43,7 @@ public class ConnectionContextFactory {
      */
     public ConnectionContextFactory(String brokerURL) throws JMSException {
         connectionFactory = new ActiveMQConnectionFactory(brokerURL);
-        log.debug("{} has been created: {}", this.getClass().getSimpleName(), brokerURL);
+        log.debugf("%s has been created: %s", this.getClass().getSimpleName(), brokerURL);
     }
 
     /**
@@ -60,7 +59,7 @@ public class ConnectionContextFactory {
      */
     public ConnectionContextFactory(String brokerURL, String username, String password) throws JMSException {
         connectionFactory = new ActiveMQConnectionFactory(username, password, brokerURL);
-        log.debug("{} has been created: [{}] with username [{}]", this.getClass().getSimpleName(), brokerURL, username);
+        log.debugf("%s has been created: [%s] with username [%s]", this.getClass().getSimpleName(), brokerURL, username);
     }
 
     /**
@@ -73,7 +72,8 @@ public class ConnectionContextFactory {
      */
     public ConnectionContextFactory(ConnectionFactory connectionFactory) throws JMSException {
         this.connectionFactory = connectionFactory;
-        log.debug("{} has been created with an existing connection factory: {}", this.getClass().getSimpleName(), connectionFactory);
+        log.debugf("%s has been created with an existing connection factory: %s", this.getClass().getSimpleName(),
+                connectionFactory);
     }
 
     /**
@@ -140,7 +140,7 @@ public class ConnectionContextFactory {
         if (conn != null) {
             conn.close();
         }
-        log.debug("{} has been closed", this);
+        log.debugf("%s has been closed", this);
     }
 
     protected ConnectionFactory getConnectionFactory() {

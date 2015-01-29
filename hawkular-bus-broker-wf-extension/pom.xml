@@ -37,6 +37,7 @@
                  org.slf4j
                  org.jboss.as.controller
                  org.jboss.as.server
+                 org.jboss.logging
                  org.jdom
         -->
         <dependency>
@@ -64,6 +65,12 @@
         </dependency>
 
         <dependency>
+            <groupId>jdom</groupId>
+            <artifactId>jdom</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-j2ee-management_1.1_spec</artifactId>
             <scope>provided</scope>
@@ -82,8 +89,8 @@
         </dependency>
 
         <dependency>
-            <groupId>jdom</groupId>
-            <artifactId>jdom</artifactId>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging</artifactId>
             <scope>provided</scope>
         </dependency>
 

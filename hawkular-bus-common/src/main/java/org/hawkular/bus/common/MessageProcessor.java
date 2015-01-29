@@ -15,8 +15,7 @@ import org.hawkular.bus.common.consumer.ConsumerConnectionContext;
 import org.hawkular.bus.common.consumer.FutureBasicMessageListener;
 import org.hawkular.bus.common.consumer.RPCConnectionContext;
 import org.hawkular.bus.common.producer.ProducerConnectionContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jboss.logging.Logger;
 
 import com.google.common.util.concurrent.ListenableFuture;
 
@@ -28,7 +27,7 @@ import com.google.common.util.concurrent.ListenableFuture;
  */
 public class MessageProcessor {
 
-    private final Logger log = LoggerFactory.getLogger(MessageProcessor.class);
+    private final Logger log = Logger.getLogger(MessageProcessor.class);
 
     /**
      * Listens for messages.
@@ -99,7 +98,7 @@ public class MessageProcessor {
         }
 
         if (basicMessage.getMessageId() != null) {
-            log.debug("Non-null message ID [{}] will be ignored and a new one generated", basicMessage.getMessageId());
+            log.debugf("Non-null message ID [%s] will be ignored and a new one generated", basicMessage.getMessageId());
             basicMessage.setMessageId(null);
         }
 
@@ -179,7 +178,7 @@ public class MessageProcessor {
         }
 
         if (basicMessage.getMessageId() != null) {
-            log.debug("Non-null message ID [{}] will be ignored and a new one generated", basicMessage.getMessageId());
+            log.debugf("Non-null message ID [%s] will be ignored and a new one generated", basicMessage.getMessageId());
             basicMessage.setMessageId(null);
         }
 

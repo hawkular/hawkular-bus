@@ -11,8 +11,7 @@ import javax.jms.TextMessage;
 
 import org.hawkular.bus.common.BasicMessage;
 import org.hawkular.bus.common.MessageId;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jboss.logging.Logger;
 
 /**
  * A message listener that expects to receive a JSON-encoded BasicMessage or one of its subclasses; the JSON decoding is
@@ -25,7 +24,7 @@ import org.slf4j.LoggerFactory;
  */
 
 public abstract class AbstractBasicMessageListener<T extends BasicMessage> implements MessageListener {
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
+    private final Logger log = Logger.getLogger(this.getClass());
 
     private ConsumerConnectionContext consumerConnectionContext;
 
@@ -89,7 +88,7 @@ public abstract class AbstractBasicMessageListener<T extends BasicMessage> imple
                 basicMessage.setCorrelationId(correlationId);
             }
 
-            getLog().trace("Received basic message: {}", basicMessage);
+            getLog().tracef("Received basic message: %s", basicMessage);
         } catch (JMSException e) {
             getLog().error("A message was received that was not a valid text message", e);
             basicMessage = null;

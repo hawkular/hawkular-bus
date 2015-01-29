@@ -87,7 +87,6 @@
         <version.gnu.getopt>1.0.13</version.gnu.getopt>
         <version.junit>4.11</version.junit>
         <version.org.apache.activemq>5.10.0</version.org.apache.activemq>
-        <version.org.jboss.spec>1.0.0.Final</version.org.jboss.spec>
         <version.org.testng>6.5.2</version.org.testng>
         <version.org.wildfly>8.2.0.Final</version.org.wildfly>
 
@@ -142,14 +141,6 @@
             </dependency>
 
             <dependency>
-                <groupId>org.jboss.spec</groupId>
-                <artifactId>jboss-javaee-7.0</artifactId>
-                <version>${version.org.jboss.spec}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
-            <dependency>
                 <groupId>org.wildfly</groupId>
                 <artifactId>wildfly-controller</artifactId>
                 <version>${version.org.wildfly}</version>
@@ -172,6 +163,15 @@
                 <groupId>org.wildfly</groupId>
                 <artifactId>wildfly-subsystem-test-framework</artifactId>
                 <version>${version.org.wildfly}</version>
+            </dependency>
+
+            <!-- this also includes the org.jboss.spec:jboss-javaee-7.0 dependencies -->
+            <dependency>
+               <groupId>org.wildfly.bom</groupId>
+               <artifactId>jboss-javaee-7.0-with-logging</artifactId>
+               <version>${version.org.wildfly}</version>
+               <type>pom</type>
+               <scope>import</scope>
             </dependency>
 
         </dependencies>

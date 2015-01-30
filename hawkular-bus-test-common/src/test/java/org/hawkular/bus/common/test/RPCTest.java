@@ -58,7 +58,8 @@ public class RPCTest {
             producerFactory = new ConnectionContextFactory(brokerURL);
             ProducerConnectionContext producerContext = producerFactory.createProducerConnectionContext(endpoint);
             MessageProcessor clientSideProcessor = new MessageProcessor();
-            ListenableFuture<SpecificMessage> future = clientSideProcessor.sendRPC(producerContext, specificMessage, SpecificMessage.class);
+            ListenableFuture<SpecificMessage> future = clientSideProcessor.sendRPC(producerContext, specificMessage,
+                    SpecificMessage.class);
 
             // wait for the message to flow
             SpecificMessage receivedSpecificMessage = null;
@@ -124,7 +125,8 @@ public class RPCTest {
             producerFactory = new ConnectionContextFactory(brokerURL);
             ProducerConnectionContext producerContext = producerFactory.createProducerConnectionContext(endpoint);
             MessageProcessor clientSideProcessor = new MessageProcessor();
-            ListenableFuture<SpecificMessage> future = clientSideProcessor.sendRPC(producerContext, specificMessage, SpecificMessage.class);
+            ListenableFuture<SpecificMessage> future = clientSideProcessor.sendRPC(producerContext, specificMessage,
+                    SpecificMessage.class);
             TestFutureCallback futureCallback = new TestFutureCallback();
             Futures.addCallback(future, futureCallback);
 
@@ -194,7 +196,8 @@ public class RPCTest {
             CountDownLatch latch = new CountDownLatch(1);
             ArrayList<SpecificMessage> receivedMessages = new ArrayList<SpecificMessage>();
             ArrayList<String> errors = new ArrayList<String>();
-            SpecificMessageStoreAndLatchListener responseListener = new SpecificMessageStoreAndLatchListener(latch, receivedMessages, errors);
+            SpecificMessageStoreAndLatchListener responseListener = new SpecificMessageStoreAndLatchListener(latch,
+                    receivedMessages, errors);
             MessageProcessor clientSideProcessor = new MessageProcessor();
             clientSideProcessor.sendAndListen(producerContext, specificMessage, responseListener);
 
@@ -248,7 +251,8 @@ public class RPCTest {
             producerFactory = new ConnectionContextFactory(brokerURL);
             ProducerConnectionContext producerContext = producerFactory.createProducerConnectionContext(endpoint);
             MessageProcessor clientSideProcessor = new MessageProcessor();
-            ListenableFuture<SpecificMessage> future = clientSideProcessor.sendRPC(producerContext, specificMessage, SpecificMessage.class);
+            ListenableFuture<SpecificMessage> future = clientSideProcessor.sendRPC(producerContext, specificMessage,
+                    SpecificMessage.class);
 
             // wait for the message to flow - notice we don't wait long enough - this should timeout
             SpecificMessage receivedSpecificMessage = null;
@@ -315,7 +319,8 @@ public class RPCTest {
             producerFactory = new ConnectionContextFactory(brokerURL);
             ProducerConnectionContext producerContext = producerFactory.createProducerConnectionContext(endpoint);
             MessageProcessor clientSideProcessor = new MessageProcessor();
-            ListenableFuture<SpecificMessage> future = clientSideProcessor.sendRPC(producerContext, specificMessage, SpecificMessage.class);
+            ListenableFuture<SpecificMessage> future = clientSideProcessor.sendRPC(producerContext, specificMessage,
+                    SpecificMessage.class);
             TestFutureCallback futureCallback = new TestFutureCallback();
             Futures.addCallback(future, futureCallback);
 
@@ -379,7 +384,8 @@ public class RPCTest {
                 }
             }
 
-            SpecificMessage responseMessage = new SpecificMessage("RESPONSE:" + requestMessage.getMessage(), requestMessage.getDetails(), "RESPONSE:"
+            SpecificMessage responseMessage = new SpecificMessage("RESPONSE:" + requestMessage.getMessage(),
+                    requestMessage.getDetails(), "RESPONSE:"
                     + requestMessage.getSpecific());
             return responseMessage;
         }

@@ -15,8 +15,8 @@ import org.hawkular.bus.common.SimpleBasicMessage;
 import org.junit.Test;
 
 /**
- * This test class shows usages of the different Embedded Broker Wrapper objects
- * as well as the convenience connections for both consumer and producer.
+ * This test class shows usages of the different Embedded Broker Wrapper objects as well as the convenience connections
+ * for both consumer and producer.
  */
 public class EmbeddedBrokerTest {
     @Test
@@ -57,8 +57,9 @@ public class EmbeddedBrokerTest {
             ArrayList<String> errors = new ArrayList<String>();
 
             // start the consumer
-            StoreAndLatchBasicMessageListener<SimpleBasicMessage> messageListener = new StoreAndLatchBasicMessageListener<SimpleBasicMessage>(latch,
-                    receivedMessages, errors, SimpleBasicMessage.class);
+            StoreAndLatchBasicMessageListener<SimpleBasicMessage> messageListener
+                    = new StoreAndLatchBasicMessageListener<SimpleBasicMessage>(latch, receivedMessages, errors,
+                            SimpleBasicMessage.class);
             ConsumerConnection consumerConnection = new ConsumerConnection(brokerURL, endpoint, messageListener);
 
             // start the producer
@@ -108,8 +109,9 @@ public class EmbeddedBrokerTest {
             ArrayList<String> errors = new ArrayList<String>();
 
             // start the consumer listening for our subclass SpecificMessage objects
-            StoreAndLatchBasicMessageListener<SpecificMessage> messageListener = new StoreAndLatchBasicMessageListener<SpecificMessage>(latch,
-                    receivedMessages, errors, SpecificMessage.class);
+            StoreAndLatchBasicMessageListener<SpecificMessage> messageListener
+                    = new StoreAndLatchBasicMessageListener<SpecificMessage>(latch, receivedMessages, errors,
+                            SpecificMessage.class);
             ConsumerConnection consumerConnection = new ConsumerConnection(brokerURL, endpoint, messageListener);
 
             // start the producer
@@ -158,7 +160,8 @@ public class EmbeddedBrokerTest {
             ArrayList<String> errors = new ArrayList<String>();
 
             // start the consumer listening for our subclass SpecificMessage objects
-            SpecificMessageStoreAndLatchListener messageListener = new SpecificMessageStoreAndLatchListener(latch, receivedMessages, errors);
+            SpecificMessageStoreAndLatchListener messageListener = new SpecificMessageStoreAndLatchListener(latch,
+                    receivedMessages, errors);
             ConsumerConnection consumerConnection = new ConsumerConnection(brokerURL, endpoint, messageListener);
 
             // start the producer

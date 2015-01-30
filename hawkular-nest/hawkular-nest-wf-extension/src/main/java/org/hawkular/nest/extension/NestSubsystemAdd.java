@@ -83,7 +83,8 @@ class NestSubsystemAdd extends AbstractAddStepHandler {
                                         DEPLOYMENT, deployment.getName()));
                                 ModelNode op = Util.getEmptyOperation(ADD, deploymentAddress.toModelNode());
                                 op.get(ENABLED).set(true);
-                                op.get(PERSISTENT).set(false); // prevents writing this deployment out to standalone.xml
+                                // prevents writing this deployment out to standalone.xml
+                                op.get(PERSISTENT).set(false);
 
                                 ModelNode contentItem = new ModelNode();
 
@@ -181,7 +182,7 @@ class NestSubsystemAdd extends AbstractAddStepHandler {
         ServiceName name = NestService.SERVICE_NAME;
         ServiceController<NestService> controller = context.getServiceTarget() //
                 .addService(name, service) //
-                .addDependency(ServerEnvironmentService.SERVICE_NAME, ServerEnvironment.class, service.envServiceValue) //
+                .addDependency(ServerEnvironmentService.SERVICE_NAME, ServerEnvironment.class, service.envServiceValue)
                 .addDependency(BrokerService.SERVICE_NAME, BrokerService.class, service.brokerService) //
                 .addListener(verificationHandler) //
                 .setInitialMode(Mode.ACTIVE) //

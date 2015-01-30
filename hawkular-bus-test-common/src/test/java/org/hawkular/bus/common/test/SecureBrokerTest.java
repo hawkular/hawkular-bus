@@ -61,7 +61,8 @@ public class SecureBrokerTest {
             // mimic server-side
             consumerFactory = new ConnectionContextFactory(brokerURL, USER1_NAME, USER1_PASSWORD);
             ConsumerConnectionContext consumerContext = consumerFactory.createConsumerConnectionContext(endpoint);
-            SimpleTestListener<SpecificMessage> listener = new SimpleTestListener<SpecificMessage>(SpecificMessage.class);
+            SimpleTestListener<SpecificMessage> listener = new SimpleTestListener<SpecificMessage>(
+                    SpecificMessage.class);
             MessageProcessor serverSideProcessor = new MessageProcessor();
             serverSideProcessor.listen(consumerContext, listener);
 
@@ -75,7 +76,8 @@ public class SecureBrokerTest {
 
             // wait for the message to flow
             assertTrue(listener.waitForMessage(3));
-            assertEquals("Should have received the message", listener.getReceivedMessage().getSpecific(), "specific text");
+            assertEquals("Should have received the message", listener.getReceivedMessage().getSpecific(),
+                    "specific text");
 
         } finally {
             // close everything

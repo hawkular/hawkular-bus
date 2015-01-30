@@ -41,7 +41,8 @@ public class BrokerSubsystemExtension implements Extension {
 
     private final SubsystemParser parser = new SubsystemParser();
 
-    private static final String RESOURCE_NAME = BrokerSubsystemExtension.class.getPackage().getName() + ".LocalDescriptions";
+    private static final String RESOURCE_NAME = BrokerSubsystemExtension.class.getPackage().getName()
+            + ".LocalDescriptions";
 
     // The following are standard ${x} variables that are defined in the default-broker.xml configuration file. These
     // will be set as system properties whose values will be the values that are given to the extension.
@@ -96,7 +97,8 @@ public class BrokerSubsystemExtension implements Extension {
 
     static StandardResourceDescriptionResolver getResourceDescriptionResolver(final String keyPrefix) {
         String prefix = SUBSYSTEM_NAME + (keyPrefix == null ? "" : "." + keyPrefix);
-        return new StandardResourceDescriptionResolver(prefix, RESOURCE_NAME, BrokerSubsystemExtension.class.getClassLoader(), true, false);
+        return new StandardResourceDescriptionResolver(prefix, RESOURCE_NAME,
+                BrokerSubsystemExtension.class.getClassLoader(), true, false);
     }
 
     @Override
@@ -109,7 +111,8 @@ public class BrokerSubsystemExtension implements Extension {
         log.info("Initializing broker subsystem");
 
         final SubsystemRegistration subsystem = context.registerSubsystem(SUBSYSTEM_NAME, 1, 0);
-        final ManagementResourceRegistration registration = subsystem.registerSubsystemModel(BrokerSubsystemDefinition.INSTANCE);
+        final ManagementResourceRegistration registration = subsystem
+                .registerSubsystemModel(BrokerSubsystemDefinition.INSTANCE);
 
         subsystem.registerXMLElementWriter(parser);
     }
@@ -117,7 +120,8 @@ public class BrokerSubsystemExtension implements Extension {
     /**
      * The subsystem parser, which uses stax to read and write to and from xml
      */
-    private static class SubsystemParser implements XMLStreamConstants, XMLElementReader<List<ModelNode>>, XMLElementWriter<SubsystemMarshallingContext> {
+    private static class SubsystemParser implements XMLStreamConstants, XMLElementReader<List<ModelNode>>,
+            XMLElementWriter<SubsystemMarshallingContext> {
 
         @Override
         public void readElement(XMLExtendedStreamReader reader, List<ModelNode> list) throws XMLStreamException {
@@ -179,7 +183,8 @@ public class BrokerSubsystemExtension implements Extension {
             list.add(opAdd);
         }
 
-        private void readCustomConfigurationProperty(XMLExtendedStreamReader reader, ModelNode configAttributeNode) throws XMLStreamException {
+        private void readCustomConfigurationProperty(XMLExtendedStreamReader reader, ModelNode configAttributeNode)
+                throws XMLStreamException {
             if (!reader.getLocalName().equals(PROPERTY_ELEMENT)) {
                 throw ParseUtils.unexpectedElement(reader);
             }
@@ -193,7 +198,8 @@ public class BrokerSubsystemExtension implements Extension {
         }
 
         @Override
-        public void writeContent(final XMLExtendedStreamWriter writer, final SubsystemMarshallingContext context) throws XMLStreamException {
+        public void writeContent(final XMLExtendedStreamWriter writer, final SubsystemMarshallingContext context)
+                throws XMLStreamException {
             ModelNode node = context.getModelNode();
 
             // <subsystem>
@@ -247,7 +253,8 @@ public class BrokerSubsystemExtension implements Extension {
             writer.writeEndElement();
         }
 
-        private void writeElement(final XMLExtendedStreamWriter writer, ModelNode node, String attribName) throws XMLStreamException {
+        private void writeElement(final XMLExtendedStreamWriter writer, ModelNode node, String attribName)
+                throws XMLStreamException {
             ModelNode attribNode = node.get(attribName);
             if (attribNode.isDefined()) {
                 writer.writeStartElement(attribName);

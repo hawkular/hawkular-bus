@@ -39,7 +39,7 @@ public class ConnectionContext {
 
     /**
      * Sets this context object with the same data found in the source context.
-     * 
+     *
      * @param source
      *            the source context whose data is to be copied
      */

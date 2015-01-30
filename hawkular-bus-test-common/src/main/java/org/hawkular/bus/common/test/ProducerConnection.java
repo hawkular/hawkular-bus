@@ -10,7 +10,7 @@ import org.hawkular.bus.common.producer.ProducerConnectionContext;
 /**
  * Convenience class tests can use to create a producer of either topic or queue
  * messages.
- * 
+ *
  * The constructor creates the connection after which you just call sendMessage
  * to produce a message.
  */

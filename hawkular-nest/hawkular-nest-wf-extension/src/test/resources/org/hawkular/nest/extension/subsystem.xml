@@ -1,10 +1,10 @@
 <subsystem xmlns="urn:org.hawkular.nest:nest:1.0" enabled="true">
 
-    <nest-name>test-name</nest-name>
+  <nest-name>test-name</nest-name>
 
-    <custom-configuration>
-        <property name="custom-prop" value="custom-prop-val"/>
-        <property name="custom-prop2" value="custom-prop-val2"/>
-    </custom-configuration>
+  <custom-configuration>
+    <property name="custom-prop" value="custom-prop-val" />
+    <property name="custom-prop2" value="custom-prop-val2" />
+  </custom-configuration>
 
 </subsystem>

@@ -18,14 +18,16 @@ import org.jboss.dmr.ModelType;
 
 /**
  * A generic catch-all to allow the broker to have any config property set.
- * 
+ *
  * @author John Mazzitelli
  */
 public class CustomConfigAttributeDefinition extends MapAttributeDefinition {
 
     public CustomConfigAttributeDefinition() {
-        super(new SimpleMapAttributeDefinition.Builder(BrokerSubsystemExtension.CUSTOM_CONFIG_ELEMENT, true).setAllowExpression(false).setMinSize(0)
-                .setMaxSize(Integer.MAX_VALUE).setElementValidator(new ModelTypeValidator(ModelType.STRING)).setFlags(Flag.RESTART_RESOURCE_SERVICES));
+        super(new SimpleMapAttributeDefinition.Builder(BrokerSubsystemExtension.CUSTOM_CONFIG_ELEMENT, true)
+                .setAllowExpression(false).setMinSize(0).setMaxSize(Integer.MAX_VALUE)
+                .setElementValidator(new ModelTypeValidator(ModelType.STRING))
+                .setFlags(Flag.RESTART_RESOURCE_SERVICES));
     }
 
     @Override
@@ -35,13 +37,13 @@ public class CustomConfigAttributeDefinition extends MapAttributeDefinition {
 
     @Override
     protected void addAttributeValueTypeDescription(ModelNode node, ResourceDescriptionResolver resolver,
-        Locale locale, ResourceBundle bundle) {
+            Locale locale, ResourceBundle bundle) {
         node.get(ModelDescriptionConstants.VALUE_TYPE).set(ModelType.STRING);
     }
 
     @Override
     protected void addOperationParameterValueTypeDescription(ModelNode node, String operationName,
-        ResourceDescriptionResolver resolver, Locale locale, ResourceBundle bundle) {
+            ResourceDescriptionResolver resolver, Locale locale, ResourceBundle bundle) {
         node.get(ModelDescriptionConstants.VALUE_TYPE).set(ModelType.STRING);
     }
 

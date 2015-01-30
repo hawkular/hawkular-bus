@@ -7,10 +7,10 @@ import org.hawkular.bus.common.BasicMessage;
 /**
  * A message listener that expects to receive a JSON-encoded BasicMessage or one of its subclasses. Implementors need
  * only implement the method that takes an BasicRecord or one of its subclasses; the JSON decoding is handled for you.
- * 
+ *
  * This processes fire-and-forget requests - that is, the request message is processed with no response being sent back
  * to the sender.
- * 
+ *
  * @author John Mazzitelli
  */
 
@@ -37,7 +37,7 @@ public abstract class BasicMessageListener<T extends BasicMessage> extends Abstr
 
     /**
      * Subclasses implement this method to process the received message.
-     * 
+     *
      * @param message
      *            the message to process
      */

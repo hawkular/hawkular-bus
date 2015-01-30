@@ -14,9 +14,9 @@ import org.jboss.logging.Logger;
  * Provides a slim wrapper around the message broker. You can simply provide a
  * config file (either a ActiveMQ .properties or .xml file) to the constructor,
  * then start/stop the broker.
- * 
+ *
  * You can start the broker on the command line if you want a standalone broker.
- * 
+ *
  * You can subclass this to provide additional functionality around
  * configuration and management of the broker.
  */
@@ -112,7 +112,7 @@ public class EmbeddedBroker {
     /**
      * This is protected because we don't want it to leak out. If it is ever stopped, it typically can't be reused or
      * restarted again.
-     * 
+     *
      * @return the actual broker instance
      */
     protected BrokerService getBrokerService() {

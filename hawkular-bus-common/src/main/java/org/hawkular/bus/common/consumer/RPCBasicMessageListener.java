@@ -10,15 +10,16 @@ import org.hawkular.bus.common.producer.ProducerConnectionContext;
 
 /**
  * A listener that processes an incoming request that will require a response sent back to the sender of the request.
- * 
+ *
  * @author John Mazzitelli
- * 
+ *
  * @param <T>
  *            the type of the incoming request message
  * @param <U>
  *            the type of the response message that is to be sent back to the request sender
  */
-public abstract class RPCBasicMessageListener<T extends BasicMessage, U extends BasicMessage> extends AbstractBasicMessageListener<T> {
+public abstract class RPCBasicMessageListener<T extends BasicMessage, U extends BasicMessage> extends
+        AbstractBasicMessageListener<T> {
 
     // this will be used to send our reply
     private MessageProcessor messageSender;
@@ -87,7 +88,9 @@ public abstract class RPCBasicMessageListener<T extends BasicMessage, U extends 
                 producerContext.setDestination(replyTo);
                 Session session = producerContext.getSession();
                 if (session == null) {
-                    getLog().error("Cannot return response - there is no session in the connection context assigned to this listener");
+                    getLog().error(
+                            "Cannot return response - there is no session in the connection context assigned to this"
+                            + " listener");
                     return;
                 }
                 producerContext.setMessageProducer(session.createProducer(replyTo));
@@ -105,7 +108,7 @@ public abstract class RPCBasicMessageListener<T extends BasicMessage, U extends 
 
     /**
      * Subclasses implement this method to process the received message.
-     * 
+     *
      * @param message
      *            the message to process
      * @return the response message - this will be forwarded to the sender of the request message

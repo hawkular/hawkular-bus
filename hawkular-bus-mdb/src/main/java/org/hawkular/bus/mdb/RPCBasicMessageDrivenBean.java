@@ -9,17 +9,18 @@ import org.hawkular.bus.common.consumer.ConsumerConnectionContext;
 import org.hawkular.bus.common.consumer.RPCBasicMessageListener;
 import org.jboss.logging.Logger;
 
-public abstract class RPCBasicMessageDrivenBean<T extends BasicMessage, U extends BasicMessage> extends RPCBasicMessageListener<T, U> {
+public abstract class RPCBasicMessageDrivenBean<T extends BasicMessage, U extends BasicMessage> extends
+        RPCBasicMessageListener<T, U> {
     private final Logger log = Logger.getLogger(RPCBasicMessageDrivenBean.class);
 
     /**
      * MDB subclasses need to define this usually by returning a factory that is obtained through injection:
-     * 
+     *
      * <pre>
      * &#064;Resource(mappedName = &quot;java:/HawkularBusConnectionFactory&quot;)
      * private ConnectionFactory connectionFactory;
      * </pre>
-     * 
+     *
      * @return connection factory to be used when sending the response
      */
     public abstract ConnectionFactory getConnectionFactory();

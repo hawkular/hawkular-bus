@@ -28,7 +28,8 @@ public class BrokerConfigurationSetup {
      */
     private final ServerEnvironment serverEnvironment;
 
-    public BrokerConfigurationSetup(String configFile, Map<String, String> customConfigProps, ServerEnvironment serverEnv) {
+    public BrokerConfigurationSetup(String configFile, Map<String, String> customConfigProps,
+            ServerEnvironment serverEnv) {
         if (configFile == null || configFile.trim().isEmpty()) {
             configFile = BrokerSubsystemExtension.BROKER_CONFIG_FILE_DEFAULT;
         }
@@ -77,7 +78,8 @@ public class BrokerConfigurationSetup {
     private void prepareConfigurationProperty(Map<String, String> customConfigProps, String prop, String defaultValue) {
         String propValue = customConfigProps.get(prop);
         if (propValue == null || propValue.trim().length() == 0 || "-".equals(propValue)) {
-            log.debug("Broker configuration property [" + prop + "] was undefined; will default to [" + defaultValue + "]");
+            log.debug("Broker configuration property [" + prop + "] was undefined; will default to [" + defaultValue
+                    + "]");
             customConfigProps.put(prop, defaultValue);
         }
         return;
@@ -86,12 +88,12 @@ public class BrokerConfigurationSetup {
     /**
      * Because the EmbeddedBroker uses third party libs to read the config file, it needs to have been put it in a place
      * where we can know and pass along its absolute path. This returns that absolute path of the config file.
-     * 
+     *
      * @param configFile
      *            the absolute or relative path that will be converted to absolute path the broker can use
      * @param serverEnv
      *            the server environment we can use to look for the file
-     * 
+     *
      * @return the absolute path of the config file that the broker will use
      */
     private String getUsableConfigurationFilePath(String configFile, ServerEnvironment serverEnv) {
@@ -116,7 +118,8 @@ public class BrokerConfigurationSetup {
             return r.getURL().toString();
         } catch (Throwable t) {
             // oh well, we tried - return the configFile as-is - we'll probably fail later because its probably missing
-            log.info("Cannot determine absolute path of config file [" + configFile + "]- does it exist? - " + t.toString());
+            log.info("Cannot determine absolute path of config file [" + configFile + "]- does it exist? - "
+                    + t.toString());
             return configFile;
         }
     }

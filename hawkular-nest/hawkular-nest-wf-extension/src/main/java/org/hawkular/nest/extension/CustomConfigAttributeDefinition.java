@@ -26,7 +26,8 @@ public class CustomConfigAttributeDefinition extends MapAttributeDefinition {
     public CustomConfigAttributeDefinition() {
         super(new SimpleMapAttributeDefinition.Builder(NestSubsystemExtension.CUSTOM_CONFIG_ELEMENT, true)
                 .setAllowExpression(false).setMinSize(0).setMaxSize(Integer.MAX_VALUE)
-                .setElementValidator(new ModelTypeValidator(ModelType.STRING)).setFlags(Flag.RESTART_RESOURCE_SERVICES));
+                .setElementValidator(new ModelTypeValidator(ModelType.STRING))
+                .setFlags(Flag.RESTART_RESOURCE_SERVICES));
     }
 
     @Override
@@ -36,13 +37,13 @@ public class CustomConfigAttributeDefinition extends MapAttributeDefinition {
 
     @Override
     protected void addAttributeValueTypeDescription(ModelNode node, ResourceDescriptionResolver resolver,
-        Locale locale, ResourceBundle bundle) {
+            Locale locale, ResourceBundle bundle) {
         node.get(ModelDescriptionConstants.VALUE_TYPE).set(ModelType.STRING);
     }
 
     @Override
     protected void addOperationParameterValueTypeDescription(ModelNode node, String operationName,
-        ResourceDescriptionResolver resolver, Locale locale, ResourceBundle bundle) {
+            ResourceDescriptionResolver resolver, Locale locale, ResourceBundle bundle) {
         node.get(ModelDescriptionConstants.VALUE_TYPE).set(ModelType.STRING);
     }
 

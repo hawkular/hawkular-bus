@@ -27,7 +27,7 @@ class NestSubsystemStop implements OperationStepHandler {
             service = (NestService) opContext.getServiceRegistry(true).getRequiredService(name).getValue();
         } catch (Exception e) {
             // The nest service just isn't deployed, so obviously, it is already stopped. Just keep going.
-		}
+        }
 
         if (service != null) {
             service.stopNest();
@@ -35,5 +35,5 @@ class NestSubsystemStop implements OperationStepHandler {
 
         opContext.stepCompleted();
         return;
-	}
+    }
 }

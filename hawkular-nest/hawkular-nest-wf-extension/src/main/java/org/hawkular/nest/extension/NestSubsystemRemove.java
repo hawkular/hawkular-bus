@@ -15,7 +15,7 @@ class NestSubsystemRemove extends AbstractRemoveStepHandler {
 
     @Override
     protected void performRuntime(OperationContext context, ModelNode operation, ModelNode model)
-        throws OperationFailedException {
+            throws OperationFailedException {
 
         ServiceName name = NestService.SERVICE_NAME;
         context.removeService(name);

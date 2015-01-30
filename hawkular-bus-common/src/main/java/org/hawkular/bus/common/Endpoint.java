@@ -41,7 +41,8 @@ public class Endpoint {
         try {
             type = Type.valueOf(typeStr);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Not a valid destination URI [" + destination + "]; the endpoint type must be either QUEUE or TOPIC: " + typeStr);
+            throw new IllegalArgumentException("Not a valid destination URI [" + destination
+                    + "]; the endpoint type must be either QUEUE or TOPIC: " + typeStr);
         }
 
         String name = uri.getHost();

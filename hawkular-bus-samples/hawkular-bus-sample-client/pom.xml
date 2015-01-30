@@ -1,66 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-    <modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.hawkular.bus</groupId>
-        <artifactId>hawkular-bus-samples-parent</artifactId>
-        <version>1.0.0.Alpha1-SNAPSHOT</version>
-    </parent>
+  <parent>
+    <groupId>org.hawkular.bus</groupId>
+    <artifactId>hawkular-bus-samples-parent</artifactId>
+    <version>1.0.0.Alpha1-SNAPSHOT</version>
+  </parent>
 
-    <artifactId>hawkular-bus-sample-client</artifactId>
-    <name>Hawkular Bus Sample Client</name>
+  <artifactId>hawkular-bus-sample-client</artifactId>
+  <name>Hawkular Bus Sample Client</name>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.hawkular.bus</groupId>
-            <artifactId>hawkular-bus-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-        </dependency>
-    </dependencies>
+  <dependencies>
+    <dependency>
+      <groupId>org.hawkular.bus</groupId>
+      <artifactId>hawkular-bus-common</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
+  </dependencies>
 
-    <profiles>
-        <profile>
-            <id>run-sample-client</id>
-            <activation>
-                <property>
-                    <name>run-sample-client</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>exec-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>execute-test-broker</id>
-                                <phase>install</phase>
-                                <goals>
-                                    <goal>java</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <mainClass>org.hawkular.bus.sample.client.Main</mainClass>
-                            <systemProperties>
-                                <systemProperty>
-                                    <key>log4j.configuration</key>
-                                    <value>file:${basedir}/src/test/resources/log4j.xml</value>
-                                </systemProperty>
-                            </systemProperties>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
+  <profiles>
+    <profile>
+      <id>run-sample-client</id>
+      <activation>
+        <property>
+          <name>run-sample-client</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>execute-test-broker</id>
+                <phase>install</phase>
+                <goals>
+                  <goal>java</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <mainClass>org.hawkular.bus.sample.client.Main</mainClass>
+              <systemProperties>
+                <systemProperty>
+                  <key>log4j.configuration</key>
+                  <value>file:${basedir}/src/test/resources/log4j.xml</value>
+                </systemProperty>
+              </systemProperties>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
 </project>

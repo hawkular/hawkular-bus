@@ -9,9 +9,9 @@ import org.hawkular.bus.common.BasicMessage;
 import org.hawkular.bus.common.consumer.BasicMessageListener;
 
 /**
- * Creates a simple test listener. This listener will log messages it receives
- * and errors it encounters in lists given to it via its constructor.
- * 
+ * Creates a simple test listener. This listener will log messages it receives and errors it encounters in lists given
+ * to it via its constructor.
+ *
  * This listener will notify when it gets a message by counting down a latch.
  */
 public class StoreAndLatchBasicMessageListener<T extends BasicMessage> extends BasicMessageListener<T> {
@@ -20,7 +20,8 @@ public class StoreAndLatchBasicMessageListener<T extends BasicMessage> extends B
     private final ArrayList<T> messages;
     private final ArrayList<String> errors;
 
-    public StoreAndLatchBasicMessageListener(CountDownLatch latch, ArrayList<T> messages, ArrayList<String> errors, Class<T> basicMessageClass) {
+    public StoreAndLatchBasicMessageListener(CountDownLatch latch, ArrayList<T> messages, ArrayList<String> errors,
+            Class<T> basicMessageClass) {
         super(basicMessageClass);
         this.latch = latch;
         this.messages = messages;

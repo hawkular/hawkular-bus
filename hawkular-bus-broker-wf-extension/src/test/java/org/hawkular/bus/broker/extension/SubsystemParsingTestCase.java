@@ -66,7 +66,8 @@ public class SubsystemParsingTestCase extends SubsystemBaseParsingTestCase {
         assertEquals(SUBSYSTEM, element.getKey());
         assertEquals(BrokerSubsystemExtension.SUBSYSTEM_NAME, element.getValue());
         assertEquals(true, addSubsystem.get(BrokerSubsystemExtension.BROKER_ENABLED_ATTR).resolve().asBoolean());
-        assertEquals("foo/bar.xml", addSubsystem.get(BrokerSubsystemExtension.BROKER_CONFIG_FILE_ATTR).resolve().asString());
+        assertEquals("foo/bar.xml", addSubsystem.get(BrokerSubsystemExtension.BROKER_CONFIG_FILE_ATTR).resolve()
+                .asString());
     }
 
     /**
@@ -82,11 +83,15 @@ public class SubsystemParsingTestCase extends SubsystemBaseParsingTestCase {
         ModelNode model = services.readWholeModel();
         System.out.println(model);
         assertTrue(model.get(SUBSYSTEM).hasDefined(BrokerSubsystemExtension.SUBSYSTEM_NAME));
-        assertTrue(model.get(SUBSYSTEM, BrokerSubsystemExtension.SUBSYSTEM_NAME).hasDefined(BrokerSubsystemExtension.BROKER_ENABLED_ATTR));
-        assertTrue(model.get(SUBSYSTEM, BrokerSubsystemExtension.SUBSYSTEM_NAME, BrokerSubsystemExtension.BROKER_ENABLED_ATTR).resolve().asBoolean());
+        assertTrue(model.get(SUBSYSTEM, BrokerSubsystemExtension.SUBSYSTEM_NAME).hasDefined(
+                BrokerSubsystemExtension.BROKER_ENABLED_ATTR));
+        assertTrue(model
+                .get(SUBSYSTEM, BrokerSubsystemExtension.SUBSYSTEM_NAME, BrokerSubsystemExtension.BROKER_ENABLED_ATTR)
+                .resolve().asBoolean());
 
         // Sanity check to test the service was there
-        BrokerService broker = (BrokerService) services.getContainer().getRequiredService(BrokerService.SERVICE_NAME).getValue();
+        BrokerService broker = (BrokerService) services.getContainer().getRequiredService(BrokerService.SERVICE_NAME)
+                .getValue();
         assertNotNull(broker);
     }
 
@@ -126,8 +131,8 @@ public class SubsystemParsingTestCase extends SubsystemBaseParsingTestCase {
         ModelNode describeOp = new ModelNode();
         describeOp.get(OP).set(DESCRIBE);
         describeOp.get(OP_ADDR).set(
-            PathAddress.pathAddress(PathElement.pathElement(SUBSYSTEM, BrokerSubsystemExtension.SUBSYSTEM_NAME))
-                .toModelNode());
+                PathAddress.pathAddress(PathElement.pathElement(SUBSYSTEM, BrokerSubsystemExtension.SUBSYSTEM_NAME))
+                        .toModelNode());
         ModelNode executeOperation = servicesA.executeOperation(describeOp);
         List<ModelNode> operations = super.checkResultAndGetContents(executeOperation).asList();
 
@@ -149,7 +154,8 @@ public class SubsystemParsingTestCase extends SubsystemBaseParsingTestCase {
         KernelServices services = createKernelServicesBuilder(null).setSubsystemXml(subsystemXml).build();
 
         // Sanity check to test the service was there
-        BrokerService broker = (BrokerService) services.getContainer().getRequiredService(BrokerService.SERVICE_NAME).getValue();
+        BrokerService broker = (BrokerService) services.getContainer().getRequiredService(BrokerService.SERVICE_NAME)
+                .getValue();
         assertNotNull(broker);
 
         // Checks that the subsystem was removed from the model
@@ -169,7 +175,8 @@ public class SubsystemParsingTestCase extends SubsystemBaseParsingTestCase {
         String subsystemXml = getSubsystemXml();
         KernelServices services = createKernelServicesBuilder(null).setSubsystemXml(subsystemXml).build();
 
-        PathAddress brokerSubsystemPath = PathAddress.pathAddress(PathElement.pathElement(SUBSYSTEM, BrokerSubsystemExtension.SUBSYSTEM_NAME));
+        PathAddress brokerSubsystemPath = PathAddress.pathAddress(PathElement.pathElement(SUBSYSTEM,
+                BrokerSubsystemExtension.SUBSYSTEM_NAME));
 
         // ask for resource description: /subsystem=broker:read-resource-description
         ModelNode resourceDescriptionOp = new ModelNode();
@@ -196,12 +203,13 @@ public class SubsystemParsingTestCase extends SubsystemBaseParsingTestCase {
                 BrokerSubsystemExtension.BROKER_ENABLED_ATTR);
         assertEquals(attributes.size(), expectedAttributes.size());
 
-        for (int i = 0 ; i < attributes.size(); i++) {
+        for (int i = 0; i < attributes.size(); i++) {
             String attrib = attributes.get(i).getName();
             assertTrue("missing attrib: " + attrib, expectedAttributes.contains(attrib));
         }
 
-        // check the operations (there are many other operations that AS adds to our resource, but we only want to check for ours)
+        // check the operations (there are many other operations that AS adds to our resource, but we only want to check
+        // for ours)
         List<String> expectedOperations = Arrays.asList( //
                 BrokerSubsystemExtension.BROKER_START_OP, //
                 BrokerSubsystemExtension.BROKER_STOP_OP, //
@@ -223,16 +231,19 @@ public class SubsystemParsingTestCase extends SubsystemBaseParsingTestCase {
         KernelServices services = createKernelServicesBuilder(null).setSubsystemXml(subsystemXml).build();
 
         // status check - our service should be available
-        BrokerService service = (BrokerService) services.getContainer().getService(BrokerService.SERVICE_NAME).getValue();
+        BrokerService service = (BrokerService) services.getContainer().getService(BrokerService.SERVICE_NAME)
+                .getValue();
         assertNotNull(service);
 
-        PathAddress brokerSubsystemPath = PathAddress.pathAddress(PathElement.pathElement(SUBSYSTEM, BrokerSubsystemExtension.SUBSYSTEM_NAME));
+        PathAddress brokerSubsystemPath = PathAddress.pathAddress(PathElement.pathElement(SUBSYSTEM,
+                BrokerSubsystemExtension.SUBSYSTEM_NAME));
 
         // get the startup model from subsystem xml
         ModelNode model = services.readWholeModel();
 
         // current list of config props
-        ModelNode configNode = model.get(SUBSYSTEM, BrokerSubsystemExtension.SUBSYSTEM_NAME).get(BrokerSubsystemExtension.CUSTOM_CONFIG_ELEMENT);
+        ModelNode configNode = model.get(SUBSYSTEM, BrokerSubsystemExtension.SUBSYSTEM_NAME).get(
+                BrokerSubsystemExtension.CUSTOM_CONFIG_ELEMENT);
 
         // Add another
         configNode.add("foo", "true");
@@ -247,12 +258,16 @@ public class SubsystemParsingTestCase extends SubsystemBaseParsingTestCase {
         // now test that things are as they should be
         model = services.readWholeModel();
         assertTrue(model.get(SUBSYSTEM).hasDefined(BrokerSubsystemExtension.SUBSYSTEM_NAME));
-        assertTrue(model.get(SUBSYSTEM, BrokerSubsystemExtension.SUBSYSTEM_NAME).hasDefined(BrokerSubsystemExtension.BROKER_ENABLED_ATTR));
-        assertTrue(model.get(SUBSYSTEM, BrokerSubsystemExtension.SUBSYSTEM_NAME, BrokerSubsystemExtension.BROKER_ENABLED_ATTR).resolve().asBoolean());
-        assertTrue(model.get(SUBSYSTEM, BrokerSubsystemExtension.SUBSYSTEM_NAME).hasDefined(BrokerSubsystemExtension.CUSTOM_CONFIG_ELEMENT));
+        assertTrue(model.get(SUBSYSTEM, BrokerSubsystemExtension.SUBSYSTEM_NAME).hasDefined(
+                BrokerSubsystemExtension.BROKER_ENABLED_ATTR));
+        assertTrue(model
+                .get(SUBSYSTEM, BrokerSubsystemExtension.SUBSYSTEM_NAME, BrokerSubsystemExtension.BROKER_ENABLED_ATTR)
+                .resolve().asBoolean());
+        assertTrue(model.get(SUBSYSTEM, BrokerSubsystemExtension.SUBSYSTEM_NAME).hasDefined(
+                BrokerSubsystemExtension.CUSTOM_CONFIG_ELEMENT));
 
-        List<Property> props = model.get(SUBSYSTEM, BrokerSubsystemExtension.SUBSYSTEM_NAME).get(BrokerSubsystemExtension.CUSTOM_CONFIG_ELEMENT)
-                .asPropertyList();
+        List<Property> props = model.get(SUBSYSTEM, BrokerSubsystemExtension.SUBSYSTEM_NAME)
+                .get(BrokerSubsystemExtension.CUSTOM_CONFIG_ELEMENT).asPropertyList();
         assertEquals(3, props.size()); // there were 2, but we added "foo" above
         assertEquals("custom-prop", props.get(0).getName());
         assertEquals("custom-prop-val", props.get(0).getValue().asString());

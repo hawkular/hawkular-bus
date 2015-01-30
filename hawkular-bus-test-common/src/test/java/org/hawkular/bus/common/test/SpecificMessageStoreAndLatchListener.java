@@ -8,7 +8,8 @@ import java.util.concurrent.CountDownLatch;
  * simply using reflection to determine the class of T (in this test case, T is SpecificMessage).
  */
 public class SpecificMessageStoreAndLatchListener extends StoreAndLatchBasicMessageListener<SpecificMessage> {
-    public SpecificMessageStoreAndLatchListener(CountDownLatch latch, ArrayList<SpecificMessage> messages, ArrayList<String> errors) {
+    public SpecificMessageStoreAndLatchListener(CountDownLatch latch, ArrayList<SpecificMessage> messages,
+            ArrayList<String> errors) {
         super(latch, messages, errors, SpecificMessage.class);
     }
 }

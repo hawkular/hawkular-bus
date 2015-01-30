@@ -19,13 +19,14 @@ class BrokerSubsystemStatus implements OperationStepHandler {
         boolean isStarted = false;
         try {
             ServiceName name = BrokerService.SERVICE_NAME;
-            BrokerService service = (BrokerService) opContext.getServiceRegistry(true).getRequiredService(name).getValue();
+            BrokerService service = (BrokerService) opContext.getServiceRegistry(true).getRequiredService(name)
+                    .getValue();
             isStarted = service.isBrokerStarted();
         } catch (ServiceNotFoundException snfe) {
             // the broker just isn't deployed, so obviously, is isn't started
             isStarted = false;
-		}
+        }
         opContext.getResult().set(isStarted ? "STARTED" : "STOPPED");
         opContext.stepCompleted();
-	}
+    }
 }

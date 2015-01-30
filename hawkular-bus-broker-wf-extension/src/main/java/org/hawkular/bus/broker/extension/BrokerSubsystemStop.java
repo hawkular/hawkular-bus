@@ -20,14 +20,15 @@ class BrokerSubsystemStop implements OperationStepHandler {
     public void execute(OperationContext opContext, ModelNode model) throws OperationFailedException {
         try {
             ServiceName name = BrokerService.SERVICE_NAME;
-            BrokerService service = (BrokerService) opContext.getServiceRegistry(true).getRequiredService(name).getValue();
+            BrokerService service = (BrokerService) opContext.getServiceRegistry(true).getRequiredService(name)
+                    .getValue();
             log.info("Asked to stop the broker");
             service.stopBroker();
         } catch (Exception e) {
             // the broker service just isn't deployed, so obviously, the broker is already stopped. just keep going
-		}
+        }
 
         opContext.stepCompleted();
         return;
-	}
+    }
 }

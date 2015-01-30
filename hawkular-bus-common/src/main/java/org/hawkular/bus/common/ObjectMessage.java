@@ -18,7 +18,7 @@ public class ObjectMessage extends BasicMessage {
     private Class<?> objectClass; // the ad-hoc class that this object message represents
 
     public ObjectMessage() {
-        ; // the owner of the object will have to tell us the object class later
+        // the owner of the object will have to tell us the object class later
     }
 
     public ObjectMessage(Object object) {

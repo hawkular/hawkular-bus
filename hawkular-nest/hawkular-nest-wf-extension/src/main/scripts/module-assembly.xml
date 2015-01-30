@@ -1,41 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <assembly>
-    <id>module</id>
-    <formats>
-        <format>zip</format>
-    </formats>
-    <includeBaseDirectory>false</includeBaseDirectory>
-    <baseDirectory>${project.build.finalName}</baseDirectory>
-    <fileSets>
-        <!-- the files which only go in the zip, not in the jar -->
-        <fileSet>
-            <directory>${basedir}/src/main/resources/module</directory>
-            <outputDirectory>/${moduleDir}</outputDirectory>
-            <includes>
-                <include>**</include>
-            </includes>
-            <filtered>true</filtered>
-            <fileMode>0644</fileMode>
-            <directoryMode>0755</directoryMode>
-        </fileSet>
-    </fileSets>
+  <id>module</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <baseDirectory>${project.build.finalName}</baseDirectory>
+  <fileSets>
+    <!-- the files which only go in the zip, not in the jar -->
+    <fileSet>
+      <directory>${basedir}/src/main/resources/module</directory>
+      <outputDirectory>/${moduleDir}</outputDirectory>
+      <includes>
+        <include>**</include>
+      </includes>
+      <filtered>true</filtered>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
+    </fileSet>
+  </fileSets>
 
-    <dependencySets>
-        <dependencySet>
-            <outputDirectory>/${moduleDir}/main</outputDirectory>
-            <useProjectArtifact>true</useProjectArtifact>
-            <useTransitiveDependencies>true</useTransitiveDependencies>
-            <useTransitiveFiltering>true</useTransitiveFiltering>
-            <!-- exclude these transitive deps that are provided to us by other modules -->
-            <excludes>
-                <exclude>org.apache.activemq:activemq-all</exclude>
-                <exclude>org.apache.activemq:activemq-jaas</exclude>
-            </excludes>
-            <fileMode>0644</fileMode>
-            <directoryMode>0755</directoryMode>
-        </dependencySet>
-    </dependencySets>
+  <dependencySets>
+    <dependencySet>
+      <outputDirectory>/${moduleDir}/main</outputDirectory>
+      <useProjectArtifact>true</useProjectArtifact>
+      <useTransitiveDependencies>true</useTransitiveDependencies>
+      <useTransitiveFiltering>true</useTransitiveFiltering>
+      <!-- exclude these transitive deps that are provided to us by other modules -->
+      <excludes>
+        <exclude>org.apache.activemq:activemq-all</exclude>
+        <exclude>org.apache.activemq:activemq-jaas</exclude>
+      </excludes>
+      <fileMode>0644</fileMode>
+      <directoryMode>0755</directoryMode>
+    </dependencySet>
+  </dependencySets>
 
 </assembly>
 

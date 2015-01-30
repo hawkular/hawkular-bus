@@ -35,8 +35,10 @@ public class MessageSelectorTest {
 
             // mimic server-side
             consumerFactory = new ConnectionContextFactory(brokerURL);
-            ConsumerConnectionContext consumerContext = consumerFactory.createConsumerConnectionContext(endpoint, "MyTest = 'boo'");
-            SimpleTestListener<SpecificMessage> listener = new SimpleTestListener<SpecificMessage>(SpecificMessage.class);
+            ConsumerConnectionContext consumerContext = consumerFactory.createConsumerConnectionContext(endpoint,
+                    "MyTest = 'boo'");
+            SimpleTestListener<SpecificMessage> listener
+                    = new SimpleTestListener<SpecificMessage>(SpecificMessage.class);
             MessageProcessor serverSideProcessor = new MessageProcessor();
             serverSideProcessor.listen(consumerContext, listener);
 
@@ -59,7 +61,8 @@ public class MessageSelectorTest {
 
             // wait for the message to flow - we should get it now
             listener.waitForMessage(3);
-            assertEquals("Should have received the message", listener.getReceivedMessage().getSpecific(), "specific text");
+            assertEquals("Should have received the message", listener.getReceivedMessage().getSpecific(),
+                    "specific text");
 
         } finally {
             // close everything

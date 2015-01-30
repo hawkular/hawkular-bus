@@ -15,7 +15,7 @@ class BrokerSubsystemRemove extends AbstractRemoveStepHandler {
 
     @Override
     protected void performRuntime(OperationContext context, ModelNode operation, ModelNode model)
-        throws OperationFailedException {
+            throws OperationFailedException {
 
         ServiceName name = BrokerService.SERVICE_NAME;
         context.removeService(name);

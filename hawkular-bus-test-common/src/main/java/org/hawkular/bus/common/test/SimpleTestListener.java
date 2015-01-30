@@ -8,8 +8,8 @@ import org.hawkular.bus.common.consumer.BasicMessageListener;
 
 /**
  * Simple test listener that allows you to wait for a message and when it comes in you can retrieve it. See
- * {@link #waitForMessage(long)} and {@link #getBasicMessage()}. This can retrieve multiple messages serially, but if you
- * don't retrieve a message before a new one comes in, the first message is lost.
+ * {@link #waitForMessage(long)} and {@link #getBasicMessage()}. This can retrieve multiple messages serially, but if
+ * you don't retrieve a message before a new one comes in, the first message is lost.
  *
  * This class is not thread safe. Its purpose is just to fascilitate unit tests.
  *

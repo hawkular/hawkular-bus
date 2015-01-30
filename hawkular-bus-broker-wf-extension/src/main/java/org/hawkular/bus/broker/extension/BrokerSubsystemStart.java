@@ -22,7 +22,8 @@ class BrokerSubsystemStart implements OperationStepHandler {
     public void execute(OperationContext opContext, ModelNode model) throws OperationFailedException {
         try {
             ServiceName name = BrokerService.SERVICE_NAME;
-            BrokerService service = (BrokerService) opContext.getServiceRegistry(true).getRequiredService(name).getValue();
+            BrokerService service = (BrokerService) opContext.getServiceRegistry(true).getRequiredService(name)
+                    .getValue();
 
             boolean restart = model.get(BrokerSubsystemDefinition.START_OP_PARAM_RESTART.getName()).asBoolean(false);
             if (restart) {

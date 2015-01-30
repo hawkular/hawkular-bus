@@ -1,188 +1,189 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.hawkular.bus</groupId>
-        <artifactId>hawkular-bus-parent</artifactId>
-        <version>1.0.0.Alpha1-SNAPSHOT</version>
-    </parent>
+  <parent>
+    <groupId>org.hawkular.bus</groupId>
+    <artifactId>hawkular-bus-parent</artifactId>
+    <version>1.0.0.Alpha1-SNAPSHOT</version>
+  </parent>
 
-    <artifactId>hawkular-bus-broker-wf-extension</artifactId>
-    <packaging>jar</packaging>
-    <name>Hawkular Bus Broker WildFly Extension</name>
+  <artifactId>hawkular-bus-broker-wf-extension</artifactId>
+  <packaging>jar</packaging>
+  <name>Hawkular Bus Broker WildFly Extension</name>
 
-    <properties>
-        <!-- this is used to replace the variable in module.xml -->
-        <moduleName>org.hawkular.bus.broker</moduleName>
-        <moduleDir>org/hawkular/bus/broker</moduleDir>
-    </properties>
+  <properties>
+    <!-- this is used to replace the variable in module.xml -->
+    <moduleName>org.hawkular.bus.broker</moduleName>
+    <moduleDir>org/hawkular/bus/broker</moduleDir>
+  </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.hawkular.bus</groupId>
-            <artifactId>hawkular-bus-broker</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+  <dependencies>
+    <dependency>
+      <groupId>org.hawkular.bus</groupId>
+      <artifactId>hawkular-bus-broker</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
-        <!-- These are provided by the Wildfly container via these module dependencies in module.xml
-                 gnu.getopt
-                 org.apache.log4j
-                 org.apache.commons.logging
-                 org.apache.commons.pool
-                 javax.management.j2ee.api
-                 javax.jms.api
-                 javax.transaction.api
-                 org.slf4j
-                 org.jboss.as.controller
-                 org.jboss.as.server
-                 org.jboss.logging
-                 org.jdom
-        -->
-        <dependency>
-            <groupId>gnu.getopt</groupId>
-            <artifactId>java-getopt</artifactId>
-            <scope>provided</scope>
-        </dependency>
+    <!-- These are provided by the Wildfly container via these module dependencies in module.xml
+      gnu.getopt
+      org.apache.log4j
+      org.apache.commons.logging
+      org.apache.commons.pool
+      javax.management.j2ee.api
+      javax.jms.api
+      javax.transaction.api
+      org.slf4j
+      org.jboss.as.controller
+      org.jboss.as.server
+      org.jboss.logging
+      org.jdom
+    -->
+    <dependency>
+      <groupId>gnu.getopt</groupId>
+      <artifactId>java-getopt</artifactId>
+      <scope>provided</scope>
+    </dependency>
 
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <scope>provided</scope>
-        </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <scope>provided</scope>
+    </dependency>
 
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <scope>provided</scope>
-        </dependency>
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <scope>provided</scope>
+    </dependency>
 
-        <dependency>
-            <groupId>commons-pool</groupId>
-            <artifactId>commons-pool</artifactId>
-            <scope>provided</scope>
-        </dependency>
+    <dependency>
+      <groupId>commons-pool</groupId>
+      <artifactId>commons-pool</artifactId>
+      <scope>provided</scope>
+    </dependency>
 
-        <dependency>
-            <groupId>jdom</groupId>
-            <artifactId>jdom</artifactId>
-            <scope>provided</scope>
-        </dependency>
+    <dependency>
+      <groupId>jdom</groupId>
+      <artifactId>jdom</artifactId>
+      <scope>provided</scope>
+    </dependency>
 
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-j2ee-management_1.1_spec</artifactId>
-            <scope>provided</scope>
-        </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-j2ee-management_1.1_spec</artifactId>
+      <scope>provided</scope>
+    </dependency>
 
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jms_1.1_spec</artifactId>
-            <scope>provided</scope>
-        </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-jms_1.1_spec</artifactId>
+      <scope>provided</scope>
+    </dependency>
 
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jta_1.0.1B_spec</artifactId>
-            <scope>provided</scope>
-        </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-jta_1.0.1B_spec</artifactId>
+      <scope>provided</scope>
+    </dependency>
 
-        <dependency>
-            <groupId>org.jboss.logging</groupId>
-            <artifactId>jboss-logging</artifactId>
-            <scope>provided</scope>
-        </dependency>
+    <dependency>
+      <groupId>org.jboss.logging</groupId>
+      <artifactId>jboss-logging</artifactId>
+      <scope>provided</scope>
+    </dependency>
 
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
 
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <scope>provided</scope>
-        </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <scope>provided</scope>
+    </dependency>
 
-        <dependency>
-            <groupId>org.wildfly</groupId>
-            <artifactId>wildfly-controller</artifactId>
-            <scope>provided</scope>
-        </dependency>
+    <dependency>
+      <groupId>org.wildfly</groupId>
+      <artifactId>wildfly-controller</artifactId>
+      <scope>provided</scope>
+    </dependency>
 
-        <dependency>
-            <groupId>org.wildfly</groupId>
-            <artifactId>wildfly-server</artifactId>
-            <scope>provided</scope>
-        </dependency>
+    <dependency>
+      <groupId>org.wildfly</groupId>
+      <artifactId>wildfly-server</artifactId>
+      <scope>provided</scope>
+    </dependency>
 
-        <!-- Test Dependencies -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
+    <!-- Test Dependencies -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
 
-        <dependency>
-            <groupId>org.wildfly</groupId>
-            <artifactId>wildfly-subsystem-test-framework</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+    <dependency>
+      <groupId>org.wildfly</groupId>
+      <artifactId>wildfly-subsystem-test-framework</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 
-    <build>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-                <excludes>
-                    <!-- these don't need to be in the jar, just in our module .zip -->
-                    <exclude>module/**</exclude>
-                </excludes>
-            </resource>
-        </resources>
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+        <excludes>
+          <!-- these don't need to be in the jar, just in our module .zip -->
+          <exclude>module/**</exclude>
+        </excludes>
+      </resource>
+    </resources>
 
-        <plugins>
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <configuration>
-                    <descriptors>
-                        <descriptor>src/main/scripts/module-assembly.xml</descriptor>
-                    </descriptors>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>module-assembly</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+    <plugins>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptors>
+            <descriptor>src/main/scripts/module-assembly.xml</descriptor>
+          </descriptors>
+        </configuration>
+        <executions>
+          <execution>
+            <id>module-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
 
-            <!-- USAGE: mvn -Dorg.hawkular.wildfly.home=/opt/wildfly8 wildfly-extension:deploy -->
-            <plugin>
-                <groupId>org.jboss.plugins</groupId>
-                <artifactId>wildfly-extension-maven-plugin</artifactId>
-                <configuration>
-                    <moduleZip>${project.build.directory}/${project.build.finalName}-module.zip</moduleZip>
-                    <jbossHome>${org.hawkular.wildfly.home}</jbossHome>
-                    <modulesHome>modules/system/layers/base</modulesHome>
-                    <serverConfig>standalone/configuration/standalone.xml</serverConfig>
-                    <subsystem>${basedir}/src/main/scripts/standalone-subsystem.xml</subsystem>
-                    <profiles>
-                        <profile>default</profile>
-                    </profiles>
-                    <socketBinding>${basedir}/src/main/scripts/socket-binding.xml</socketBinding>
-                    <socketBindingGroups>
-                        <socketBindingGroup>standard-sockets</socketBindingGroup>
-                    </socketBindingGroups>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+      <!-- USAGE: mvn -Dorg.hawkular.wildfly.home=/opt/wildfly8 wildfly-extension:deploy -->
+      <plugin>
+        <groupId>org.jboss.plugins</groupId>
+        <artifactId>wildfly-extension-maven-plugin</artifactId>
+        <configuration>
+          <moduleZip>${project.build.directory}/${project.build.finalName}-module.zip</moduleZip>
+          <jbossHome>${org.hawkular.wildfly.home}</jbossHome>
+          <modulesHome>modules/system/layers/base</modulesHome>
+          <serverConfig>standalone/configuration/standalone.xml</serverConfig>
+          <subsystem>${basedir}/src/main/scripts/standalone-subsystem.xml</subsystem>
+          <profiles>
+            <profile>default</profile>
+          </profiles>
+          <socketBinding>${basedir}/src/main/scripts/socket-binding.xml</socketBinding>
+          <socketBindingGroups>
+            <socketBindingGroup>standard-sockets</socketBindingGroup>
+          </socketBindingGroups>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>

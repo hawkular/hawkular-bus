@@ -40,21 +40,23 @@ public class SimpleMessageProcessor extends MessageProcessor {
         return super.send(producerCtx, basicMessage, headers);
     }
 
-    public <T extends BasicMessage> RPCConnectionContext sendAndListen(BasicMessage basicMessage, BasicMessageListener<T> responseListener) throws JMSException {
+    public <T extends BasicMessage> RPCConnectionContext sendAndListen(BasicMessage basicMessage,
+            BasicMessageListener<T> responseListener) throws JMSException {
         return super.sendAndListen(producerCtx, basicMessage, responseListener);
     }
 
-    public <T extends BasicMessage> RPCConnectionContext sendAndListen(BasicMessage basicMessage, BasicMessageListener<T> responseListener,
-            Map<String, String> headers) throws JMSException {
+    public <T extends BasicMessage> RPCConnectionContext sendAndListen(BasicMessage basicMessage,
+            BasicMessageListener<T> responseListener, Map<String, String> headers) throws JMSException {
         return super.sendAndListen(producerCtx, basicMessage, responseListener, headers);
     }
 
-    public <R extends BasicMessage> ListenableFuture<R> sendRPC(BasicMessage basicMessage, Class<R> expectedResponseMessageClass) throws JMSException {
+    public <R extends BasicMessage> ListenableFuture<R> sendRPC(BasicMessage basicMessage,
+            Class<R> expectedResponseMessageClass) throws JMSException {
         return super.sendRPC(producerCtx, basicMessage, expectedResponseMessageClass);
     }
 
-    public <R extends BasicMessage> ListenableFuture<R> sendRPC(BasicMessage basicMessage, Class<R> expectedResponseMessageClass, Map<String, String> headers)
-            throws JMSException {
+    public <R extends BasicMessage> ListenableFuture<R> sendRPC(BasicMessage basicMessage,
+            Class<R> expectedResponseMessageClass, Map<String, String> headers) throws JMSException {
         return super.sendRPC(producerCtx, basicMessage, expectedResponseMessageClass, headers);
     }
 
@@ -62,7 +64,8 @@ public class SimpleMessageProcessor extends MessageProcessor {
         return super.createMessage(context, basicMessage);
     }
 
-    protected Message createMessage(ConnectionContext context, BasicMessage basicMessage, Map<String, String> headers) throws JMSException {
+    protected Message createMessage(ConnectionContext context, BasicMessage basicMessage, Map<String, String> headers)
+            throws JMSException {
         return super.createMessage(context, basicMessage, headers);
     }
 }

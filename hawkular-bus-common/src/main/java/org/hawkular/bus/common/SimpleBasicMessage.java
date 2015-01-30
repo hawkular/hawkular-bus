@@ -19,7 +19,7 @@ public class SimpleBasicMessage extends BasicMessage {
     private Map<String, String> details;
 
     protected SimpleBasicMessage() {
-        ; // Intentionally left blank
+        // Intentionally left blank
     }
 
     public SimpleBasicMessage(String message) {
@@ -39,7 +39,7 @@ public class SimpleBasicMessage extends BasicMessage {
 
     /**
      * The simple message string of this message.
-     * 
+     *
      * @return message string
      */
     public String getMessage() {

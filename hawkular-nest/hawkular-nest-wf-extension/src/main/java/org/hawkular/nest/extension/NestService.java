@@ -35,8 +35,8 @@ public class NestService implements Service<NestService> {
     final InjectedValue<BrokerService> brokerService = new InjectedValue<BrokerService>();
 
     /**
-     * Configuration settings that help complete the configuration. These are settings that the user set in the subsystem
-     * (e.g. standalone.xml or via CLI).
+     * Configuration settings that help complete the configuration. These are settings that the user set in the
+     * subsystem (e.g. standalone.xml or via CLI).
      */
     private Map<String, String> customConfigProperties = Collections.synchronizedMap(new HashMap<String, String>());
 

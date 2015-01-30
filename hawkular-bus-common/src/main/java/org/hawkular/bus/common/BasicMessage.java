@@ -44,7 +44,7 @@ public abstract class BasicMessage {
     }
 
     protected BasicMessage() {
-        ; // Intentionally left blank
+        // Intentionally left blank
     }
 
     /**

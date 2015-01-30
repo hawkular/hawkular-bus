@@ -14,7 +14,8 @@ public class TCPEmbeddedBrokerWrapper extends AbstractEmbeddedBrokerWrapper {
 
     public TCPEmbeddedBrokerWrapper() throws Exception {
         bindPort = findFreePort();
-        setBroker(new EmbeddedBroker(new String[] { "--config=" + getConfigurationFile(), "-Dtcp-testbroker.bind.port=" + bindPort }));
+        setBroker(new EmbeddedBroker(new String[] { "--config=" + getConfigurationFile(),
+                "-Dtcp-testbroker.bind.port=" + bindPort }));
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,4 +44,36 @@ public interface MsgLogger {
     @LogMessage(level = Level.ERROR)
     @Message(id = 100003, value = "Failed to start connection.")
     void errorFailedToStartConnection(@Cause Throwable t);
+
+    @LogMessage(level = Level.ERROR)
+    @Message(id = 100004, value = "Cannot return response - there is no message sender assigned to this listener")
+    void errorNoMessageSenderInListener();
+
+    @LogMessage(level = Level.ERROR)
+    @Message(id = 100005, value = "Cannot return response - there is no connection context assigned to this listener")
+    void errorNoConnectionContextInListener();
+
+    @LogMessage(level = Level.ERROR)
+    @Message(id = 100006, value = "Cannot return response - no session in the conn context assigned to this listener")
+    void errorNoSessionInListener();
+
+    @LogMessage(level = Level.ERROR)
+    @Message(id = 100007, value = "Failed to send response")
+    void errorFailedToSendResponse(@Cause Throwable t);
+
+    @LogMessage(level = Level.ERROR)
+    @Message(id = 100008, value = "Told not to interrupt if running, but it is running. Cannot cancel.")
+    void errorCannotCancelRunningFuture();
+
+    @LogMessage(level = Level.ERROR)
+    @Message(id = 100009, value = "Failed to close consumer, cannot fully cancel")
+    void errorConsumerCloseFailureOnFutureCancel();
+
+    @LogMessage(level = Level.ERROR)
+    @Message(id = 100010, value = "Failed to store incoming message for some reason. This future is now invalid.")
+    void errorCannotStoreIncomingMessageFutureInvalid();
+
+    @LogMessage(level = Level.ERROR)
+    @Message(id = 100011, value = "Failed to close consumer")
+    void errorFailedToCloseFutureConsumer(@Cause Throwable t);
 }

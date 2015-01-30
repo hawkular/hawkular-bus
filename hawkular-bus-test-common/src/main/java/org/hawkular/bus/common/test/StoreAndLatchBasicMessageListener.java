@@ -1,3 +1,19 @@
+/*
+ * Copyright 2015 Red Hat, Inc. and/or its affiliates
+ * and other contributors as indicated by the @author tags.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.hawkular.bus.common.test;
 
 import java.util.ArrayList;
@@ -11,7 +27,7 @@ import org.hawkular.bus.common.consumer.BasicMessageListener;
 /**
  * Creates a simple test listener. This listener will log messages it receives
  * and errors it encounters in lists given to it via its constructor.
- * 
+ *
  * This listener will notify when it gets a message by counting down a latch.
  */
 public class StoreAndLatchBasicMessageListener<T extends BasicMessage> extends BasicMessageListener<T> {
@@ -20,7 +36,8 @@ public class StoreAndLatchBasicMessageListener<T extends BasicMessage> extends B
     private final ArrayList<T> messages;
     private final ArrayList<String> errors;
 
-    public StoreAndLatchBasicMessageListener(CountDownLatch latch, ArrayList<T> messages, ArrayList<String> errors, Class<T> basicMessageClass) {
+    public StoreAndLatchBasicMessageListener(CountDownLatch latch, ArrayList<T> messages, ArrayList<String> errors,
+            Class<T> basicMessageClass) {
         super(basicMessageClass);
         this.latch = latch;
         this.messages = messages;

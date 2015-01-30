@@ -1,3 +1,19 @@
+/*
+ * Copyright 2015 Red Hat, Inc. and/or its affiliates
+ * and other contributors as indicated by the @author tags.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.hawkular.nest.extension;
 
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.ADD;
@@ -33,7 +49,8 @@ import org.jboss.staxmapper.XMLExtendedStreamWriter;
 
 public class NestSubsystemExtension implements Extension {
 
-    private final MsgLogger msglog = Logger.getMessageLogger(MsgLogger.class, NestSubsystemExtension.class.getPackage()
+    private final MsgLogger msglog = Logger.getMessageLogger(MsgLogger.class, NestSubsystemExtension.class
+            .getPackage()
             .getName());
     private final Logger log = Logger.getLogger(NestSubsystemExtension.class);
 
@@ -42,14 +59,15 @@ public class NestSubsystemExtension implements Extension {
 
     private final SubsystemParser parser = new SubsystemParser();
 
-    private static final String RESOURCE_NAME = NestSubsystemExtension.class.getPackage().getName() + ".LocalDescriptions";
+    private static final String RESOURCE_NAME = NestSubsystemExtension.class.getPackage().getName()
+            + ".LocalDescriptions";
 
     protected static final String DEPLOYMENTS_DIR_NAME = "deployments";
 
     // The following define the XML elements and attributes of the extension itself (these appear in WildFly's
     // standalone.xml for this extension).
-	protected static final String NEST_ENABLED_ATTR = "enabled";
-	protected static final boolean NEST_ENABLED_DEFAULT = false;
+    protected static final String NEST_ENABLED_ATTR = "enabled";
+    protected static final boolean NEST_ENABLED_DEFAULT = false;
 
     protected static final String NEST_NAME_ELEMENT = "nest-name";
     protected static final String NEST_NAME_AUTOGENERATE = "autogenerate";
@@ -58,15 +76,16 @@ public class NestSubsystemExtension implements Extension {
     protected static final String CUSTOM_CONFIG_ELEMENT = "custom-configuration";
     protected static final String PROPERTY_ELEMENT = "property";
 
-	protected static final String NEST_START_OP = "start";
-	protected static final String NEST_STOP_OP = "stop";
-	protected static final String NEST_STATUS_OP = "status";
+    protected static final String NEST_START_OP = "start";
+    protected static final String NEST_STOP_OP = "stop";
+    protected static final String NEST_STATUS_OP = "status";
 
     protected static final PathElement SUBSYSTEM_PATH = PathElement.pathElement(SUBSYSTEM, SUBSYSTEM_NAME);
 
     static StandardResourceDescriptionResolver getResourceDescriptionResolver(final String keyPrefix) {
         String prefix = SUBSYSTEM_NAME + (keyPrefix == null ? "" : "." + keyPrefix);
-        return new StandardResourceDescriptionResolver(prefix, RESOURCE_NAME, NestSubsystemExtension.class.getClassLoader(), true, false);
+        return new StandardResourceDescriptionResolver(prefix, RESOURCE_NAME,
+                NestSubsystemExtension.class.getClassLoader(), true, false);
     }
 
     @Override
@@ -79,7 +98,8 @@ public class NestSubsystemExtension implements Extension {
         msglog.infoInitializingNestSubsystem();
 
         final SubsystemRegistration subsystem = context.registerSubsystem(SUBSYSTEM_NAME, 1, 0);
-        final ManagementResourceRegistration registration = subsystem.registerSubsystemModel(NestSubsystemDefinition.INSTANCE);
+        final ManagementResourceRegistration registration = subsystem
+                .registerSubsystemModel(NestSubsystemDefinition.INSTANCE);
 
         subsystem.registerXMLElementWriter(parser);
     }
@@ -87,12 +107,13 @@ public class NestSubsystemExtension implements Extension {
     /**
      * The subsystem parser, which uses stax to read and write to and from xml
      */
-    private static class SubsystemParser implements XMLStreamConstants, XMLElementReader<List<ModelNode>>, XMLElementWriter<SubsystemMarshallingContext> {
+    private static class SubsystemParser implements XMLStreamConstants, XMLElementReader<List<ModelNode>>,
+            XMLElementWriter<SubsystemMarshallingContext> {
 
         @Override
         public void readElement(XMLExtendedStreamReader reader, List<ModelNode> list) throws XMLStreamException {
             // The "enabled" attribute is required
-			ParseUtils.requireAttributes(reader, NEST_ENABLED_ATTR);
+            ParseUtils.requireAttributes(reader, NEST_ENABLED_ATTR);
 
             // Add the main subsystem 'add' operation
             final ModelNode opAdd = new ModelNode();
@@ -113,7 +134,7 @@ public class NestSubsystemExtension implements Extension {
                             readCustomConfigurationProperty(reader, configAttributeNode);
                         }
                     }
-				} else if (elementName.equals(NEST_NAME_ELEMENT)) {
+                } else if (elementName.equals(NEST_NAME_ELEMENT)) {
                     opAdd.get(NEST_NAME_ELEMENT).set(new ValueExpression(reader.getElementText()));
                 } else {
                     throw ParseUtils.unexpectedElement(reader);
@@ -123,7 +144,8 @@ public class NestSubsystemExtension implements Extension {
             list.add(opAdd);
         }
 
-        private void readCustomConfigurationProperty(XMLExtendedStreamReader reader, ModelNode configAttributeNode) throws XMLStreamException {
+        private void readCustomConfigurationProperty(XMLExtendedStreamReader reader, ModelNode configAttributeNode)
+                throws XMLStreamException {
             if (!reader.getLocalName().equals(PROPERTY_ELEMENT)) {
                 throw ParseUtils.unexpectedElement(reader);
             }
@@ -137,7 +159,8 @@ public class NestSubsystemExtension implements Extension {
         }
 
         @Override
-        public void writeContent(final XMLExtendedStreamWriter writer, final SubsystemMarshallingContext context) throws XMLStreamException {
+        public void writeContent(final XMLExtendedStreamWriter writer, final SubsystemMarshallingContext context)
+                throws XMLStreamException {
             ModelNode node = context.getModelNode();
 
             // <subsystem>
@@ -145,7 +168,7 @@ public class NestSubsystemExtension implements Extension {
             writer.writeAttribute(NEST_ENABLED_ATTR, node.get(NEST_ENABLED_ATTR).asString());
 
             // our config elements
-			writeElement(writer, node, NEST_NAME_ELEMENT);
+            writeElement(writer, node, NEST_NAME_ELEMENT);
 
             // <custom-configuration>
             writer.writeStartElement(CUSTOM_CONFIG_ELEMENT);
@@ -167,7 +190,8 @@ public class NestSubsystemExtension implements Extension {
             writer.writeEndElement();
         }
 
-        private void writeElement(final XMLExtendedStreamWriter writer, ModelNode node, String attribName) throws XMLStreamException {
+        private void writeElement(final XMLExtendedStreamWriter writer, ModelNode node, String attribName)
+                throws XMLStreamException {
             ModelNode attribNode = node.get(attribName);
             if (attribNode.isDefined()) {
                 writer.writeStartElement(attribName);

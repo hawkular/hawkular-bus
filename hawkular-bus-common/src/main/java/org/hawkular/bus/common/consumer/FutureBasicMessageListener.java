@@ -1,4 +1,21 @@
+/*
+ * Copyright 2015 Red Hat, Inc. and/or its affiliates
+ * and other contributors as indicated by the @author tags.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.hawkular.bus.common.consumer;
+
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CancellationException;
@@ -11,27 +28,32 @@ import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
 
 import org.hawkular.bus.common.BasicMessage;
+import org.hawkular.bus.common.log.MsgLogger;
+import org.jboss.logging.Logger;
 
 import com.google.common.util.concurrent.ExecutionList;
 import com.google.common.util.concurrent.ListenableFuture;
 
 /**
  * This listener waits for a single incoming message and returns it within the context of the Future API.
- * 
+ *
  * Once the message is received, the consumer associated with this listener will be closed.
- * 
+ *
  * This is not intended to receive a series of messages; it is only expected that the consumer will receive a single
  * message. This is useful, for example, to process a response from a single RPC call over a temporary queue.
- * 
+ *
  * To use this, just register this as a message listener and call one of the get() methods to block waiting for the
  * response.
- * 
+ *
  * @author John Mazzitelli
- * 
- * @param <T>
- *            the type of message that is expected to be received
+ *
+ * @param <T> the type of message that is expected to be received
  */
-public class FutureBasicMessageListener<T extends BasicMessage> extends BasicMessageListener<T> implements ListenableFuture<T> {
+public class FutureBasicMessageListener<T extends BasicMessage> extends BasicMessageListener<T> implements
+        ListenableFuture<T> {
+
+    private final MsgLogger msglog = Logger.getMessageLogger(MsgLogger.class, FutureBasicMessageListener.class
+            .getPackage().getName());
 
     private static enum State {
         WAITING, DONE, CANCELLED
@@ -65,10 +87,10 @@ public class FutureBasicMessageListener<T extends BasicMessage> extends BasicMes
                 closeConsumer();
                 state = State.CANCELLED;
             } else {
-                getLog().error("Told not to interrupt if running, but it is running. Cannot cancel.");
+                msglog.errorCannotCancelRunningFuture();
             }
         } catch (Exception e) {
-            getLog().error("Failed to close consumer, cannot fully cancel");
+            msglog.errorConsumerCloseFailureOnFutureCancel();
         }
 
         executionList.execute();
@@ -132,13 +154,13 @@ public class FutureBasicMessageListener<T extends BasicMessage> extends BasicMes
                 state = State.DONE;
                 executionList.execute();
             } else {
-                getLog().error("Failed to store incoming message for some reason. This future is now invalid.");
+                msglog.errorCannotStoreIncomingMessageFutureInvalid();
                 state = State.CANCELLED;
             }
             try {
                 closeConsumer();
             } catch (Exception e) {
-                getLog().error("Failed to close consumer: {}", e);
+                msglog.errorFailedToCloseFutureConsumer(e);
             }
         }
     }
@@ -152,5 +174,10 @@ public class FutureBasicMessageListener<T extends BasicMessage> extends BasicMes
             }
         }
         return;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + ": STATE=" + this.state;
     }
 }

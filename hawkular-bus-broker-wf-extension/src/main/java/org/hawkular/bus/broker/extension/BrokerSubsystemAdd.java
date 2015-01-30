@@ -1,3 +1,19 @@
+/*
+ * Copyright 2015 Red Hat, Inc. and/or its affiliates
+ * and other contributors as indicated by the @author tags.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.hawkular.bus.broker.extension;
 
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.ADD;
@@ -53,12 +69,14 @@ class BrokerSubsystemAdd extends AbstractAddStepHandler {
     }
 
     @Override
-    protected void populateModel(OperationContext context, ModelNode operation, Resource resource) throws OperationFailedException {
+    protected void populateModel(OperationContext context, ModelNode operation, Resource resource)
+            throws OperationFailedException {
 
         // ask that the REST war be deployed
         try {
             if (requiresRuntime(context)) { // only add the step if we are going to actually deploy the war
-                PathAddress deploymentAddress = PathAddress.pathAddress(PathElement.pathElement(DEPLOYMENT, BrokerSubsystemExtension.DEPLOYMENT_REST_WAR));
+                PathAddress deploymentAddress = PathAddress.pathAddress(PathElement.pathElement(DEPLOYMENT,
+                        BrokerSubsystemExtension.DEPLOYMENT_REST_WAR));
                 ModelNode op = Util.getEmptyOperation(ADD, deploymentAddress.toModelNode());
                 op.get(ENABLED).set(true);
                 op.get(PERSISTENT).set(false); // prevents writing this deployment out to standalone.xml
@@ -115,15 +133,16 @@ class BrokerSubsystemAdd extends AbstractAddStepHandler {
             ServiceVerificationHandler verificationHandler, List<ServiceController<?>> newControllers)
             throws OperationFailedException {
 
-        boolean enabled = BrokerSubsystemDefinition.BROKER_ENABLED_ATTRIBDEF.resolveModelAttribute(context, model).asBoolean(
-                BrokerSubsystemExtension.BROKER_ENABLED_DEFAULT);
+        boolean enabled = BrokerSubsystemDefinition.BROKER_ENABLED_ATTRIBDEF.resolveModelAttribute(context, model)
+                .asBoolean(BrokerSubsystemExtension.BROKER_ENABLED_DEFAULT);
 
         if (!enabled) {
             msglog.infoBrokerNotEnabled();
             return;
         }
 
-        String configFile = BrokerSubsystemDefinition.BROKER_CONFIG_FILE_ATTRIBDEF.resolveModelAttribute(context, model).asString();
+        String configFile = BrokerSubsystemDefinition.BROKER_CONFIG_FILE_ATTRIBDEF.resolveModelAttribute(context,
+                model).asString();
         if (configFile == null || configFile.trim().isEmpty()) {
             configFile = BrokerSubsystemExtension.BROKER_CONFIG_FILE_DEFAULT;
         }
@@ -133,13 +152,16 @@ class BrokerSubsystemAdd extends AbstractAddStepHandler {
         // set up our runtime custom configuration properties that should be used instead of the out-of-box config
         Map<String, String> customConfigProps = new HashMap<String, String>();
         addCustomConfigProperty(context, model, customConfigProps, BrokerSubsystemDefinition.BROKER_NAME_ATTRIBDEF);
-        addCustomConfigProperty(context, model, customConfigProps, BrokerSubsystemDefinition.BROKER_PERSISTENT_ATTRIBDEF);
+        addCustomConfigProperty(context, model, customConfigProps,
+                BrokerSubsystemDefinition.BROKER_PERSISTENT_ATTRIBDEF);
         addCustomConfigProperty(context, model, customConfigProps, BrokerSubsystemDefinition.BROKER_USE_JMX_ATTRIBDEF);
         addCustomConfigProperty(context, model, customConfigProps, BrokerSubsystemDefinition.CONNECTOR_NAME_ATTRIBDEF);
-        addCustomConfigProperty(context, model, customConfigProps, BrokerSubsystemDefinition.CONNECTOR_PROTOCOL_ATTRIBDEF);
+        addCustomConfigProperty(context, model, customConfigProps,
+                BrokerSubsystemDefinition.CONNECTOR_PROTOCOL_ATTRIBDEF);
 
         // allow the user to provide their own config props
-        ModelNode customConfigNode = BrokerSubsystemDefinition.CUSTOM_CONFIG_ATTRIBDEF.resolveModelAttribute(context, model);
+        ModelNode customConfigNode = BrokerSubsystemDefinition.CUSTOM_CONFIG_ATTRIBDEF.resolveModelAttribute(context,
+                model);
         if (customConfigNode != null && customConfigNode.isDefined()) {
             HashMap<String, String> customConfig = new HashMap<String, String>();
             List<Property> propList = customConfigNode.asPropertyList();
@@ -157,11 +179,13 @@ class BrokerSubsystemAdd extends AbstractAddStepHandler {
         service.setCustomConfigurationProperties(customConfigProps);
 
         // install the service
-        String binding = BrokerSubsystemDefinition.SOCKET_BINDING_ATTRIBDEF.resolveModelAttribute(context, model).asString();
+        String binding = BrokerSubsystemDefinition.SOCKET_BINDING_ATTRIBDEF.resolveModelAttribute(context, model)
+                .asString();
         String discoveryBinding = BrokerSubsystemDefinition.DISCOVERY_SOCKET_BINDING_ATTRIBDEF.resolveModelAttribute(
                 context, model).asString();
         ServiceName name = BrokerService.SERVICE_NAME;
-        ServiceController<BrokerService> controller = context.getServiceTarget()
+        ServiceController<BrokerService> controller = context
+                .getServiceTarget()
                 .addService(name, service)
                 .addDependency(ServerEnvironmentService.SERVICE_NAME, ServerEnvironment.class, service.envServiceValue)
                 .addDependency(SocketBinding.JBOSS_BINDING_NAME.append(binding), SocketBinding.class,
@@ -175,16 +199,18 @@ class BrokerSubsystemAdd extends AbstractAddStepHandler {
         return;
     }
 
-    private void addCustomConfigProperty(OperationContext context, ModelNode model, Map<String, String> customConfigProps, AttributeDefinition attribDef)
-            throws OperationFailedException {
+    private void addCustomConfigProperty(OperationContext context, ModelNode model,
+            Map<String, String> customConfigProps, AttributeDefinition attribDef) throws OperationFailedException {
         addCustomConfigProperty(context, model, customConfigProps, attribDef, null);
     }
 
-    private void addCustomConfigProperty(OperationContext context, ModelNode model, Map<String, String> customConfigProps, AttributeDefinition attribDef,
-            String customConfigPropName) throws OperationFailedException {
+    private void addCustomConfigProperty(OperationContext context, ModelNode model,
+            Map<String, String> customConfigProps, AttributeDefinition attribDef, String customConfigPropName)
+            throws OperationFailedException {
         ModelNode node = attribDef.resolveModelAttribute(context, model);
         if (node.isDefined()) {
-            customConfigProps.put((customConfigPropName == null) ? attribDef.getName() : customConfigPropName, node.asString());
+            customConfigProps.put((customConfigPropName == null) ? attribDef.getName() : customConfigPropName,
+                    node.asString());
         }
     }
 }

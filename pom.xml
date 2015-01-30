@@ -1,9 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    Copyright 2015 Red Hat, Inc. and/or its affiliates
+    and other contributors as indicated by the @author tags.
 
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.hawkular</groupId>
+    <artifactId>hawkular-parent</artifactId>
+    <version>2</version>
+  </parent>
 
   <groupId>org.hawkular.bus</groupId>
   <artifactId>hawkular-bus-parent</artifactId>
@@ -12,41 +33,18 @@
   <name>Hawkular Bus Framework</name>
   <inceptionYear>2015</inceptionYear>
 
-  <!-- TODO remove repos -->
-  <repositories>
-    <!-- Conventions are described in http://community.jboss.org/wiki/MavenGettingStarted-Developers -->
-    <repository>
-      <id>jboss-public-repository-group</id>
-      <name>JBoss Public Repository Group</name>
-      <url>http://repository.jboss.org/nexus/content/groups/public/</url>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-        <updatePolicy>daily</updatePolicy>
-      </snapshots>
-    </repository>
-  </repositories>
   <pluginRepositories>
-    <pluginRepository>
-      <id>jboss-public-repository-group</id>
-      <name>JBoss Public Repository Group</name>
-      <url>http://repository.jboss.org/nexus/content/groups/public/</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </pluginRepository>
-
     <!-- needed for the Wildfly Extension plugin -->
     <pluginRepository>
       <id>clojars</id>
       <name>clojars</name>
       <url>https://clojars.org/repo</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
     </pluginRepository>
   </pluginRepositories>
 
@@ -63,36 +61,19 @@
 
   <properties>
 
+    <!-- maven-compiler-plugin -->
+    <maven.compiler.source>1.7</maven.compiler.source>
+    <maven.compiler.target>1.7</maven.compiler.target>
+
     <!-- MAVEN VERSIONS -->
 
-    <maven-compiler-source-version>1.7</maven-compiler-source-version>
-    <maven-compiler-target-version>1.7</maven-compiler-target-version>
-
-    <plugin.version.org.apache.maven.plugins-maven-antrun-plugin>1.7</plugin.version.org.apache.maven.plugins-maven-antrun-plugin>
-    <plugin.version.org.apache.maven.plugins-maven-assembly-plugin>2.4</plugin.version.org.apache.maven.plugins-maven-assembly-plugin>
-    <plugin.version.org.apache.maven.plugins-maven-compiler-plugin>2.5.1</plugin.version.org.apache.maven.plugins-maven-compiler-plugin>
-    <plugin.version.org.apache.maven.plugins-maven-enforcer-plugin>1.3.1</plugin.version.org.apache.maven.plugins-maven-enforcer-plugin>
-    <plugin.version.org.apache.maven.plugins-maven-jar-plugin>2.4</plugin.version.org.apache.maven.plugins-maven-jar-plugin>
-    <plugin.version.org.apache.maven.plugins-maven-surefire-plugin>2.12.4</plugin.version.org.apache.maven.plugins-maven-surefire-plugin>
     <plugin.version.org.bsc.maven-maven-processor-plugin>2.0.2</plugin.version.org.bsc.maven-maven-processor-plugin>
-    <plugin.version.org.codehaus.mojo-exec-maven-plugin>1.3.1</plugin.version.org.codehaus.mojo-exec-maven-plugin>
+    <plugin.version.wildfly-extension-maven-plugin>0.4.1-SNAPSHOT</plugin.version.wildfly-extension-maven-plugin>
 
     <!-- DEPENDENCY VERSIONS -->
 
-    <!-- CONVENTIONS: -->
-    <!-- - A version property must be specified in the format "version.{groupId}" -->
-    <!-- - If groupId is not unique, append the property name with "-{artifactId}" -->
-    <!-- - Version properties must be sorted alphabetically -->
-
-    <version.com.google.code.gson>2.2.4</version.com.google.code.gson>
-    <version.com.google.guava>16.0.1</version.com.google.guava>
-    <version.gnu.getopt>1.0.13</version.gnu.getopt>
-    <version.junit>4.11</version.junit>
-    <version.org.apache.activemq>5.10.0</version.org.apache.activemq>
     <version.org.jboss.logging-jboss-logging-annotations>1.2.0.Final</version.org.jboss.logging-jboss-logging-annotations>
     <version.org.jboss.logging-jboss-logging-processor>1.2.0.Final</version.org.jboss.logging-jboss-logging-processor>
-    <version.org.testng>6.5.2</version.org.testng>
-    <version.org.wildfly>8.2.0.Final</version.org.wildfly>
 
   </properties>
 
@@ -188,76 +169,9 @@
     </dependencies>
   </dependencyManagement>
 
-  <profiles>
-    <profile>
-      <id>test.debug</id>
-      <activation>
-        <property>
-          <name>test.debug</name>
-        </property>
-      </activation>
-
-      <properties>
-        <!-- See: http://maven.apache.org/plugins/maven-surefire-plugin/test-mojo.html#debugForkedProcess -->
-        <maven.surefire.debug>-Xdebug -Xnoagent -Djava.compiler=NONE
-          -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=y</maven.surefire.debug>
-      </properties>
-    </profile>
-  </profiles>
-
   <build>
     <pluginManagement>
       <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-antrun-plugin</artifactId>
-          <version>${plugin.version.org.apache.maven.plugins-maven-antrun-plugin}</version>
-        </plugin>
-
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-assembly-plugin</artifactId>
-          <version>${plugin.version.org.apache.maven.plugins-maven-assembly-plugin}</version>
-          <configuration>
-            <tarLongFileMode>gnu</tarLongFileMode>
-          </configuration>
-        </plugin>
-
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>${plugin.version.org.apache.maven.plugins-maven-compiler-plugin}</version>
-        </plugin>
-
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-enforcer-plugin</artifactId>
-          <version>${plugin.version.org.apache.maven.plugins-maven-enforcer-plugin}</version>
-        </plugin>
-
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-jar-plugin</artifactId>
-          <version>${plugin.version.org.apache.maven.plugins-maven-jar-plugin}</version>
-          <configuration>
-            <archive>
-              <manifest>
-                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-              </manifest>
-              <compress>true</compress>
-            </archive>
-          </configuration>
-        </plugin>
-
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <version>${plugin.version.org.apache.maven.plugins-maven-surefire-plugin}</version>
-          <configuration>
-            <argLine>-Xmx512m</argLine>
-          </configuration>
-        </plugin>
-
         <plugin>
           <groupId>org.bsc.maven</groupId>
           <artifactId>maven-processor-plugin</artifactId>
@@ -265,46 +179,38 @@
         </plugin>
 
         <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>exec-maven-plugin</artifactId>
-          <version>${plugin.version.org.codehaus.mojo-exec-maven-plugin}</version>
+          <groupId>org.jboss.plugins</groupId>
+          <artifactId>wildfly-extension-maven-plugin</artifactId>
+          <version>${plugin.version.wildfly-extension-maven-plugin}</version>
         </plugin>
-
       </plugins>
     </pluginManagement>
 
+    <!-- needed for the Wildfly Extension plugin -->
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>${maven-compiler-source-version}</source>
-          <target>${maven-compiler-target-version}</target>
-          <optimize>true</optimize>
-          <debug>true</debug>
-          <showDeprecation>true</showDeprecation>
-          <showWarnings>true</showWarnings>
-        </configuration>
-      </plugin>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
         <executions>
           <execution>
-            <phase>validate</phase>
+            <id>enforce-rules</id>
             <goals>
               <goal>enforce</goal>
             </goals>
-            <configuration>
-              <rules>
-                <requireMavenVersion>
-                  <version>[3.0.4,)</version>
-                </requireMavenVersion>
-              </rules>
-            </configuration>
           </execution>
         </executions>
+        <configuration>
+          <rules combine.self="override">
+            <requireNoRepositories>
+              <allowedPluginRepositories>
+                <repository>clojars</repository>
+              </allowedPluginRepositories>
+            </requireNoRepositories>
+            <requirePluginVersions>
+              <unCheckedPluginList>org.jboss.plugins:wildfly-extension-maven-plugin</unCheckedPluginList>
+            </requirePluginVersions>
+          </rules>
+        </configuration>
       </plugin>
     </plugins>
   </build>

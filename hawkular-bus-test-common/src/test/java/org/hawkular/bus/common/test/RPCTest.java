@@ -1,3 +1,19 @@
+/*
+ * Copyright 2015 Red Hat, Inc. and/or its affiliates
+ * and other contributors as indicated by the @author tags.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.hawkular.bus.common.test;
 
 import static org.junit.Assert.assertEquals;
@@ -58,7 +74,8 @@ public class RPCTest {
             producerFactory = new ConnectionContextFactory(brokerURL);
             ProducerConnectionContext producerContext = producerFactory.createProducerConnectionContext(endpoint);
             MessageProcessor clientSideProcessor = new MessageProcessor();
-            ListenableFuture<SpecificMessage> future = clientSideProcessor.sendRPC(producerContext, specificMessage, SpecificMessage.class);
+            ListenableFuture<SpecificMessage> future = clientSideProcessor.sendRPC(producerContext, specificMessage,
+                    SpecificMessage.class);
 
             // wait for the message to flow
             SpecificMessage receivedSpecificMessage = null;
@@ -74,7 +91,7 @@ public class RPCTest {
             assertEquals(specificMessage.getDetails(), receivedSpecificMessage.getDetails());
             assertEquals("RESPONSE:" + specificMessage.getSpecific(), receivedSpecificMessage.getSpecific());
             assertFalse(future.isCancelled());
-            assertTrue(future.isDone());
+            assertTrue("Future should have been done: " + future, future.isDone());
 
             // use the future.get(timeout) method and make sure it returns the same
             try {
@@ -124,7 +141,8 @@ public class RPCTest {
             producerFactory = new ConnectionContextFactory(brokerURL);
             ProducerConnectionContext producerContext = producerFactory.createProducerConnectionContext(endpoint);
             MessageProcessor clientSideProcessor = new MessageProcessor();
-            ListenableFuture<SpecificMessage> future = clientSideProcessor.sendRPC(producerContext, specificMessage, SpecificMessage.class);
+            ListenableFuture<SpecificMessage> future = clientSideProcessor.sendRPC(producerContext, specificMessage,
+                    SpecificMessage.class);
             TestFutureCallback futureCallback = new TestFutureCallback();
             Futures.addCallback(future, futureCallback);
 
@@ -138,7 +156,7 @@ public class RPCTest {
 
             // make sure the message flowed properly
             assertFalse(future.isCancelled());
-            assertTrue(future.isDone());
+            assertTrue("Future should have been done: " + future, future.isDone());
             assertNotNull("Didn't receive response", receivedSpecificMessage);
             assertEquals("RESPONSE:" + specificMessage.getMessage(), receivedSpecificMessage.getMessage());
             assertEquals(specificMessage.getDetails(), receivedSpecificMessage.getDetails());
@@ -194,7 +212,8 @@ public class RPCTest {
             CountDownLatch latch = new CountDownLatch(1);
             ArrayList<SpecificMessage> receivedMessages = new ArrayList<SpecificMessage>();
             ArrayList<String> errors = new ArrayList<String>();
-            SpecificMessageStoreAndLatchListener responseListener = new SpecificMessageStoreAndLatchListener(latch, receivedMessages, errors);
+            SpecificMessageStoreAndLatchListener responseListener = new SpecificMessageStoreAndLatchListener(latch,
+                    receivedMessages, errors);
             MessageProcessor clientSideProcessor = new MessageProcessor();
             clientSideProcessor.sendAndListen(producerContext, specificMessage, responseListener);
 
@@ -248,7 +267,8 @@ public class RPCTest {
             producerFactory = new ConnectionContextFactory(brokerURL);
             ProducerConnectionContext producerContext = producerFactory.createProducerConnectionContext(endpoint);
             MessageProcessor clientSideProcessor = new MessageProcessor();
-            ListenableFuture<SpecificMessage> future = clientSideProcessor.sendRPC(producerContext, specificMessage, SpecificMessage.class);
+            ListenableFuture<SpecificMessage> future = clientSideProcessor.sendRPC(producerContext, specificMessage,
+                    SpecificMessage.class);
 
             // wait for the message to flow - notice we don't wait long enough - this should timeout
             SpecificMessage receivedSpecificMessage = null;
@@ -262,7 +282,7 @@ public class RPCTest {
             }
 
             assertFalse(future.isCancelled());
-            assertFalse(future.isDone());
+            assertFalse("Future should not have been done: " + future, future.isDone());
 
             // ok, now wait for the message to flow
             try {
@@ -277,7 +297,7 @@ public class RPCTest {
             assertEquals(specificMessage.getDetails(), receivedSpecificMessage.getDetails());
             assertEquals("RESPONSE:" + specificMessage.getSpecific(), receivedSpecificMessage.getSpecific());
             assertFalse(future.isCancelled());
-            assertTrue(future.isDone());
+            assertTrue("Future should have been done: " + future, future.isDone());
 
         } finally {
             // close everything
@@ -315,13 +335,14 @@ public class RPCTest {
             producerFactory = new ConnectionContextFactory(brokerURL);
             ProducerConnectionContext producerContext = producerFactory.createProducerConnectionContext(endpoint);
             MessageProcessor clientSideProcessor = new MessageProcessor();
-            ListenableFuture<SpecificMessage> future = clientSideProcessor.sendRPC(producerContext, specificMessage, SpecificMessage.class);
+            ListenableFuture<SpecificMessage> future = clientSideProcessor.sendRPC(producerContext, specificMessage,
+                    SpecificMessage.class);
             TestFutureCallback futureCallback = new TestFutureCallback();
             Futures.addCallback(future, futureCallback);
 
             assertTrue("Failed to cancel the future", future.cancel(true));
-            assertTrue(future.isCancelled());
-            assertTrue(future.isDone());
+            assertTrue("Future should have been canceled: " + future, future.isCancelled());
+            assertTrue("Future should have been done: " + future, future.isDone());
 
             // try to get the message using get(timeout) method
             try {
@@ -379,8 +400,9 @@ public class RPCTest {
                 }
             }
 
-            SpecificMessage responseMessage = new SpecificMessage("RESPONSE:" + requestMessage.getMessage(), requestMessage.getDetails(), "RESPONSE:"
-                    + requestMessage.getSpecific());
+            SpecificMessage responseMessage = new SpecificMessage("RESPONSE:" + requestMessage.getMessage(),
+                    requestMessage.getDetails(), "RESPONSE:"
+                            + requestMessage.getSpecific());
             return responseMessage;
         }
     }

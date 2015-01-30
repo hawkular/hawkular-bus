@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!--
 
     Copyright 2015 Red Hat, Inc. and/or its affiliates
@@ -16,10 +17,11 @@
     limitations under the License.
 
 -->
-<jboss-deployment-structure>
-  <deployment>
-    <dependencies>
-      <module name="${moduleName}" />
-    </dependencies>
-  </deployment>
-</jboss-deployment-structure>
+<!DOCTYPE suppressions PUBLIC
+    "-//Puppy Crawl//DTD Suppressions 1.1//EN"
+    "http://www.puppycrawl.com/dtds/suppressions_1_1.dtd">
+
+<suppressions>
+  <!-- we want to remain as faithful to the Wildfly style as possible -->
+  <suppress checks="[a-zA-Z0-9]" files="standalone.xml"/>
+</suppressions>

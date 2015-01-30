@@ -1,3 +1,19 @@
+/*
+ * Copyright 2015 Red Hat, Inc. and/or its affiliates
+ * and other contributors as indicated by the @author tags.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.hawkular.bus.common;
 
 import java.util.Map;
@@ -22,8 +38,8 @@ import com.google.common.util.concurrent.ListenableFuture;
 /**
  * Provides some functionality to process messages, both as a producer or consumer.
  *
- * Use {@link ConnectionContextFactory} to create contexts (which create destinations, sessions, and connections for you)
- * that you then use to pass to the listen and send methods in this class.
+ * Use {@link ConnectionContextFactory} to create contexts (which create destinations, sessions, and connections for
+ * you) that you then use to pass to the listen and send methods in this class.
  */
 public class MessageProcessor {
 
@@ -40,7 +56,8 @@ public class MessageProcessor {
      *
      * @see {@link org.hawkular.bus.common.ConnectionContextFactory#createConsumerConnectionContext(Endpoint)}
      */
-    public <T extends BasicMessage> void listen(ConsumerConnectionContext context, AbstractBasicMessageListener<T> listener) throws JMSException {
+    public <T extends BasicMessage> void listen(ConsumerConnectionContext context,
+            AbstractBasicMessageListener<T> listener) throws JMSException {
         if (context == null) {
             throw new NullPointerException("context must not be null");
         }
@@ -81,7 +98,8 @@ public class MessageProcessor {
      *
      * @see {@link ConnectionContextFactory#createProducerConnectionContext(Endpoint)}
      */
-    public MessageId send(ProducerConnectionContext context, BasicMessage basicMessage, Map<String, String> headers) throws JMSException {
+    public MessageId send(ProducerConnectionContext context, BasicMessage basicMessage, Map<String, String> headers)
+            throws JMSException {
         if (context == null) {
             throw new IllegalArgumentException("context must not be null");
         }
@@ -121,17 +139,17 @@ public class MessageProcessor {
      * Same as {@link #sendAndListen(ProducerConnectionContext, BasicMessage, BasicMessageListener, Map)} with
      * <code>null</code> headers.
      */
-    public <T extends BasicMessage> RPCConnectionContext sendAndListen(ProducerConnectionContext context, BasicMessage basicMessage,
-            BasicMessageListener<T> responseListener) throws JMSException {
+    public <T extends BasicMessage> RPCConnectionContext sendAndListen(ProducerConnectionContext context,
+            BasicMessage basicMessage, BasicMessageListener<T> responseListener) throws JMSException {
         return sendAndListen(context, basicMessage, responseListener, null);
     }
 
     /**
-     * Send the given message to its destinations across the message bus and any response sent back will be passed to the
-     * given listener. Use this for request-response messages where you expect to get a non-void response back.
+     * Send the given message to its destinations across the message bus and any response sent back will be passed to
+     * the given listener. Use this for request-response messages where you expect to get a non-void response back.
      *
-     * The response listener should close its associated consumer since typically there is only a single response that is
-     * expected. This is left to the listener to do in case there are special circumstances where the listener does
+     * The response listener should close its associated consumer since typically there is only a single response that
+     * is expected. This is left to the listener to do in case there are special circumstances where the listener does
      * expect multiple response messages.
      *
      * If the caller merely wants to wait for a single response and obtain the response message to process it further,
@@ -156,8 +174,9 @@ public class MessageProcessor {
      *
      * @see {@link org.hawkular.bus.common.ConnectionContextFactory#createProducerConnectionContext(Endpoint)}
      */
-    public <T extends BasicMessage> RPCConnectionContext sendAndListen(ProducerConnectionContext context, BasicMessage basicMessage,
-            BasicMessageListener<T> responseListener, Map<String, String> headers) throws JMSException {
+    public <T extends BasicMessage> RPCConnectionContext sendAndListen(ProducerConnectionContext context,
+            BasicMessage basicMessage, BasicMessageListener<T> responseListener, Map<String, String> headers)
+            throws JMSException {
 
         if (context == null) {
             throw new IllegalArgumentException("context must not be null");
@@ -220,8 +239,8 @@ public class MessageProcessor {
     /**
      * Same as {@link #sendRPC(ProducerConnectionContext, BasicMessage, Class, Map)} with <code>null</code> headers.
      */
-    public <R extends BasicMessage> ListenableFuture<R> sendRPC(ProducerConnectionContext context, BasicMessage basicMessage,
-            Class<R> expectedResponseMessageClass) throws JMSException {
+    public <R extends BasicMessage> ListenableFuture<R> sendRPC(ProducerConnectionContext context,
+            BasicMessage basicMessage, Class<R> expectedResponseMessageClass) throws JMSException {
         return sendRPC(context, basicMessage, expectedResponseMessageClass, null);
     }
 
@@ -250,8 +269,9 @@ public class MessageProcessor {
      *
      * @see {@link org.hawkular.bus.common.ConnectionContextFactory#createProducerConnectionContext(Endpoint)}
      */
-    public <R extends BasicMessage> ListenableFuture<R> sendRPC(ProducerConnectionContext context, BasicMessage basicMessage,
-            Class<R> expectedResponseMessageClass, Map<String, String> headers) throws JMSException {
+    public <R extends BasicMessage> ListenableFuture<R> sendRPC(ProducerConnectionContext context,
+            BasicMessage basicMessage, Class<R> expectedResponseMessageClass, Map<String, String> headers)
+            throws JMSException {
 
         FutureBasicMessageListener<R> futureListener = new FutureBasicMessageListener<R>(expectedResponseMessageClass);
         sendAndListen(context, basicMessage, futureListener, headers);
@@ -279,7 +299,8 @@ public class MessageProcessor {
      * @throws NullPointerException
      *             if the context is null or the context's session is null
      */
-    protected Message createMessage(ConnectionContext context, BasicMessage basicMessage, Map<String, String> headers) throws JMSException {
+    protected Message createMessage(ConnectionContext context, BasicMessage basicMessage, Map<String, String> headers)
+            throws JMSException {
         if (context == null) {
             throw new IllegalArgumentException("The context is null");
         }

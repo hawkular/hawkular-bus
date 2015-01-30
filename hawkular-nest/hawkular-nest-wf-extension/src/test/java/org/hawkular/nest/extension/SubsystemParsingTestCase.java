@@ -1,3 +1,19 @@
+/*
+ * Copyright 2015 Red Hat, Inc. and/or its affiliates
+ * and other contributors as indicated by the @author tags.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.hawkular.nest.extension;
 
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.ADD;
@@ -77,11 +93,15 @@ public class SubsystemParsingTestCase extends SubsystemBaseParsingTestCase {
         ModelNode model = services.readWholeModel();
         System.out.println(model);
         Assert.assertTrue(model.get(SUBSYSTEM).hasDefined(NestSubsystemExtension.SUBSYSTEM_NAME));
-        Assert.assertTrue(model.get(SUBSYSTEM, NestSubsystemExtension.SUBSYSTEM_NAME).hasDefined(NestSubsystemExtension.NEST_ENABLED_ATTR));
-        Assert.assertTrue(model.get(SUBSYSTEM, NestSubsystemExtension.SUBSYSTEM_NAME, NestSubsystemExtension.NEST_ENABLED_ATTR).resolve().asBoolean());
+        Assert.assertTrue(model.get(SUBSYSTEM, NestSubsystemExtension.SUBSYSTEM_NAME).hasDefined(
+                NestSubsystemExtension.NEST_ENABLED_ATTR));
+        Assert.assertTrue(model
+                .get(SUBSYSTEM, NestSubsystemExtension.SUBSYSTEM_NAME, NestSubsystemExtension.NEST_ENABLED_ATTR)
+                .resolve().asBoolean());
 
         // Sanity check to test the service was there
-        NestService agent = (NestService) services.getContainer().getRequiredService(NestService.SERVICE_NAME).getValue();
+        NestService agent = (NestService) services.getContainer().getRequiredService(NestService.SERVICE_NAME)
+                .getValue();
         Assert.assertNotNull(agent);
     }
 
@@ -119,8 +139,8 @@ public class SubsystemParsingTestCase extends SubsystemBaseParsingTestCase {
         ModelNode describeOp = new ModelNode();
         describeOp.get(OP).set(DESCRIBE);
         describeOp.get(OP_ADDR).set(
-            PathAddress.pathAddress(PathElement.pathElement(SUBSYSTEM, NestSubsystemExtension.SUBSYSTEM_NAME))
-                .toModelNode());
+                PathAddress.pathAddress(PathElement.pathElement(SUBSYSTEM, NestSubsystemExtension.SUBSYSTEM_NAME))
+                        .toModelNode());
         ModelNode executeOperation = servicesA.executeOperation(describeOp);
         List<ModelNode> operations = super.checkResultAndGetContents(executeOperation).asList();
 
@@ -141,7 +161,8 @@ public class SubsystemParsingTestCase extends SubsystemBaseParsingTestCase {
         KernelServices services = createKernelServicesBuilder(null).setSubsystemXml(subsystemXml).build();
 
         // Sanity check to test the service was there
-        NestService agent = (NestService) services.getContainer().getRequiredService(NestService.SERVICE_NAME).getValue();
+        NestService agent = (NestService) services.getContainer().getRequiredService(NestService.SERVICE_NAME)
+                .getValue();
         Assert.assertNotNull(agent);
 
         // Checks that the subsystem was removed from the model
@@ -160,7 +181,8 @@ public class SubsystemParsingTestCase extends SubsystemBaseParsingTestCase {
         String subsystemXml = getSubsystemXml();
         KernelServices services = createKernelServicesBuilder(null).setSubsystemXml(subsystemXml).build();
 
-        PathAddress agentSubsystemPath = PathAddress.pathAddress(PathElement.pathElement(SUBSYSTEM, NestSubsystemExtension.SUBSYSTEM_NAME));
+        PathAddress agentSubsystemPath = PathAddress.pathAddress(PathElement.pathElement(SUBSYSTEM,
+                NestSubsystemExtension.SUBSYSTEM_NAME));
 
         // ask for resource description: /subsystem=agent:read-resource-description
         ModelNode resourceDescriptionOp = new ModelNode();
@@ -180,12 +202,13 @@ public class SubsystemParsingTestCase extends SubsystemBaseParsingTestCase {
                 NestSubsystemExtension.NEST_ENABLED_ATTR);
         Assert.assertEquals(expectedAttributes.size(), attributes.size());
 
-        for (int i = 0 ; i < attributes.size(); i++) {
+        for (int i = 0; i < attributes.size(); i++) {
             String attrib = attributes.get(i).getName();
             Assert.assertTrue("missing attrib: " + attrib, expectedAttributes.contains(attrib));
         }
 
-        // check the operations (there are many other operations that AS adds to our resource, but we only want to check for ours)
+        // check the operations (there are many other operations that AS adds to our resource, but we only want to check
+        // for ours)
         List<String> expectedOperations = Arrays.asList( //
                 NestSubsystemExtension.NEST_START_OP, //
                 NestSubsystemExtension.NEST_STOP_OP, //
@@ -209,13 +232,15 @@ public class SubsystemParsingTestCase extends SubsystemBaseParsingTestCase {
         NestService service = (NestService) services.getContainer().getService(NestService.SERVICE_NAME).getValue();
         Assert.assertNotNull(service);
 
-        PathAddress agentSubsystemPath = PathAddress.pathAddress(PathElement.pathElement(SUBSYSTEM, NestSubsystemExtension.SUBSYSTEM_NAME));
+        PathAddress agentSubsystemPath = PathAddress.pathAddress(PathElement.pathElement(SUBSYSTEM,
+                NestSubsystemExtension.SUBSYSTEM_NAME));
 
         // get the startup model from subsystem xml
         ModelNode model = services.readWholeModel();
 
         // current list of config props
-        ModelNode configNode = model.get(SUBSYSTEM, NestSubsystemExtension.SUBSYSTEM_NAME).get(NestSubsystemExtension.CUSTOM_CONFIG_ELEMENT);
+        ModelNode configNode = model.get(SUBSYSTEM, NestSubsystemExtension.SUBSYSTEM_NAME).get(
+                NestSubsystemExtension.CUSTOM_CONFIG_ELEMENT);
 
         // Add another
         configNode.add("foo", "true");
@@ -230,12 +255,16 @@ public class SubsystemParsingTestCase extends SubsystemBaseParsingTestCase {
         // now test that things are as they should be
         model = services.readWholeModel();
         Assert.assertTrue(model.get(SUBSYSTEM).hasDefined(NestSubsystemExtension.SUBSYSTEM_NAME));
-        Assert.assertTrue(model.get(SUBSYSTEM, NestSubsystemExtension.SUBSYSTEM_NAME).hasDefined(NestSubsystemExtension.NEST_ENABLED_ATTR));
-        Assert.assertTrue(model.get(SUBSYSTEM, NestSubsystemExtension.SUBSYSTEM_NAME, NestSubsystemExtension.NEST_ENABLED_ATTR).resolve().asBoolean());
-        Assert.assertTrue(model.get(SUBSYSTEM, NestSubsystemExtension.SUBSYSTEM_NAME).hasDefined(NestSubsystemExtension.CUSTOM_CONFIG_ELEMENT));
+        Assert.assertTrue(model.get(SUBSYSTEM, NestSubsystemExtension.SUBSYSTEM_NAME).hasDefined(
+                NestSubsystemExtension.NEST_ENABLED_ATTR));
+        Assert.assertTrue(model
+                .get(SUBSYSTEM, NestSubsystemExtension.SUBSYSTEM_NAME, NestSubsystemExtension.NEST_ENABLED_ATTR)
+                .resolve().asBoolean());
+        Assert.assertTrue(model.get(SUBSYSTEM, NestSubsystemExtension.SUBSYSTEM_NAME).hasDefined(
+                NestSubsystemExtension.CUSTOM_CONFIG_ELEMENT));
 
-        List<Property> props = model.get(SUBSYSTEM, NestSubsystemExtension.SUBSYSTEM_NAME).get(NestSubsystemExtension.CUSTOM_CONFIG_ELEMENT)
-                .asPropertyList();
+        List<Property> props = model.get(SUBSYSTEM, NestSubsystemExtension.SUBSYSTEM_NAME)
+                .get(NestSubsystemExtension.CUSTOM_CONFIG_ELEMENT).asPropertyList();
         Assert.assertEquals(3, props.size()); // there were 2, but we added "foo" above
         Assert.assertEquals("custom-prop", props.get(0).getName());
         Assert.assertEquals("custom-prop-val", props.get(0).getValue().asString());

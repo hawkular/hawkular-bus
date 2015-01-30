@@ -1,3 +1,19 @@
+/*
+ * Copyright 2015 Red Hat, Inc. and/or its affiliates
+ * and other contributors as indicated by the @author tags.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.hawkular.bus.broker.extension;
 
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.ADD;
@@ -41,7 +57,8 @@ public class BrokerSubsystemExtension implements Extension {
 
     private final SubsystemParser parser = new SubsystemParser();
 
-    private static final String RESOURCE_NAME = BrokerSubsystemExtension.class.getPackage().getName() + ".LocalDescriptions";
+    private static final String RESOURCE_NAME = BrokerSubsystemExtension.class.getPackage().getName()
+            + ".LocalDescriptions";
 
     // The following are standard ${x} variables that are defined in the default-broker.xml configuration file. These
     // will be set as system properties whose values will be the values that are given to the extension.
@@ -96,7 +113,8 @@ public class BrokerSubsystemExtension implements Extension {
 
     static StandardResourceDescriptionResolver getResourceDescriptionResolver(final String keyPrefix) {
         String prefix = SUBSYSTEM_NAME + (keyPrefix == null ? "" : "." + keyPrefix);
-        return new StandardResourceDescriptionResolver(prefix, RESOURCE_NAME, BrokerSubsystemExtension.class.getClassLoader(), true, false);
+        return new StandardResourceDescriptionResolver(prefix, RESOURCE_NAME,
+                BrokerSubsystemExtension.class.getClassLoader(), true, false);
     }
 
     @Override
@@ -109,7 +127,8 @@ public class BrokerSubsystemExtension implements Extension {
         log.info("Initializing broker subsystem");
 
         final SubsystemRegistration subsystem = context.registerSubsystem(SUBSYSTEM_NAME, 1, 0);
-        final ManagementResourceRegistration registration = subsystem.registerSubsystemModel(BrokerSubsystemDefinition.INSTANCE);
+        final ManagementResourceRegistration registration = subsystem
+                .registerSubsystemModel(BrokerSubsystemDefinition.INSTANCE);
 
         subsystem.registerXMLElementWriter(parser);
     }
@@ -117,7 +136,8 @@ public class BrokerSubsystemExtension implements Extension {
     /**
      * The subsystem parser, which uses stax to read and write to and from xml
      */
-    private static class SubsystemParser implements XMLStreamConstants, XMLElementReader<List<ModelNode>>, XMLElementWriter<SubsystemMarshallingContext> {
+    private static class SubsystemParser implements XMLStreamConstants, XMLElementReader<List<ModelNode>>,
+            XMLElementWriter<SubsystemMarshallingContext> {
 
         @Override
         public void readElement(XMLExtendedStreamReader reader, List<ModelNode> list) throws XMLStreamException {
@@ -179,7 +199,8 @@ public class BrokerSubsystemExtension implements Extension {
             list.add(opAdd);
         }
 
-        private void readCustomConfigurationProperty(XMLExtendedStreamReader reader, ModelNode configAttributeNode) throws XMLStreamException {
+        private void readCustomConfigurationProperty(XMLExtendedStreamReader reader, ModelNode configAttributeNode)
+                throws XMLStreamException {
             if (!reader.getLocalName().equals(PROPERTY_ELEMENT)) {
                 throw ParseUtils.unexpectedElement(reader);
             }
@@ -193,7 +214,8 @@ public class BrokerSubsystemExtension implements Extension {
         }
 
         @Override
-        public void writeContent(final XMLExtendedStreamWriter writer, final SubsystemMarshallingContext context) throws XMLStreamException {
+        public void writeContent(final XMLExtendedStreamWriter writer, final SubsystemMarshallingContext context)
+                throws XMLStreamException {
             ModelNode node = context.getModelNode();
 
             // <subsystem>
@@ -247,7 +269,8 @@ public class BrokerSubsystemExtension implements Extension {
             writer.writeEndElement();
         }
 
-        private void writeElement(final XMLExtendedStreamWriter writer, ModelNode node, String attribName) throws XMLStreamException {
+        private void writeElement(final XMLExtendedStreamWriter writer, ModelNode node, String attribName)
+                throws XMLStreamException {
             ModelNode attribNode = node.get(attribName);
             if (attribNode.isDefined()) {
                 writer.writeStartElement(attribName);

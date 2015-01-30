@@ -1,3 +1,19 @@
+/*
+ * Copyright 2015 Red Hat, Inc. and/or its affiliates
+ * and other contributors as indicated by the @author tags.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.hawkular.bus.common.consumer;
 
 import java.lang.reflect.ParameterizedType;
@@ -14,9 +30,9 @@ import org.hawkular.bus.common.MessageId;
 import org.jboss.logging.Logger;
 
 /**
- * A message listener that expects to receive a JSON-encoded BasicMessage or one of its subclasses; the JSON decoding is
- * handled for you.
- * 
+ * A message listener that expects to receive a JSON-encoded BasicMessage or one of its subclasses; the JSON decoding
+ * is handled for you.
+ *
  * Subclasses will typically override {@link #AbstractBasicMessageListener(Class)} or
  * {@link #determineBasicMessageClass()} unless either (a) the subclass hierarchy has generic types that are specific
  * enough for reflection to determine the type of {@link BasicMessage} being listened for or (b) the message type being
@@ -30,8 +46,8 @@ public abstract class AbstractBasicMessageListener<T extends BasicMessage> imple
 
     // In order to convert a JSON string to a BasicMessage object (or one of its subclasses), we need the actual Java
     // class of the generic type T. Java does not make it easy to find the class representation of T. This field will
-    // store the actual class when we can actually determine what it is, which will be used when we decode a JSON string
-    // into an instance of that class.
+    // store the actual class when we can actually determine what it is, which will be used when we decode a JSON
+    // string into an instance of that class.
     private final Class<T> jsonDecoderRing;
 
     public AbstractBasicMessageListener() {
@@ -43,7 +59,7 @@ public abstract class AbstractBasicMessageListener<T extends BasicMessage> imple
      * message type. If this constructor is not used by subclasses, typically those subclasses will need to override
      * {@link #determineBasicMessageClass()} unless {@link BasicMessage} is the message type that subclass wants to
      * explicitly use (as opposed to a subclass of BasicMessage).
-     * 
+     *
      * @param jsonDecoderRing
      *            the class representation of the generic type T
      */
@@ -54,7 +70,7 @@ public abstract class AbstractBasicMessageListener<T extends BasicMessage> imple
     /**
      * When this listener is attached to a consumer, this field should be filled in to allow the listener to perform
      * other tasks it needs which might require access to the context.
-     * 
+     *
      * @return the consumer context this listener is associated with, or <code>null</code> if not associated with a
      *         consumer yet
      */
@@ -68,10 +84,10 @@ public abstract class AbstractBasicMessageListener<T extends BasicMessage> imple
 
     /**
      * Given the Message received over the wire, convert it to our T representation of the message.
-     * 
+     *
      * @param message
      *            the over-the-wire message
-     * 
+     *
      * @return the message as a object T, or null if we should not or cannot process the message
      */
     protected T getBasicMessageFromMessage(Message message) {
@@ -107,12 +123,12 @@ public abstract class AbstractBasicMessageListener<T extends BasicMessage> imple
     /**
      * In order to decode the JSON, we need the class representation of the basic message type. This method uses
      * reflection to try to get that type.
-     * 
+     *
      * Subclasses can override this if they want to provide the class representation themselves (e.g. in case the
      * reflection cannot get it). Alternatively, subclasses can utilize the constructor
      * {@link AbstractBasicMessageListener#AbstractBasicMessageListener(Class)} to tell this object what the class of T
      * is.
-     * 
+     *
      * @return class of T
      */
     protected Class<T> determineBasicMessageClass() {

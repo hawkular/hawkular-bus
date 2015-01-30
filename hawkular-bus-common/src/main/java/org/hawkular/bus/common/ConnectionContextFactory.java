@@ -1,3 +1,19 @@
+/*
+ * Copyright 2015 Red Hat, Inc. and/or its affiliates
+ * and other contributors as indicated by the @author tags.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.hawkular.bus.common;
 
 import javax.jms.Connection;
@@ -59,7 +75,8 @@ public class ConnectionContextFactory {
      */
     public ConnectionContextFactory(String brokerURL, String username, String password) throws JMSException {
         connectionFactory = new ActiveMQConnectionFactory(username, password, brokerURL);
-        log.debugf("%s has been created: [%s] with username [%s]", this.getClass().getSimpleName(), brokerURL, username);
+        log.debugf("%s has been created: [%s] with username [%s]", this.getClass().getSimpleName(), brokerURL,
+                username);
     }
 
     /**
@@ -120,7 +137,8 @@ public class ConnectionContextFactory {
      * @return the new consumer connection context fully populated
      * @throws JMSException
      */
-    public ConsumerConnectionContext createConsumerConnectionContext(Endpoint endpoint, String messageSelector) throws JMSException {
+    public ConsumerConnectionContext createConsumerConnectionContext(Endpoint endpoint, String messageSelector)
+            throws JMSException {
         ConsumerConnectionContext context = new ConsumerConnectionContext();
         createOrReuseConnection(context, true);
         createSession(context);
@@ -163,12 +181,10 @@ public class ConnectionContextFactory {
     /**
      * To store a connection in this processor object, call this setter.
      *
-     * NOTE: Calling {@link #createConnection(ConnectionContext)} does
-     * <b>not</b> set this processor's connection - that method only creates the
-     * connection and puts that connection in the context. It does not save that
-     * connection in this processor object. You must explicitly set the
-     * connection via this method if you want that connection cached here. See
-     * also {@link #createOrReuseConnection(ConnectionContext, boolean)}.
+     * NOTE: Calling {@link #createConnection(ConnectionContext)} does <b>not</b> set this processor's connection - that
+     * method only creates the connection and puts that connection in the context. It does not save that connection in
+     * this processor object. You must explicitly set the connection via this method if you want that connection cached
+     * here. See also {@link #createOrReuseConnection(ConnectionContext, boolean)}.
      *
      * @param connection
      *
@@ -187,14 +203,11 @@ public class ConnectionContextFactory {
     }
 
     /**
-     * This method provides a way to cache and share a connection across
-     * multiple contexts. It combines the creation and setting of the
-     * connection. This also can optionally start the connection immediately.
-     * Use this if you want to reuse any connection that may already be stored
-     * in this processor object (i.e. {@link #getConnection()} is non-null). If
-     * there is no connection yet, one will be created. Whether the connection
-     * is created or reused, that connection will be stored in the given
-     * context.
+     * This method provides a way to cache and share a connection across multiple contexts. It combines the creation and
+     * setting of the connection. This also can optionally start the connection immediately. Use this if you want to
+     * reuse any connection that may already be stored in this processor object (i.e. {@link #getConnection()} is
+     * non-null). If there is no connection yet, one will be created. Whether the connection is created or reused, that
+     * connection will be stored in the given context.
      *
      * @param context
      *            the connection will be stored in this context
@@ -227,7 +240,7 @@ public class ConnectionContextFactory {
         }
     }
 
-    /**
+/**
      * Creates a connection using this object's connection factory and stores
      * that connection in the given context object.
      *

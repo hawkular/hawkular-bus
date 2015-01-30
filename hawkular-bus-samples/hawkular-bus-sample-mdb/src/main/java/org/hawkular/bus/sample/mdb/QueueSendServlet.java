@@ -1,3 +1,19 @@
+/*
+ * Copyright 2015 Red Hat, Inc. and/or its affiliates
+ * and other contributors as indicated by the @author tags.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.hawkular.bus.sample.mdb;
 
 import java.io.IOException;
@@ -25,13 +41,14 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 public class QueueSendServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private final static String CONN_FACTORY = "/HawkularBusConnectionFactory";
-    private final static String QUEUE_NAME = "ExampleQueueName"; // the full name is "java:/queue/ExampleQueueName"
+    private static final String CONN_FACTORY = "/HawkularBusConnectionFactory";
+    private static final String QUEUE_NAME = "ExampleQueueName"; // the full name is "java:/queue/ExampleQueueName"
 
-    private final static Map<String, String> FNF_HEADER = createMyFilterHeader("fnf");
-    private final static Map<String, String> RPC_HEADER = createMyFilterHeader("rpc");
+    private static final Map<String, String> FNF_HEADER = createMyFilterHeader("fnf");
+    private static final Map<String, String> RPC_HEADER = createMyFilterHeader("rpc");
 
-    public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException,
+            IOException {
         String userMessage = request.getParameter("jmsMessageFNF");
         if (userMessage != null) {
             fireAndForget(request, response, userMessage);
@@ -51,7 +68,8 @@ public class QueueSendServlet extends HttpServlet {
             QueueConnectionFactory qconFactory = (QueueConnectionFactory) ctx.lookup(CONN_FACTORY);
 
             ConnectionContextFactory ccf = new ConnectionContextFactory(qconFactory);
-            ProducerConnectionContext pcc = ccf.createProducerConnectionContext(new Endpoint(Endpoint.Type.QUEUE, QUEUE_NAME));
+            ProducerConnectionContext pcc = ccf.createProducerConnectionContext(new Endpoint(Endpoint.Type.QUEUE,
+                    QUEUE_NAME));
 
             SimpleBasicMessage msg = new SimpleBasicMessage(userMessage);
             MessageId mid = new MessageProcessor().send(pcc, msg, FNF_HEADER);
@@ -71,10 +89,12 @@ public class QueueSendServlet extends HttpServlet {
             QueueConnectionFactory qconFactory = (QueueConnectionFactory) ctx.lookup(CONN_FACTORY);
 
             ConnectionContextFactory ccf = new ConnectionContextFactory(qconFactory);
-            ProducerConnectionContext pcc = ccf.createProducerConnectionContext(new Endpoint(Endpoint.Type.QUEUE, QUEUE_NAME));
+            ProducerConnectionContext pcc = ccf.createProducerConnectionContext(new Endpoint(Endpoint.Type.QUEUE,
+                    QUEUE_NAME));
 
             SimpleBasicMessage msg = new SimpleBasicMessage(userMessage);
-            ListenableFuture<SimpleBasicMessage> future = new MessageProcessor().sendRPC(pcc, msg, SimpleBasicMessage.class, RPC_HEADER);
+            ListenableFuture<SimpleBasicMessage> future = new MessageProcessor().sendRPC(pcc, msg,
+                    SimpleBasicMessage.class, RPC_HEADER);
             Futures.addCallback(future, new SimpleFutureCallback());
 
             PrintWriter out = response.getWriter();

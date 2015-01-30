@@ -1,3 +1,19 @@
+/*
+ * Copyright 2015 Red Hat, Inc. and/or its affiliates
+ * and other contributors as indicated by the @author tags.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.hawkular.nest.extension;
 
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.ADD;
@@ -83,7 +99,8 @@ class NestSubsystemAdd extends AbstractAddStepHandler {
                                         DEPLOYMENT, deployment.getName()));
                                 ModelNode op = Util.getEmptyOperation(ADD, deploymentAddress.toModelNode());
                                 op.get(ENABLED).set(true);
-                                op.get(PERSISTENT).set(false); // prevents writing this deployment out to standalone.xml
+                                // prevents writing this deployment out to standalone.xml
+                                op.get(PERSISTENT).set(false);
 
                                 ModelNode contentItem = new ModelNode();
 
@@ -181,7 +198,7 @@ class NestSubsystemAdd extends AbstractAddStepHandler {
         ServiceName name = NestService.SERVICE_NAME;
         ServiceController<NestService> controller = context.getServiceTarget() //
                 .addService(name, service) //
-                .addDependency(ServerEnvironmentService.SERVICE_NAME, ServerEnvironment.class, service.envServiceValue) //
+                .addDependency(ServerEnvironmentService.SERVICE_NAME, ServerEnvironment.class, service.envServiceValue)
                 .addDependency(BrokerService.SERVICE_NAME, BrokerService.class, service.brokerService) //
                 .addListener(verificationHandler) //
                 .setInitialMode(Mode.ACTIVE) //

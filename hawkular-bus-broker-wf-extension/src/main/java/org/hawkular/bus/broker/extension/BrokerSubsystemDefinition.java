@@ -1,3 +1,19 @@
+/*
+ * Copyright 2015 Red Hat, Inc. and/or its affiliates
+ * and other contributors as indicated by the @author tags.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.hawkular.bus.broker.extension;
 
 import org.jboss.as.controller.AttributeDefinition;
@@ -15,43 +31,55 @@ import org.jboss.dmr.ModelType;
 
 public class BrokerSubsystemDefinition extends SimpleResourceDefinition {
 
-	public static final BrokerSubsystemDefinition INSTANCE = new BrokerSubsystemDefinition();
+    public static final BrokerSubsystemDefinition INSTANCE = new BrokerSubsystemDefinition();
 
     protected static final SimpleAttributeDefinition BROKER_ENABLED_ATTRIBDEF = new SimpleAttributeDefinitionBuilder(
-            BrokerSubsystemExtension.BROKER_ENABLED_ATTR, ModelType.BOOLEAN).setAllowExpression(true).setXmlName(BrokerSubsystemExtension.BROKER_ENABLED_ATTR)
-            .setFlags(AttributeAccess.Flag.RESTART_RESOURCE_SERVICES).setDefaultValue(new ModelNode(BrokerSubsystemExtension.BROKER_ENABLED_DEFAULT))
-            .setAllowNull(false).build();
+            BrokerSubsystemExtension.BROKER_ENABLED_ATTR, ModelType.BOOLEAN).setAllowExpression(true)
+            .setXmlName(BrokerSubsystemExtension.BROKER_ENABLED_ATTR)
+            .setFlags(AttributeAccess.Flag.RESTART_RESOURCE_SERVICES)
+            .setDefaultValue(new ModelNode(BrokerSubsystemExtension.BROKER_ENABLED_DEFAULT)).setAllowNull(false)
+            .build();
 
-    protected static final SimpleAttributeDefinition BROKER_CONFIG_FILE_ATTRIBDEF = new SimpleAttributeDefinitionBuilder(
-            BrokerSubsystemExtension.BROKER_CONFIG_FILE_ATTR, ModelType.STRING).setAllowExpression(true)
-            .setFlags(AttributeAccess.Flag.RESTART_RESOURCE_SERVICES).setDefaultValue(new ModelNode(BrokerSubsystemExtension.BROKER_CONFIG_FILE_DEFAULT))
-            .setAllowNull(true).build();
+    protected static final SimpleAttributeDefinition BROKER_CONFIG_FILE_ATTRIBDEF
+            = new SimpleAttributeDefinitionBuilder(BrokerSubsystemExtension.BROKER_CONFIG_FILE_ATTR, ModelType.STRING)
+            .setAllowExpression(true)
+            .setFlags(AttributeAccess.Flag.RESTART_RESOURCE_SERVICES)
+            .setDefaultValue(new ModelNode(BrokerSubsystemExtension.BROKER_CONFIG_FILE_DEFAULT)).setAllowNull(true)
+            .build();
 
-    protected static final SimpleAttributeDefinition BROKER_NAME_ATTRIBDEF = new SimpleAttributeDefinitionBuilder(BrokerSubsystemExtension.BROKER_NAME_ELEMENT,
-            ModelType.STRING).setAllowExpression(true).setFlags(AttributeAccess.Flag.RESTART_RESOURCE_SERVICES)
+    protected static final SimpleAttributeDefinition BROKER_NAME_ATTRIBDEF = new SimpleAttributeDefinitionBuilder(
+            BrokerSubsystemExtension.BROKER_NAME_ELEMENT, ModelType.STRING).setAllowExpression(true)
+            .setFlags(AttributeAccess.Flag.RESTART_RESOURCE_SERVICES)
             .setDefaultValue(new ModelNode(BrokerSubsystemExtension.BROKER_NAME_DEFAULT)).setAllowNull(true).build();
 
     protected static final SimpleAttributeDefinition BROKER_PERSISTENT_ATTRIBDEF = new SimpleAttributeDefinitionBuilder(
-            BrokerSubsystemExtension.PERSISTENT_ELEMENT, ModelType.BOOLEAN).setAllowExpression(true).setXmlName(BrokerSubsystemExtension.PERSISTENT_ELEMENT)
-            .setFlags(AttributeAccess.Flag.RESTART_RESOURCE_SERVICES).setDefaultValue(new ModelNode(BrokerSubsystemExtension.PERSISTENT_DEFAULT))
-            .setAllowNull(true).build();
+            BrokerSubsystemExtension.PERSISTENT_ELEMENT, ModelType.BOOLEAN).setAllowExpression(true)
+            .setXmlName(BrokerSubsystemExtension.PERSISTENT_ELEMENT)
+            .setFlags(AttributeAccess.Flag.RESTART_RESOURCE_SERVICES)
+            .setDefaultValue(new ModelNode(BrokerSubsystemExtension.PERSISTENT_DEFAULT)).setAllowNull(true).build();
 
-    protected static final SimpleAttributeDefinition BROKER_USE_JMX_ATTRIBDEF = new SimpleAttributeDefinitionBuilder(BrokerSubsystemExtension.USE_JMX_ELEMENT,
-            ModelType.BOOLEAN).setAllowExpression(true).setXmlName(BrokerSubsystemExtension.USE_JMX_ELEMENT)
-            .setFlags(AttributeAccess.Flag.RESTART_RESOURCE_SERVICES).setDefaultValue(new ModelNode(BrokerSubsystemExtension.USE_JMX_DEFAULT))
-            .setAllowNull(true).build();
+    protected static final SimpleAttributeDefinition BROKER_USE_JMX_ATTRIBDEF = new SimpleAttributeDefinitionBuilder(
+            BrokerSubsystemExtension.USE_JMX_ELEMENT, ModelType.BOOLEAN).setAllowExpression(true)
+            .setXmlName(BrokerSubsystemExtension.USE_JMX_ELEMENT)
+            .setFlags(AttributeAccess.Flag.RESTART_RESOURCE_SERVICES)
+            .setDefaultValue(new ModelNode(BrokerSubsystemExtension.USE_JMX_DEFAULT)).setAllowNull(true).build();
 
-    protected static final CustomConfigAttributeDefinition CUSTOM_CONFIG_ATTRIBDEF = new CustomConfigAttributeDefinition();
+    protected static final CustomConfigAttributeDefinition CUSTOM_CONFIG_ATTRIBDEF
+            = new CustomConfigAttributeDefinition();
 
     protected static final SimpleAttributeDefinition CONNECTOR_NAME_ATTRIBDEF = new SimpleAttributeDefinitionBuilder(
-            BrokerSubsystemExtension.CONNECTOR_NAME_ATTR, ModelType.STRING).setAllowExpression(true).setXmlName(BrokerSubsystemExtension.CONNECTOR_NAME_ATTR)
-            .setFlags(AttributeAccess.Flag.RESTART_RESOURCE_SERVICES).setDefaultValue(new ModelNode(BrokerSubsystemExtension.CONNECTOR_NAME_DEFAULT))
-            .setAllowNull(true).build();
+            BrokerSubsystemExtension.CONNECTOR_NAME_ATTR, ModelType.STRING).setAllowExpression(true)
+            .setXmlName(BrokerSubsystemExtension.CONNECTOR_NAME_ATTR)
+            .setFlags(AttributeAccess.Flag.RESTART_RESOURCE_SERVICES)
+            .setDefaultValue(new ModelNode(BrokerSubsystemExtension.CONNECTOR_NAME_DEFAULT)).setAllowNull(true).build();
 
-    protected static final SimpleAttributeDefinition CONNECTOR_PROTOCOL_ATTRIBDEF = new SimpleAttributeDefinitionBuilder(
+    protected static final SimpleAttributeDefinition CONNECTOR_PROTOCOL_ATTRIBDEF
+            = new SimpleAttributeDefinitionBuilder(
             BrokerSubsystemExtension.CONNECTOR_PROTOCOL_ATTR, ModelType.STRING).setAllowExpression(true)
-            .setXmlName(BrokerSubsystemExtension.CONNECTOR_PROTOCOL_ATTR).setFlags(AttributeAccess.Flag.RESTART_RESOURCE_SERVICES)
-            .setDefaultValue(new ModelNode(BrokerSubsystemExtension.CONNECTOR_PROTOCOL_DEFAULT)).setAllowNull(true).build();
+            .setXmlName(BrokerSubsystemExtension.CONNECTOR_PROTOCOL_ATTR)
+            .setFlags(AttributeAccess.Flag.RESTART_RESOURCE_SERVICES)
+            .setDefaultValue(new ModelNode(BrokerSubsystemExtension.CONNECTOR_PROTOCOL_DEFAULT)).setAllowNull(true)
+            .build();
 
     protected static final SimpleAttributeDefinition SOCKET_BINDING_ATTRIBDEF = new SimpleAttributeDefinitionBuilder(
             BrokerSubsystemExtension.CONNECTOR_SOCKET_BINDING_ATTR, ModelType.STRING)
@@ -59,19 +87,20 @@ public class BrokerSubsystemDefinition extends SimpleResourceDefinition {
             .setDefaultValue(new ModelNode(BrokerSubsystemExtension.CONNECTOR_SOCKET_BINDING_DEFAULT))
             .setValidator(new StringLengthValidator(1)).setAllowNull(false).build();
 
-    protected static final SimpleAttributeDefinition DISCOVERY_SOCKET_BINDING_ATTRIBDEF = new SimpleAttributeDefinitionBuilder(
+    protected static final SimpleAttributeDefinition DISCOVERY_SOCKET_BINDING_ATTRIBDEF
+            = new SimpleAttributeDefinitionBuilder(
             BrokerSubsystemExtension.DISCOVERY_SOCKET_BINDING_ELEMENT, ModelType.STRING)
             .setFlags(AttributeAccess.Flag.RESTART_RESOURCE_SERVICES)
             .setDefaultValue(new ModelNode(BrokerSubsystemExtension.DISCOVERY_SOCKET_BINDING_DEFAULT))
             .setValidator(new StringLengthValidator(1)).setAllowNull(false).build();
 
     // operation parameters
-    protected static final SimpleAttributeDefinition START_OP_PARAM_RESTART = new SimpleAttributeDefinitionBuilder("restart", ModelType.BOOLEAN)
-            .setAllowExpression(true).setDefaultValue(new ModelNode(false)).build();
+    protected static final SimpleAttributeDefinition START_OP_PARAM_RESTART = new SimpleAttributeDefinitionBuilder(
+            "restart", ModelType.BOOLEAN).setAllowExpression(true).setDefaultValue(new ModelNode(false)).build();
 
-	private BrokerSubsystemDefinition() {
-        super(BrokerSubsystemExtension.SUBSYSTEM_PATH, BrokerSubsystemExtension.getResourceDescriptionResolver(null), BrokerSubsystemAdd.INSTANCE,
-                BrokerSubsystemRemove.INSTANCE);
+    private BrokerSubsystemDefinition() {
+        super(BrokerSubsystemExtension.SUBSYSTEM_PATH, BrokerSubsystemExtension.getResourceDescriptionResolver(null),
+                BrokerSubsystemAdd.INSTANCE, BrokerSubsystemRemove.INSTANCE);
     }
 
     @Override
@@ -88,7 +117,8 @@ public class BrokerSubsystemDefinition extends SimpleResourceDefinition {
         registerReloadRequiredWriteAttributeHandler(rr, DISCOVERY_SOCKET_BINDING_ATTRIBDEF);
     }
 
-    private void registerReloadRequiredWriteAttributeHandler(ManagementResourceRegistration rr, AttributeDefinition def) {
+    private void registerReloadRequiredWriteAttributeHandler(
+            ManagementResourceRegistration rr, AttributeDefinition def) {
         rr.registerReadWriteAttribute(def, null, new ReloadRequiredWriteAttributeHandler(def));
     }
 
@@ -97,19 +127,18 @@ public class BrokerSubsystemDefinition extends SimpleResourceDefinition {
         super.registerOperations(rr);
 
         // We always need to add a 'describe' operation
-        rr.registerOperationHandler(GenericSubsystemDescribeHandler.DEFINITION, GenericSubsystemDescribeHandler.INSTANCE);
+        rr.registerOperationHandler(GenericSubsystemDescribeHandler.DEFINITION,
+                GenericSubsystemDescribeHandler.INSTANCE);
 
-        rr.registerOperationHandler(
-                new SimpleOperationDefinitionBuilder(BrokerSubsystemExtension.BROKER_START_OP, BrokerSubsystemExtension.getResourceDescriptionResolver(null))
-                        .addParameter(START_OP_PARAM_RESTART).build(), BrokerSubsystemStart.INSTANCE);
+        rr.registerOperationHandler(new SimpleOperationDefinitionBuilder(BrokerSubsystemExtension.BROKER_START_OP,
+                BrokerSubsystemExtension.getResourceDescriptionResolver(null)).addParameter(START_OP_PARAM_RESTART)
+                .build(), BrokerSubsystemStart.INSTANCE);
 
-        rr.registerOperationHandler(
-                new SimpleOperationDefinitionBuilder(BrokerSubsystemExtension.BROKER_STOP_OP, BrokerSubsystemExtension.getResourceDescriptionResolver(null))
-                        .build(), BrokerSubsystemStop.INSTANCE);
+        rr.registerOperationHandler(new SimpleOperationDefinitionBuilder(BrokerSubsystemExtension.BROKER_STOP_OP,
+                BrokerSubsystemExtension.getResourceDescriptionResolver(null)).build(), BrokerSubsystemStop.INSTANCE);
 
-        rr.registerOperationHandler(
-                new SimpleOperationDefinitionBuilder(BrokerSubsystemExtension.BROKER_STATUS_OP, BrokerSubsystemExtension.getResourceDescriptionResolver(null))
-                        .build(), BrokerSubsystemStatus.INSTANCE);
+        rr.registerOperationHandler(new SimpleOperationDefinitionBuilder(BrokerSubsystemExtension.BROKER_STATUS_OP,
+                BrokerSubsystemExtension.getResourceDescriptionResolver(null)).build(), BrokerSubsystemStatus.INSTANCE);
 
         return;
     }

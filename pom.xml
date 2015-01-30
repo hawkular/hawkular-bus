@@ -1,294 +1,200 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    Copyright 2015 Red Hat, Inc. and/or its affiliates
+    and other contributors as indicated by the @author tags.
 
-    <modelVersion>4.0.0</modelVersion>
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
 
-    <groupId>org.hawkular.bus</groupId>
-    <artifactId>hawkular-bus-parent</artifactId>
-    <version>1.0.0.Alpha1-SNAPSHOT</version>
-    <packaging>pom</packaging>
-    <name>Hawkular Bus Framework</name>
-    <inceptionYear>2015</inceptionYear>
+       http://www.apache.org/licenses/LICENSE-2.0
 
-    <!-- TODO remove repos -->
-    <repositories>
-        <!-- Conventions are described in http://community.jboss.org/wiki/MavenGettingStarted-Developers -->
-        <repository>
-            <id>jboss-public-repository-group</id>
-            <name>JBoss Public Repository Group</name>
-            <url>http://repository.jboss.org/nexus/content/groups/public/</url>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>daily</updatePolicy>
-            </snapshots>
-        </repository>
-    </repositories>
-    <pluginRepositories>
-        <pluginRepository>
-            <id>jboss-public-repository-group</id>
-            <name>JBoss Public Repository Group</name>
-            <url>http://repository.jboss.org/nexus/content/groups/public/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </pluginRepository>
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 
-        <!-- needed for the Wildfly Extension plugin -->
-        <pluginRepository>
-            <id>clojars</id>
-            <name>clojars</name>
-            <url>https://clojars.org/repo</url>
-        </pluginRepository>
-    </pluginRepositories>
+-->
 
-    <modules>
-        <module>hawkular-bus-common</module>
-        <module>hawkular-bus-mdb</module>
-        <module>hawkular-bus-broker</module>
-        <module>hawkular-bus-test-common</module>
-        <module>hawkular-bus-broker-wf-extension</module>
-        <module>hawkular-bus-ra-wf-module</module>
-        <module>hawkular-bus-samples</module>
-        <module>hawkular-nest</module>
-    </modules>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <properties>
+  <modelVersion>4.0.0</modelVersion>
 
-        <!-- MAVEN VERSIONS -->
+  <parent>
+    <groupId>org.hawkular</groupId>
+    <artifactId>hawkular-parent</artifactId>
+    <version>2</version>
+  </parent>
 
-        <maven-compiler-source-version>1.6</maven-compiler-source-version>
-        <maven-compiler-target-version>1.6</maven-compiler-target-version>
+  <groupId>org.hawkular.bus</groupId>
+  <artifactId>hawkular-bus-parent</artifactId>
+  <version>1.0.0.Alpha1-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>Hawkular Bus Framework</name>
+  <inceptionYear>2015</inceptionYear>
 
-        <plugin.version.org.apache.maven.plugins-maven-antrun-plugin>1.7</plugin.version.org.apache.maven.plugins-maven-antrun-plugin>
-        <plugin.version.org.apache.maven.plugins-maven-assembly-plugin>2.4</plugin.version.org.apache.maven.plugins-maven-assembly-plugin>
-        <plugin.version.org.apache.maven.plugins-maven-compiler-plugin>2.5.1</plugin.version.org.apache.maven.plugins-maven-compiler-plugin>
-        <plugin.version.org.apache.maven.plugins-maven-enforcer-plugin>1.3.1</plugin.version.org.apache.maven.plugins-maven-enforcer-plugin>
-        <plugin.version.org.apache.maven.plugins-maven-jar-plugin>2.4</plugin.version.org.apache.maven.plugins-maven-jar-plugin>
-        <plugin.version.org.apache.maven.plugins-maven-surefire-plugin>2.12.4</plugin.version.org.apache.maven.plugins-maven-surefire-plugin>
-        <plugin.version.org.codehaus.mojo-exec-maven-plugin>1.3.1</plugin.version.org.codehaus.mojo-exec-maven-plugin>
+  <pluginRepositories>
+    <!-- needed for the Wildfly Extension plugin -->
+    <pluginRepository>
+      <id>clojars</id>
+      <name>clojars</name>
+      <url>https://clojars.org/repo</url>
+    </pluginRepository>
+  </pluginRepositories>
 
-        <!-- DEPENDENCY VERSIONS -->
+  <modules>
+    <module>hawkular-bus-common</module>
+    <module>hawkular-bus-mdb</module>
+    <module>hawkular-bus-broker</module>
+    <module>hawkular-bus-test-common</module>
+    <module>hawkular-bus-broker-wf-extension</module>
+    <module>hawkular-bus-ra-wf-module</module>
+    <module>hawkular-bus-samples</module>
+    <module>hawkular-nest</module>
+  </modules>
 
-        <!-- CONVENTIONS: -->
-        <!-- - A version property must be specified in the format "version.{groupId}" -->
-        <!-- - If groupId is not unique, append the property name with "-{artifactId}" -->
-        <!-- - Version properties must be sorted alphabetically -->
+  <properties>
 
-        <version.com.google.code.gson>2.2.4</version.com.google.code.gson>
-        <version.com.google.guava>16.0.1</version.com.google.guava>
-        <version.gnu.getopt>1.0.13</version.gnu.getopt>
-        <version.junit>4.11</version.junit>
-        <version.org.apache.activemq>5.10.0</version.org.apache.activemq>
-        <version.org.testng>6.5.2</version.org.testng>
-        <version.org.wildfly>8.2.0.Final</version.org.wildfly>
+    <!-- maven-compiler-plugin -->
+    <maven.compiler.source>1.6</maven.compiler.source>
+    <maven.compiler.target>1.6</maven.compiler.target>
 
-    </properties>
+    <!-- DEPENDENCY VERSIONS -->
 
-    <dependencyManagement>
-        <dependencies>
-            <!-- CONVENTIONS: -->
-            <!-- - Dependencies must be SORTED ALPHABETICALLY on groupId -->
-            <!-- - Do not declare <scope> (exception: import) or <optional>: a child module will declare scope/optional itself. -->
-            <!-- - Always extract the version as a property. -->
-            <!-- - A element's inner order is <groupId>, <artifactId>, [<type>,] [<classifier>,] <version> -->
+    <!-- CONVENTIONS: -->
+    <!-- - A version property must be specified in the format "version.{groupId}" -->
+    <!-- - If groupId is not unique, append the property name with "-{artifactId}" -->
+    <!-- - Version properties must be sorted alphabetically -->
 
-            <dependency>
-                <groupId>com.google.code.gson</groupId>
-                <artifactId>gson</artifactId>
-                <version>${version.com.google.code.gson}</version>
-            </dependency>
+    <version.com.google.code.gson>2.2.4</version.com.google.code.gson>
+    <version.com.google.guava>16.0.1</version.com.google.guava>
+    <version.gnu.getopt>1.0.13</version.gnu.getopt>
+    <version.junit>4.11</version.junit>
+    <version.org.apache.activemq>5.10.0</version.org.apache.activemq>
+    <version.org.testng>6.5.2</version.org.testng>
+    <version.org.wildfly>8.2.0.Final</version.org.wildfly>
 
-            <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <version>${version.com.google.guava}</version>
-            </dependency>
+  </properties>
 
-            <dependency>
-                <groupId>gnu.getopt</groupId>
-                <artifactId>java-getopt</artifactId>
-                <version>${version.gnu.getopt}</version>
-            </dependency>
+  <dependencyManagement>
+    <dependencies>
+      <!-- CONVENTIONS: -->
+      <!-- - Dependencies must be SORTED ALPHABETICALLY on groupId -->
+      <!-- - Do not declare <scope> (exception: import) or <optional>: a child module will declare scope/optional -->
+      <!--   itself. -->
+      <!-- - Always extract the version as a property. -->
+      <!-- - A element's inner order is <groupId>, <artifactId>, [<type>,] [<classifier>,] <version> -->
 
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${version.junit}</version>
-            </dependency>
+      <dependency>
+        <groupId>com.google.code.gson</groupId>
+        <artifactId>gson</artifactId>
+        <version>${version.com.google.code.gson}</version>
+      </dependency>
 
-            <!-- ActiveMQ BOM -->
-            <dependency>
-                <groupId>org.apache.activemq</groupId>
-                <artifactId>activemq-parent</artifactId>
-                <version>${version.org.apache.activemq}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>${version.com.google.guava}</version>
+      </dependency>
 
-            <dependency>
-                <groupId>org.apache.activemq</groupId>
-                <artifactId>activemq-rar</artifactId>
-                <version>${version.org.apache.activemq}</version>
-                <type>rar</type>
-            </dependency>
+      <dependency>
+        <groupId>gnu.getopt</groupId>
+        <artifactId>java-getopt</artifactId>
+        <version>${version.gnu.getopt}</version>
+      </dependency>
 
-            <dependency>
-                <groupId>org.wildfly</groupId>
-                <artifactId>wildfly-controller</artifactId>
-                <version>${version.org.wildfly}</version>
-            </dependency>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>${version.junit}</version>
+      </dependency>
 
-            <dependency>
-                <groupId>org.wildfly</groupId>
-                <artifactId>wildfly-dist</artifactId>
-                <version>${version.org.wildfly}</version>
-                <type>zip</type>
-            </dependency>
+      <!-- ActiveMQ BOM -->
+      <dependency>
+        <groupId>org.apache.activemq</groupId>
+        <artifactId>activemq-parent</artifactId>
+        <version>${version.org.apache.activemq}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
 
-            <dependency>
-                <groupId>org.wildfly</groupId>
-                <artifactId>wildfly-server</artifactId>
-                <version>${version.org.wildfly}</version>
-            </dependency>
+      <dependency>
+        <groupId>org.apache.activemq</groupId>
+        <artifactId>activemq-rar</artifactId>
+        <version>${version.org.apache.activemq}</version>
+        <type>rar</type>
+      </dependency>
 
-            <dependency>
-                <groupId>org.wildfly</groupId>
-                <artifactId>wildfly-subsystem-test-framework</artifactId>
-                <version>${version.org.wildfly}</version>
-            </dependency>
+      <dependency>
+        <groupId>org.wildfly</groupId>
+        <artifactId>wildfly-controller</artifactId>
+        <version>${version.org.wildfly}</version>
+      </dependency>
 
-            <!-- this also includes the org.jboss.spec:jboss-javaee-7.0 dependencies -->
-            <dependency>
-               <groupId>org.wildfly.bom</groupId>
-               <artifactId>jboss-javaee-7.0-with-logging</artifactId>
-               <version>${version.org.wildfly}</version>
-               <type>pom</type>
-               <scope>import</scope>
-            </dependency>
+      <dependency>
+        <groupId>org.wildfly</groupId>
+        <artifactId>wildfly-dist</artifactId>
+        <version>${version.org.wildfly}</version>
+        <type>zip</type>
+      </dependency>
 
-        </dependencies>
-    </dependencyManagement>
+      <dependency>
+        <groupId>org.wildfly</groupId>
+        <artifactId>wildfly-server</artifactId>
+        <version>${version.org.wildfly}</version>
+      </dependency>
 
-    <profiles>
-        <profile>
-            <id>test.debug</id>
-            <activation>
-                <property>
-                    <name>test.debug</name>
-                </property>
-            </activation>
+      <dependency>
+        <groupId>org.wildfly</groupId>
+        <artifactId>wildfly-subsystem-test-framework</artifactId>
+        <version>${version.org.wildfly}</version>
+      </dependency>
 
-            <properties>
-                <!-- See: http://maven.apache.org/plugins/maven-surefire-plugin/test-mojo.html#debugForkedProcess -->
-                <maven.surefire.debug>-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=y</maven.surefire.debug>
-            </properties>
-        </profile>
-    </profiles>
+      <!-- this also includes the org.jboss.spec:jboss-javaee-7.0 dependencies -->
+      <dependency>
+        <groupId>org.wildfly.bom</groupId>
+        <artifactId>jboss-javaee-7.0-with-logging</artifactId>
+        <version>${version.org.wildfly}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
 
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-antrun-plugin</artifactId>
-                    <version>${plugin.version.org.apache.maven.plugins-maven-antrun-plugin}</version>
-                </plugin>
+    </dependencies>
+  </dependencyManagement>
 
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-assembly-plugin</artifactId>
-                    <version>${plugin.version.org.apache.maven.plugins-maven-assembly-plugin}</version>
-                    <configuration>
-                        <tarLongFileMode>gnu</tarLongFileMode>
-                    </configuration>
-                </plugin>
-
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>${plugin.version.org.apache.maven.plugins-maven-compiler-plugin}</version>
-                </plugin>
-
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-enforcer-plugin</artifactId>
-                    <version>${plugin.version.org.apache.maven.plugins-maven-enforcer-plugin}</version>
-                </plugin>
-
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <version>${plugin.version.org.apache.maven.plugins-maven-jar-plugin}</version>
-                    <configuration>
-                        <archive>
-                            <manifest>
-                                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                            </manifest>
-                            <compress>true</compress>
-                        </archive>
-                    </configuration>
-                </plugin>
-
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>${plugin.version.org.apache.maven.plugins-maven-surefire-plugin}</version>
-                    <configuration>
-                        <argLine>-Xmx512m</argLine>
-                    </configuration>
-                </plugin>
-
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>exec-maven-plugin</artifactId>
-                    <version>${plugin.version.org.codehaus.mojo-exec-maven-plugin}</version>
-                </plugin>
-
-            </plugins>
-        </pluginManagement>
-
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>${maven-compiler-source-version}</source>
-                    <target>${maven-compiler-target-version}</target>
-                    <optimize>true</optimize>
-                    <debug>true</debug>
-                    <showDeprecation>true</showDeprecation>
-                    <showWarnings>true</showWarnings>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <requireMavenVersion>
-                                    <version>[3.0.4,)</version>
-                                </requireMavenVersion>
-                            </rules>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
-
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>enforce-rules</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <rules combine.self="override">
+            <requireMavenVersion>
+              <version>[3.0.4,)</version>
+            </requireMavenVersion>
+            <requireJavaVersion>
+              <version>[1.6,)</version>
+            </requireJavaVersion>
+            <requireNoRepositories>
+              <allowedPluginRepositories>
+                <repository>clojars</repository>
+              </allowedPluginRepositories>
+            </requireNoRepositories>
+            <!-- <requirePluginVersions /> -->
+          </rules>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

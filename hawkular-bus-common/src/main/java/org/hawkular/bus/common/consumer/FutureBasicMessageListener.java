@@ -1,3 +1,19 @@
+/*
+ * Copyright 2015 Red Hat, Inc. and/or its affiliates
+ * and other contributors as indicated by the @author tags.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.hawkular.bus.common.consumer;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -17,21 +33,22 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 /**
  * This listener waits for a single incoming message and returns it within the context of the Future API.
- * 
+ *
  * Once the message is received, the consumer associated with this listener will be closed.
- * 
+ *
  * This is not intended to receive a series of messages; it is only expected that the consumer will receive a single
  * message. This is useful, for example, to process a response from a single RPC call over a temporary queue.
- * 
+ *
  * To use this, just register this as a message listener and call one of the get() methods to block waiting for the
  * response.
- * 
+ *
  * @author John Mazzitelli
- * 
+ *
  * @param <T>
  *            the type of message that is expected to be received
  */
-public class FutureBasicMessageListener<T extends BasicMessage> extends BasicMessageListener<T> implements ListenableFuture<T> {
+public class FutureBasicMessageListener<T extends BasicMessage> extends BasicMessageListener<T> implements
+        ListenableFuture<T> {
 
     private static enum State {
         WAITING, DONE, CANCELLED

@@ -1,3 +1,15 @@
+/*
+ * Copyright 2014-2015 Red Hat, Inc. and/or its affiliates and other contributors as indicated by the @author tags.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package org.hawkular.bus.broker.extension;
 
 import java.net.InetAddress;
@@ -7,6 +19,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.hawkular.bus.broker.EmbeddedBroker;
+import org.hawkular.bus.broker.extension.log.MsgLogger;
 import org.jboss.as.network.SocketBinding;
 import org.jboss.as.server.ServerEnvironment;
 import org.jboss.logging.Logger;
@@ -21,6 +34,8 @@ public class BrokerService implements Service<BrokerService> {
 
     public static final ServiceName SERVICE_NAME = ServiceName.of("org.hawkular.bus").append(BrokerSubsystemExtension.SUBSYSTEM_NAME);
 
+    private final MsgLogger msglog = Logger.getMessageLogger(MsgLogger.class, BrokerService.class.getPackage()
+            .getName());
     private final Logger log = Logger.getLogger(BrokerService.class);
 
     /**
@@ -74,16 +89,16 @@ public class BrokerService implements Service<BrokerService> {
 
     @Override
     public void start(StartContext context) throws StartException {
-        log.info("Broker service starting");
+        msglog.infoBrokerServiceStarting();
         startBroker();
-        log.info("Broker service started");
+        msglog.infoBrokerServiceStarted();
     }
 
     @Override
     public void stop(StopContext context) {
-        log.info("Broker service stopping");
+        msglog.infoBrokerServiceStopping();
         stopBroker();
-        log.info("Broker service stopped");
+        msglog.infoBrokerServiceStopped();
     }
 
     protected void setConfigurationFile(String configFile) {
@@ -110,11 +125,11 @@ public class BrokerService implements Service<BrokerService> {
 
     protected void startBroker() throws StartException {
         if (isBrokerStarted()) {
-            log.info("Broker is already started.");
+            msglog.infoBrokerAlreadyStarted();
             return;
         }
 
-        log.info("Starting the broker now");
+        msglog.infoStartingBrokerNow();
         try {
             // make sure we pre-configure the broker with some settings taken from our runtime environment
 
@@ -128,18 +143,18 @@ public class BrokerService implements Service<BrokerService> {
 
             customConfigProperties.put(BrokerSubsystemExtension.BROKER_CONNECTOR_ADDRESS_SYSPROP, connectorAddress);
             customConfigProperties.put(BrokerSubsystemExtension.BROKER_CONNECTOR_PORT_SYSPROP, connectorPort);
-            log.info("Broker told to bind socket to [" + connectorAddress + ":" + connectorPort + "]");
+            msglog.infoBrokerBindingToSocket(connectorAddress, connectorPort);
 
             SocketBinding discoverySocketBindingValue = discoverySocketBinding.getValue();
             String discoveryAddress = discoverySocketBindingValue.getMulticastAddress().getHostAddress();
             String discoveryPort = String.valueOf(discoverySocketBindingValue.getMulticastPort());
             customConfigProperties.put(BrokerSubsystemExtension.BROKER_DISCOVERY_ADDRESS_SYSPROP, discoveryAddress);
             customConfigProperties.put(BrokerSubsystemExtension.BROKER_DISCOVERY_PORT_SYSPROP, discoveryPort);
-            log.info("Broker told to discover other brokers via [" + discoveryAddress + ":" + discoveryPort + "]");
+            msglog.infoBrokerDiscoveryEndpoint(discoveryAddress, discoveryPort);
 
             ServerEnvironment env = envServiceValue.getValue();
             BrokerConfigurationSetup configSetup = new BrokerConfigurationSetup(configurationFile, customConfigProperties, env);
-            log.info("Broker told to use configuration file [" + configSetup.getConfigurationFile() + "]");
+            msglog.infoBrokerConfigurationFile(configSetup.getConfigurationFile());
 
             // build the startup command line arguments to pass to the broker
             Map<String, String> customConfig = configSetup.getCustomConfiguration();
@@ -164,7 +179,7 @@ public class BrokerService implements Service<BrokerService> {
                         // broker just exited due to being shutdown, die quietly
                         log.debug("Broker has exited.");
                     } catch (Throwable t) {
-                        log.error("Broker aborted with exception.", t);
+                        msglog.errorBrokerAborted(t);
                     }
                 };
             };
@@ -178,13 +193,13 @@ public class BrokerService implements Service<BrokerService> {
     protected void stopBroker() {
         try {
             if (!isBrokerStarted()) {
-                log.info("Broker is already stopped.");
+                msglog.infoBrokerAlreadyStopped();
             } else {
-                log.info("Stopping the broker now");
+                msglog.infoStoppingBrokerNow();
                 theBroker.get().stopBroker();
             }
         } catch (Throwable t) {
-            log.error("Failed to shutdown broker", t);
+            msglog.errorFailedToShutdownBroker(t);
         } finally {
             if (brokerThread != null) {
                 brokerThread.interrupt();

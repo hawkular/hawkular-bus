@@ -1,5 +1,6 @@
 package org.hawkular.bus.broker.extension;
 
+import org.hawkular.bus.broker.extension.log.MsgLogger;
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationFailedException;
 import org.jboss.as.controller.OperationStepHandler;
@@ -11,7 +12,8 @@ class BrokerSubsystemStop implements OperationStepHandler {
 
     static final BrokerSubsystemStop INSTANCE = new BrokerSubsystemStop();
 
-    private final Logger log = Logger.getLogger(BrokerSubsystemStop.class);
+    private final MsgLogger msglog = Logger.getMessageLogger(MsgLogger.class, BrokerSubsystemStop.class.getPackage()
+            .getName());
 
     private BrokerSubsystemStop() {
     }
@@ -21,7 +23,7 @@ class BrokerSubsystemStop implements OperationStepHandler {
         try {
             ServiceName name = BrokerService.SERVICE_NAME;
             BrokerService service = (BrokerService) opContext.getServiceRegistry(true).getRequiredService(name).getValue();
-            log.info("Asked to stop the broker");
+            msglog.infoAskedToStopBroker();
             service.stopBroker();
         } catch (Exception e) {
             // the broker service just isn't deployed, so obviously, the broker is already stopped. just keep going

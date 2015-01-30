@@ -1,3 +1,15 @@
+/*
+ * Copyright 2014-2015 Red Hat, Inc. and/or its affiliates and other contributors as indicated by the @author tags.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package org.hawkular.bus.broker;
 
 import gnu.getopt.Getopt;
@@ -8,19 +20,20 @@ import java.util.Arrays;
 
 import org.apache.activemq.broker.BrokerFactory;
 import org.apache.activemq.broker.BrokerService;
+import org.hawkular.bus.broker.log.MsgLogger;
 import org.jboss.logging.Logger;
 
 /**
- * Provides a slim wrapper around the message broker. You can simply provide a
- * config file (either a ActiveMQ .properties or .xml file) to the constructor,
- * then start/stop the broker.
+ * Provides a slim wrapper around the message broker. You can simply provide a config file (either a ActiveMQ
+ * .properties or .xml file) to the constructor, then start/stop the broker.
  * 
  * You can start the broker on the command line if you want a standalone broker.
  * 
- * You can subclass this to provide additional functionality around
- * configuration and management of the broker.
+ * You can subclass this to provide additional functionality around configuration and management of the broker.
  */
 public class EmbeddedBroker {
+    private final MsgLogger msglog = Logger.getMessageLogger(MsgLogger.class, EmbeddedBroker.class.getPackage()
+            .getName());
     private final Logger log = Logger.getLogger(EmbeddedBroker.class);
     private InitializationParameters initialParameters;
     private BrokerService brokerService;
@@ -63,9 +76,9 @@ public class EmbeddedBroker {
         if (broker == null) {
             throw new IllegalStateException("Broker was not initialized");
         }
-        log.info("Attempting to start the broker");
+        msglog.infoStartingBroker();
         broker.start();
-        log.info("Started broker");
+        msglog.infoStartedBroker();
     }
 
     public void stopBroker() throws Exception {
@@ -75,8 +88,9 @@ public class EmbeddedBroker {
         }
 
         try {
+            msglog.infoStoppingBroker();
             broker.stop();
-            log.info("Stopped broker");
+            msglog.infoStoppedBroker();
         } finally {
             setBrokerService(null); // we do not want to attempt to reuse or restart this broker instance again
         }
@@ -102,7 +116,7 @@ public class EmbeddedBroker {
 
         BrokerService broker = BrokerFactory.createBroker(initParams.configFile, false);
         setBrokerService(broker);
-        log.info("Initialized broker");
+        msglog.infoInitializedBroker();
     }
 
     protected void setBrokerService(BrokerService broker) {
@@ -133,48 +147,48 @@ public class EmbeddedBroker {
 
         while ((code = getopt.getopt()) != -1) {
             switch (code) {
-            case ':':
-            case '?': {
-                // for now both of these should exit
-                displayUsage();
-                throw new IllegalArgumentException("Invalid argument(s)");
-            }
-
-            case 1: {
-                // this will catch non-option arguments (which we don't currently care about)
-                System.err.println("Unused argument: " + getopt.getOptarg());
-                break;
-            }
-
-            case 'h': {
-                displayUsage();
-                throw new HelpException("Help displayed");
-            }
-
-            case 'D': {
-                String sysprop = getopt.getOptarg();
-                int i = sysprop.indexOf("=");
-                String name;
-                String value;
-
-                if (i == -1) {
-                    name = sysprop;
-                    value = "true";
-                } else {
-                    name = sysprop.substring(0, i);
-                    value = sysprop.substring(i + 1, sysprop.length());
+                case ':':
+                case '?': {
+                    // for now both of these should exit
+                    displayUsage();
+                    throw new IllegalArgumentException("Invalid argument(s)");
                 }
 
-                System.setProperty(name, value);
+                case 1: {
+                    // this will catch non-option arguments (which we don't currently care about)
+                    System.err.println("Unused argument: " + getopt.getOptarg());
+                    break;
+                }
+
+                case 'h': {
+                    displayUsage();
+                    throw new HelpException("Help displayed");
+                }
+
+                case 'D': {
+                    String sysprop = getopt.getOptarg();
+                    int i = sysprop.indexOf("=");
+                    String name;
+                    String value;
+
+                    if (i == -1) {
+                        name = sysprop;
+                        value = "true";
+                    } else {
+                        name = sysprop.substring(0, i);
+                        value = sysprop.substring(i + 1, sysprop.length());
+                    }
+
+                    System.setProperty(name, value);
                     log.debugf("System property set: %s=%s", name, value);
 
-                break;
-            }
+                    break;
+                }
 
-            case 'c': {
-                configFileArg = getopt.getOptarg();
-                break;
-            }
+                case 'c': {
+                    configFileArg = getopt.getOptarg();
+                    break;
+                }
             }
         }
 
@@ -200,10 +214,12 @@ public class EmbeddedBroker {
     }
 
     private void displayUsage() {
-        log.info("Options:");
-        log.info("\t--help, -h: Displays this help text.");
-        log.info("\t-Dname=value: Sets a system property.");
-        log.info("\t--config=<file>, -c: Specifies the file used to configure the broker.");
+        StringBuilder str = new StringBuilder();
+        str.append("Options:").append("\n");
+        str.append("\t--help, -h: Displays this help text.").append("\n");
+        str.append("\t-Dname=value: Sets a system property.").append("\n");
+        str.append("\t--config=<file>, -c: Specifies the file used to configure the broker.").append("\n");
+        msglog.infoUsage(str.toString());
     }
 
     private class HelpException extends Exception {

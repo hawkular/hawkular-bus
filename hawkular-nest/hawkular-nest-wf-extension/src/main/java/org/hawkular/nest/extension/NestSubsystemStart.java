@@ -25,7 +25,7 @@ class NestSubsystemStart implements OperationStepHandler {
 
             boolean restart = model.get(NestSubsystemDefinition.START_OP_PARAM_RESTART.getName()).asBoolean(false);
             if (restart) {
-                log.info("Asked to restart the nest. Will stop it, then restart it now.");
+                log.debug("Asked to restart the nest. Will stop it, then restart it now.");
                 service.stopNest();
             }
             service.startNest();

@@ -11,6 +11,7 @@ import javax.jms.TextMessage;
 
 import org.hawkular.bus.common.BasicMessage;
 import org.hawkular.bus.common.MessageId;
+import org.hawkular.bus.common.log.MsgLogger;
 import org.jboss.logging.Logger;
 
 /**
@@ -24,6 +25,7 @@ import org.jboss.logging.Logger;
  */
 
 public abstract class AbstractBasicMessageListener<T extends BasicMessage> implements MessageListener {
+    private final MsgLogger msglog = Logger.getMessageLogger(MsgLogger.class, this.getClass().getPackage().getName());
     private final Logger log = Logger.getLogger(this.getClass());
 
     private ConsumerConnectionContext consumerConnectionContext;
@@ -90,10 +92,10 @@ public abstract class AbstractBasicMessageListener<T extends BasicMessage> imple
 
             getLog().tracef("Received basic message: %s", basicMessage);
         } catch (JMSException e) {
-            getLog().error("A message was received that was not a valid text message", e);
+            msglog.errorNotValidTextMessage(e);
             basicMessage = null;
         } catch (Exception e) {
-            getLog().error("A message was received that was not a valid JSON-encoded BasicMessage object", e);
+            msglog.errorNotValidJsonMessage(e);
             basicMessage = null;
         }
 
@@ -139,7 +141,7 @@ public abstract class AbstractBasicMessageListener<T extends BasicMessage> imple
     }
 
     /**
-     * @return logger for subclasses to use
+     * @return logger for subclasses to use to log ad-hoc debug or trace messages
      */
     protected Logger getLog() {
         return this.log;

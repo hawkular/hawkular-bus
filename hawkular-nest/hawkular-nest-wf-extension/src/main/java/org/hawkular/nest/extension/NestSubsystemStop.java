@@ -18,7 +18,7 @@ class NestSubsystemStop implements OperationStepHandler {
 
     @Override
     public void execute(OperationContext opContext, ModelNode model) throws OperationFailedException {
-        log.info("Asked to stop the nest");
+        log.debug("Asked to stop the nest");
 
         NestService service = null;
 

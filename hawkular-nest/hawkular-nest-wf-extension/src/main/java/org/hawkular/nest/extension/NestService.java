@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.hawkular.bus.broker.extension.BrokerService;
 import org.hawkular.bus.common.ConnectionContextFactory;
+import org.hawkular.nest.extension.log.MsgLogger;
 import org.jboss.as.server.ServerEnvironment;
 import org.jboss.logging.Logger;
 import org.jboss.msc.service.Service;
@@ -20,7 +21,8 @@ public class NestService implements Service<NestService> {
     public static final ServiceName SERVICE_NAME = ServiceName.of("org.hawkular.nest").append(
             NestSubsystemExtension.SUBSYSTEM_NAME);
 
-    private final Logger log = Logger.getLogger(NestService.class);
+    private final MsgLogger msglog = Logger.getMessageLogger(MsgLogger.class, NestService.class.getPackage().getName());
+    private final Logger logx = Logger.getLogger(NestService.class);
 
     /**
      * Our subsystem add-step handler will inject this as a dependency for us. This service gives us information about
@@ -65,16 +67,16 @@ public class NestService implements Service<NestService> {
 
     @Override
     public void start(StartContext context) throws StartException {
-        log.info("Nest service starting");
+        msglog.infoNestStarting();
         startNest();
-        log.info("Nest service started");
+        msglog.infoNestStarted();
     }
 
     @Override
     public void stop(StopContext context) {
-        log.info("Nest service stopping");
+        msglog.infoNestStopping();
         stopNest();
-        log.info("Nest service stopped");
+        msglog.infoNestStopped();
     }
 
     public boolean isStarted() {
@@ -86,7 +88,7 @@ public class NestService implements Service<NestService> {
             return; // nothing to do, already started
         }
 
-        log.infof("Nest name=[%s]", getNestName());
+        msglog.infoNestName(getNestName());
 
         // we don't necessarily need the broker, but if it is not started, log that fact.
         BrokerService broker = this.brokerService.getValue();
@@ -97,7 +99,7 @@ public class NestService implements Service<NestService> {
                 throw new StartException("Cannot initialize messaging client", e);
             }
         } else {
-            log.info("Broker service is not started.");
+            msglog.infoBrokerServiceNotStarted();
         }
 
         this.started = true;
@@ -113,7 +115,7 @@ public class NestService implements Service<NestService> {
                 messagingConnectionContextFactory.close();
             }
         } catch (Exception e) {
-            log.error("Cannot close the messaging connection context factory", e);
+            msglog.errorCannotCloseMsgConnCtxFactory(e);
         }
 
         this.started = false;
@@ -147,7 +149,7 @@ public class NestService implements Service<NestService> {
 
     protected void setupMessaging(BrokerService broker) throws Exception {
         String brokerURL = "vm://" + broker.getBrokerName();
-        log.infof("There is a broker at [%s]", brokerURL);
+        msglog.infoBrokerExists(brokerURL);
         messagingConnectionContextFactory = new ConnectionContextFactory(brokerURL);
     }
 }

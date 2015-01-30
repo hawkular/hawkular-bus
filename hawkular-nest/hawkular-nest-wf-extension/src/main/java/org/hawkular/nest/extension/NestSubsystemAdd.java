@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.hawkular.bus.broker.extension.BrokerService;
+import org.hawkular.nest.extension.log.MsgLogger;
 import org.jboss.as.controller.AbstractAddStepHandler;
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationFailedException;
@@ -44,6 +45,8 @@ class NestSubsystemAdd extends AbstractAddStepHandler {
 
     static final NestSubsystemAdd INSTANCE = new NestSubsystemAdd();
 
+    private final MsgLogger msglog = Logger.getMessageLogger(MsgLogger.class, NestSubsystemAdd.class.getPackage()
+            .getName());
     private final Logger log = Logger.getLogger(NestSubsystemAdd.class);
 
     private NestSubsystemAdd() {
@@ -76,7 +79,7 @@ class NestSubsystemAdd extends AbstractAddStepHandler {
                             }
                         });
                         if (deployments != null) {
-                            log.infof("[%d] deployments found", deployments.length);
+                            msglog.infoDeploymentsFound(deployments.length);
                             int deploymentNumber = 1;
                             for (File deployment : deployments) {
                                 PathAddress deploymentAddress = PathAddress.pathAddress(PathElement.pathElement(
@@ -104,19 +107,16 @@ class NestSubsystemAdd extends AbstractAddStepHandler {
                                         deploymentAddress, ADD);
                                 context.addStep(op, handler, OperationContext.Stage.MODEL);
 
-                                log.infof("%d. Deploying [%s]", deploymentNumber++, deployment.getName());
+                                msglog.infoDeploying(deploymentNumber++, deployment.getName());
                             }
                         } else {
-                            log.errorf("Failed to get deployments from [%s] - nothing will be deployed",
-                                    NestSubsystemExtension.DEPLOYMENTS_DIR_NAME);
+                            msglog.errorFailedGettingDeployments(NestSubsystemExtension.DEPLOYMENTS_DIR_NAME);
                         }
                     } else {
-                        log.errorf("[%s] is not a directory - nothing will be deployed",
-                                NestSubsystemExtension.DEPLOYMENTS_DIR_NAME);
+                        msglog.errorBadDeploymentsDirectory(NestSubsystemExtension.DEPLOYMENTS_DIR_NAME);
                     }
                 } else {
-                    log.infof("Missing directory [%s] - nothing will be deployed",
-                            NestSubsystemExtension.DEPLOYMENTS_DIR_NAME);
+                    msglog.errorMissingDeploymentsDirectory(NestSubsystemExtension.DEPLOYMENTS_DIR_NAME);
                 }
             }
         } catch (Exception e) {
@@ -132,7 +132,7 @@ class NestSubsystemAdd extends AbstractAddStepHandler {
         NestSubsystemDefinition.AGENT_ENABLED_ATTRIBDEF.validateAndSet(operation, model);
         NestSubsystemDefinition.AGENT_NAME_ATTRIBDEF.validateAndSet(operation, model);
         NestSubsystemDefinition.CUSTOM_CONFIG_ATTRIBDEF.validateAndSet(operation, model);
-        log.debug("Populating the Agent subsystem model: " + operation + "=" + model);
+        log.debugf("Populating the Agent subsystem model: %s=%s", operation, model);
     }
 
     @Override
@@ -144,11 +144,11 @@ class NestSubsystemAdd extends AbstractAddStepHandler {
                 .asBoolean(NestSubsystemExtension.NEST_ENABLED_DEFAULT);
 
         if (!enabled) {
-            log.info("Nest is not enabled and will not be deployed");
+            msglog.infoNestNotEnabled();
             return;
         }
 
-        log.info("Nest is enabled and will be deployed");
+        msglog.infoNestEnabled();
 
         // set up our runtime custom configuration properties that should be used instead of the out-of-box config
         ModelNode node = NestSubsystemDefinition.AGENT_NAME_ATTRIBDEF.resolveModelAttribute(context, model);

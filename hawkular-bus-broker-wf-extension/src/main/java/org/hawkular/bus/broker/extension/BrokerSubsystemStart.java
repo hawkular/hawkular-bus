@@ -1,5 +1,6 @@
 package org.hawkular.bus.broker.extension;
 
+import org.hawkular.bus.broker.extension.log.MsgLogger;
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationFailedException;
 import org.jboss.as.controller.OperationStepHandler;
@@ -13,7 +14,8 @@ class BrokerSubsystemStart implements OperationStepHandler {
 
     static final BrokerSubsystemStart INSTANCE = new BrokerSubsystemStart();
 
-    private final Logger log = Logger.getLogger(BrokerSubsystemStart.class);
+    private final MsgLogger msglog = Logger.getMessageLogger(MsgLogger.class, BrokerSubsystemStart.class.getPackage()
+            .getName());
 
     private BrokerSubsystemStart() {
     }
@@ -26,7 +28,7 @@ class BrokerSubsystemStart implements OperationStepHandler {
 
             boolean restart = model.get(BrokerSubsystemDefinition.START_OP_PARAM_RESTART.getName()).asBoolean(false);
             if (restart) {
-                log.info("Asked to restart the broker. Will stop it, then restart it now.");
+                msglog.infoAskedToRestartBroker();
                 service.stopBroker();
             }
             service.startBroker();

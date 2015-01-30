@@ -3,6 +3,7 @@ package org.hawkular.bus.broker.extension;
 import java.io.File;
 import java.util.Map;
 
+import org.hawkular.bus.broker.extension.log.MsgLogger;
 import org.jboss.as.server.ServerEnvironment;
 import org.jboss.logging.Logger;
 import org.jboss.modules.Module;
@@ -10,7 +11,8 @@ import org.jboss.modules.Resource;
 import org.jboss.util.StringPropertyReplacer;
 
 public class BrokerConfigurationSetup {
-
+    private final MsgLogger msglog = Logger.getMessageLogger(MsgLogger.class, BrokerConfigurationSetup.class
+            .getPackage().getName());
     private final Logger log = Logger.getLogger(BrokerConfigurationSetup.class);
 
     /**
@@ -77,7 +79,7 @@ public class BrokerConfigurationSetup {
     private void prepareConfigurationProperty(Map<String, String> customConfigProps, String prop, String defaultValue) {
         String propValue = customConfigProps.get(prop);
         if (propValue == null || propValue.trim().length() == 0 || "-".equals(propValue)) {
-            log.debug("Broker configuration property [" + prop + "] was undefined; will default to [" + defaultValue + "]");
+            log.debugf("Broker configuration property [%s] was undefined; will default to [%s]", prop, defaultValue);
             customConfigProps.put(prop, defaultValue);
         }
         return;
@@ -116,7 +118,7 @@ public class BrokerConfigurationSetup {
             return r.getURL().toString();
         } catch (Throwable t) {
             // oh well, we tried - return the configFile as-is - we'll probably fail later because its probably missing
-            log.info("Cannot determine absolute path of config file [" + configFile + "]- does it exist? - " + t.toString());
+            msglog.warnCannotDetermineConfigFilePath(configFile, t.toString());
             return configFile;
         }
     }

@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hawkular.bus.broker.extension.log.MsgLogger;
 import org.jboss.as.controller.AbstractAddStepHandler;
 import org.jboss.as.controller.AttributeDefinition;
 import org.jboss.as.controller.OperationContext;
@@ -44,6 +45,8 @@ class BrokerSubsystemAdd extends AbstractAddStepHandler {
 
     static final BrokerSubsystemAdd INSTANCE = new BrokerSubsystemAdd();
 
+    private final MsgLogger msglog = Logger.getMessageLogger(MsgLogger.class, BrokerSubsystemAdd.class.getPackage()
+            .getName());
     private final Logger log = Logger.getLogger(BrokerSubsystemAdd.class);
 
     private BrokerSubsystemAdd() {
@@ -84,7 +87,7 @@ class BrokerSubsystemAdd extends AbstractAddStepHandler {
             }
         } catch (Exception e) {
             // log an error but keep going; this just means we lose our REST interface but the broker should still work
-            log.error("The REST WAR could not be deployed; REST interface to the broker is unavailable: " + e);
+            msglog.errorRestWarCouldNotBeDeployed(e.toString());
             log.debug("The REST WAR deployment exception stack is logged with this message", e);
         }
 
@@ -104,7 +107,7 @@ class BrokerSubsystemAdd extends AbstractAddStepHandler {
         BrokerSubsystemDefinition.CONNECTOR_PROTOCOL_ATTRIBDEF.validateAndSet(operation, model);
         BrokerSubsystemDefinition.SOCKET_BINDING_ATTRIBDEF.validateAndSet(operation, model);
         BrokerSubsystemDefinition.DISCOVERY_SOCKET_BINDING_ATTRIBDEF.validateAndSet(operation, model);
-        log.debug("Populating the Broker subsystem model: " + operation + "=" + model);
+        log.debugf("Populating the Broker subsystem model: [%s=%s]", operation, model);
     }
 
     @Override
@@ -116,7 +119,7 @@ class BrokerSubsystemAdd extends AbstractAddStepHandler {
                 BrokerSubsystemExtension.BROKER_ENABLED_DEFAULT);
 
         if (!enabled) {
-            log.info("Broker is not enabled and will not be deployed");
+            msglog.infoBrokerNotEnabled();
             return;
         }
 
@@ -125,7 +128,7 @@ class BrokerSubsystemAdd extends AbstractAddStepHandler {
             configFile = BrokerSubsystemExtension.BROKER_CONFIG_FILE_DEFAULT;
         }
 
-        log.info("Broker is enabled and will be deployed using config file [" + configFile + "]");
+        msglog.infoBrokerEnabledWithConfigFile(configFile);
 
         // set up our runtime custom configuration properties that should be used instead of the out-of-box config
         Map<String, String> customConfigProps = new HashMap<String, String>();

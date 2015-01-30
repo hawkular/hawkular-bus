@@ -1,3 +1,15 @@
+/*
+ * Copyright 2014-2015 Red Hat, Inc. and/or its affiliates and other contributors as indicated by the @author tags.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package org.hawkular.bus.broker.extension;
 
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.ADD;
@@ -10,6 +22,7 @@ import java.util.List;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 
+import org.hawkular.bus.broker.extension.log.MsgLogger;
 import org.jboss.as.controller.Extension;
 import org.jboss.as.controller.ExtensionContext;
 import org.jboss.as.controller.PathAddress;
@@ -32,6 +45,8 @@ import org.jboss.staxmapper.XMLExtendedStreamWriter;
 
 public class BrokerSubsystemExtension implements Extension {
 
+    private final MsgLogger msglog = Logger.getMessageLogger(MsgLogger.class, BrokerSubsystemExtension.class
+            .getPackage().getName());
     private final Logger log = Logger.getLogger(BrokerSubsystemExtension.class);
 
     public static final String NAMESPACE = "urn:org.hawkular.bus:broker:1.0";
@@ -106,7 +121,7 @@ public class BrokerSubsystemExtension implements Extension {
 
     @Override
     public void initialize(ExtensionContext context) {
-        log.info("Initializing broker subsystem");
+        msglog.infoInitializingBrokerSubsystem();
 
         final SubsystemRegistration subsystem = context.registerSubsystem(SUBSYSTEM_NAME, 1, 0);
         final ManagementResourceRegistration registration = subsystem.registerSubsystemModel(BrokerSubsystemDefinition.INSTANCE);

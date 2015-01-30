@@ -10,6 +10,7 @@ import java.util.List;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 
+import org.hawkular.nest.extension.log.MsgLogger;
 import org.jboss.as.controller.Extension;
 import org.jboss.as.controller.ExtensionContext;
 import org.jboss.as.controller.PathAddress;
@@ -32,6 +33,8 @@ import org.jboss.staxmapper.XMLExtendedStreamWriter;
 
 public class NestSubsystemExtension implements Extension {
 
+    private final MsgLogger msglog = Logger.getMessageLogger(MsgLogger.class, NestSubsystemExtension.class.getPackage()
+            .getName());
     private final Logger log = Logger.getLogger(NestSubsystemExtension.class);
 
     public static final String NAMESPACE = "urn:org.hawkular.nest:nest:1.0";
@@ -73,7 +76,7 @@ public class NestSubsystemExtension implements Extension {
 
     @Override
     public void initialize(ExtensionContext context) {
-		log.info("Initializing agent subsystem");
+        msglog.infoInitializingNestSubsystem();
 
         final SubsystemRegistration subsystem = context.registerSubsystem(SUBSYSTEM_NAME, 1, 0);
         final ManagementResourceRegistration registration = subsystem.registerSubsystemModel(NestSubsystemDefinition.INSTANCE);

@@ -10,6 +10,7 @@ import javax.jms.Session;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.hawkular.bus.common.consumer.ConsumerConnectionContext;
+import org.hawkular.bus.common.log.MsgLogger;
 import org.hawkular.bus.common.producer.ProducerConnectionContext;
 import org.jboss.logging.Logger;
 
@@ -28,6 +29,8 @@ import org.jboss.logging.Logger;
  */
 public class ConnectionContextFactory {
 
+    private final MsgLogger msglog = Logger.getMessageLogger(MsgLogger.class, ConnectionContextFactory.class
+            .getPackage().getName());
     private final Logger log = Logger.getLogger(ConnectionContextFactory.class);
     protected final ConnectionFactory connectionFactory;
     private Connection connection;
@@ -180,7 +183,7 @@ public class ConnectionContextFactory {
                 // make sure it is closed to free up any resources it was using
                 this.connection.close();
             } catch (JMSException e) {
-                log.error("Cannot close the previous connection; memory might leak.", e);
+                msglog.errorCannotCloseConnectionMemoryMightLeak(e);
             }
         }
         this.connection = connection;
@@ -220,7 +223,7 @@ public class ConnectionContextFactory {
             try {
                 conn.start();
             } catch (JMSException e) {
-                log.error("Failed to start connection", e);
+                msglog.errorFailedToStartConnection(e);
                 setConnection(null);
                 throw e;
             }

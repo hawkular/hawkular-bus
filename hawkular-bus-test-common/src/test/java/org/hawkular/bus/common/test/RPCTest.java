@@ -95,7 +95,7 @@ public class RPCTest {
 
             // use the future.get(timeout) method and make sure it returns the same
             try {
-                receivedSpecificMessage = future.get(1, TimeUnit.SECONDS);
+                receivedSpecificMessage = future.get(30, TimeUnit.SECONDS);
             } catch (Exception e) {
                 assert false : "Future failed to obtain response message: " + e;
             }
@@ -149,7 +149,7 @@ public class RPCTest {
             // wait for the message to flow
             SpecificMessage receivedSpecificMessage = null;
             try {
-                receivedSpecificMessage = futureCallback.getResult(10, TimeUnit.SECONDS);
+                receivedSpecificMessage = futureCallback.getResult(30, TimeUnit.SECONDS);
             } catch (Throwable t) {
                 assert false : "Future failed to obtain response message: " + t;
             }
@@ -164,7 +164,7 @@ public class RPCTest {
 
             // use the future.get(timeout) method and make sure it returns the same
             try {
-                receivedSpecificMessage = future.get(1, TimeUnit.SECONDS);
+                receivedSpecificMessage = future.get(30, TimeUnit.SECONDS);
             } catch (Exception e) {
                 assert false : "Future failed to obtain response message: " + e;
             }
@@ -218,7 +218,7 @@ public class RPCTest {
             clientSideProcessor.sendAndListen(producerContext, specificMessage, responseListener);
 
             // wait for the message to flow
-            boolean gotMessage = latch.await(5, TimeUnit.SECONDS);
+            boolean gotMessage = latch.await(30, TimeUnit.SECONDS);
             if (!gotMessage) {
                 errors.add("Timed out waiting for response message - it never showed up");
             }
@@ -346,7 +346,7 @@ public class RPCTest {
 
             // try to get the message using get(timeout) method
             try {
-                future.get(1, TimeUnit.SECONDS);
+                future.get(30, TimeUnit.SECONDS);
             } catch (CancellationException expected) {
                 // expected
             } catch (Exception e) {
@@ -364,7 +364,7 @@ public class RPCTest {
 
             // try to get the message using the future callback
             try {
-                futureCallback.getResult(1, TimeUnit.SECONDS);
+                futureCallback.getResult(30, TimeUnit.SECONDS);
             } catch (CancellationException expected) {
                 // expected
             } catch (Throwable t) {

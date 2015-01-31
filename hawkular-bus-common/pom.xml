@@ -69,38 +69,6 @@
       <artifactId>junit</artifactId>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.bsc.maven</groupId>
-        <artifactId>maven-processor-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>process</id>
-            <goals>
-              <goal>process</goal>
-            </goals>
-            <phase>generate-sources</phase>
-            <configuration>
-              <processors>
-                <processor>org.jboss.logging.processor.apt.LoggingToolsProcessor</processor>
-              </processors>
-            </configuration>
-          </execution>
-        </executions>
-        <dependencies>
-          <dependency>
-            <groupId>org.jboss.logging</groupId>
-            <artifactId>jboss-logging-processor</artifactId>
-            <version>${version.org.jboss.logging-jboss-logging-processor}</version>
-            <scope>compile</scope>
-          </dependency>
-        </dependencies>
-      </plugin>
-    </plugins>
-  </build>
 
 </project>

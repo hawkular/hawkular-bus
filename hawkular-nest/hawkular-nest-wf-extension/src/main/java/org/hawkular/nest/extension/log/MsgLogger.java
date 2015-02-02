@@ -16,6 +16,7 @@
  */
 package org.hawkular.nest.extension.log;
 
+import org.jboss.logging.Logger;
 import org.jboss.logging.Logger.Level;
 import org.jboss.logging.annotations.Cause;
 import org.jboss.logging.annotations.LogMessage;
@@ -26,71 +27,73 @@ import org.jboss.logging.annotations.ValidIdRange;
 /**
  * @author John Mazzitelli
  */
-@MessageLogger(projectCode = "HAWK")
-@ValidIdRange(min = 103000, max = 103999)
+@MessageLogger(projectCode = "HAWKBUS")
+@ValidIdRange(min = 130000, max = 139999)
 public interface MsgLogger {
+    MsgLogger LOGGER = Logger.getMessageLogger(MsgLogger.class, MsgLogger.class.getPackage().getName());
+
     @LogMessage(level = Level.INFO)
-    @Message(id = 103000, value = "Nest service starting")
+    @Message(id = 130000, value = "Nest service starting")
     void infoNestStarting();
 
     @LogMessage(level = Level.INFO)
-    @Message(id = 103001, value = "Nest service started")
+    @Message(id = 130001, value = "Nest service started")
     void infoNestStarted();
 
     @LogMessage(level = Level.INFO)
-    @Message(id = 103002, value = "Nest service stopping")
+    @Message(id = 130002, value = "Nest service stopping")
     void infoNestStopping();
 
     @LogMessage(level = Level.INFO)
-    @Message(id = 103003, value = "Nest service stopped")
+    @Message(id = 130003, value = "Nest service stopped")
     void infoNestStopped();
 
     @LogMessage(level = Level.INFO)
-    @Message(id = 103004, value = "Nest name=[%s]")
+    @Message(id = 130004, value = "Nest name=[%s]")
     void infoNestName(String name);
 
     @LogMessage(level = Level.INFO)
-    @Message(id = 103005, value = "Broker service is not started")
+    @Message(id = 130005, value = "Broker service is not started")
     void infoBrokerServiceNotStarted();
 
     @LogMessage(level = Level.ERROR)
-    @Message(id = 103006, value = "Cannot close the messaging connection context factory")
+    @Message(id = 130006, value = "Cannot close the messaging connection context factory")
     void errorCannotCloseMsgConnCtxFactory(@Cause Throwable t);
 
     @LogMessage(level = Level.INFO)
-    @Message(id = 103007, value = "There is a broker at [%s]")
+    @Message(id = 130007, value = "There is a broker at [%s]")
     void infoBrokerExists(String brokerUrl);
 
     @LogMessage(level = Level.INFO)
-    @Message(id = 103008, value = "[%d] deployments found")
+    @Message(id = 130008, value = "[%d] deployments found")
     void infoDeploymentsFound(int deploymentsCount);
 
     @LogMessage(level = Level.INFO)
-    @Message(id = 103009, value = "%d. Deploying [%s]")
+    @Message(id = 130009, value = "%d. Deploying [%s]")
     void infoDeploying(int deploymentNumber, String deploymentName);
 
     @LogMessage(level = Level.ERROR)
-    @Message(id = 103010, value = "Failed to get deployments from [%s] - nothing will be deployed")
+    @Message(id = 130010, value = "Failed to get deployments from [%s] - nothing will be deployed")
     void errorFailedGettingDeployments(String deploymentsLocation);
 
     @LogMessage(level = Level.ERROR)
-    @Message(id = 103011, value = "[%s] is not a directory - nothing will be deployed")
+    @Message(id = 130011, value = "[%s] is not a directory - nothing will be deployed")
     void errorBadDeploymentsDirectory(String deploymentsLocation);
 
     @LogMessage(level = Level.ERROR)
-    @Message(id = 103012, value = "Missing directory [%s] - nothing will be deployed")
+    @Message(id = 130012, value = "Missing directory [%s] - nothing will be deployed")
     void errorMissingDeploymentsDirectory(String deploymentsLocation);
 
     @LogMessage(level = Level.INFO)
-    @Message(id = 103013, value = "Nest is not enabled and will not be deployed")
+    @Message(id = 130013, value = "Nest is not enabled and will not be deployed")
     void infoNestNotEnabled();
 
     @LogMessage(level = Level.INFO)
-    @Message(id = 103014, value = "Nest is enabled and will be deployed")
+    @Message(id = 130014, value = "Nest is enabled and will be deployed")
     void infoNestEnabled();
 
     @LogMessage(level = Level.INFO)
-    @Message(id = 103015, value = "Initializing Nest subsystem")
+    @Message(id = 130015, value = "Initializing Nest subsystem")
     void infoInitializingNestSubsystem();
 
 }

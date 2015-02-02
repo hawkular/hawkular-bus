@@ -21,15 +21,13 @@ import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationFailedException;
 import org.jboss.as.controller.OperationStepHandler;
 import org.jboss.dmr.ModelNode;
-import org.jboss.logging.Logger;
 import org.jboss.msc.service.ServiceName;
 
 class BrokerSubsystemStop implements OperationStepHandler {
 
     static final BrokerSubsystemStop INSTANCE = new BrokerSubsystemStop();
 
-    private final MsgLogger msglog = Logger.getMessageLogger(MsgLogger.class, BrokerSubsystemStop.class.getPackage()
-            .getName());
+    private final MsgLogger msglog = MsgLogger.LOGGER;
 
     private BrokerSubsystemStop() {
     }

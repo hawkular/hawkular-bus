@@ -27,8 +27,7 @@ import org.jboss.modules.Resource;
 import org.jboss.util.StringPropertyReplacer;
 
 public class BrokerConfigurationSetup {
-    private final MsgLogger msglog = Logger.getMessageLogger(MsgLogger.class, BrokerConfigurationSetup.class
-            .getPackage().getName());
+    private final MsgLogger msglog = MsgLogger.LOGGER;
     private final Logger log = Logger.getLogger(BrokerConfigurationSetup.class);
 
     /**

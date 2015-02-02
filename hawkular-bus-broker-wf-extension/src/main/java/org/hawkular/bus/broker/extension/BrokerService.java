@@ -39,8 +39,7 @@ public class BrokerService implements Service<BrokerService> {
     public static final ServiceName SERVICE_NAME = ServiceName.of("org.hawkular.bus").append(
             BrokerSubsystemExtension.SUBSYSTEM_NAME);
 
-    private final MsgLogger msglog = Logger.getMessageLogger(MsgLogger.class, BrokerService.class.getPackage()
-            .getName());
+    private final MsgLogger msglog = MsgLogger.LOGGER;
     private final Logger log = Logger.getLogger(BrokerService.class);
 
     /**

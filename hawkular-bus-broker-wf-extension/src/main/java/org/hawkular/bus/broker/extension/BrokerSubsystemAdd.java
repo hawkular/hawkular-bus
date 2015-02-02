@@ -61,8 +61,7 @@ class BrokerSubsystemAdd extends AbstractAddStepHandler {
 
     static final BrokerSubsystemAdd INSTANCE = new BrokerSubsystemAdd();
 
-    private final MsgLogger msglog = Logger.getMessageLogger(MsgLogger.class, BrokerSubsystemAdd.class.getPackage()
-            .getName());
+    private final MsgLogger msglog = MsgLogger.LOGGER;
     private final Logger log = Logger.getLogger(BrokerSubsystemAdd.class);
 
     private BrokerSubsystemAdd() {

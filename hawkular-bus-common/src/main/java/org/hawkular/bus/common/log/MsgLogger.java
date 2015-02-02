@@ -16,6 +16,7 @@
  */
 package org.hawkular.bus.common.log;
 
+import org.jboss.logging.Logger;
 import org.jboss.logging.Logger.Level;
 import org.jboss.logging.annotations.Cause;
 import org.jboss.logging.annotations.LogMessage;
@@ -26,9 +27,11 @@ import org.jboss.logging.annotations.ValidIdRange;
 /**
  * @author John Mazzitelli
  */
-@MessageLogger(projectCode = "HAWK")
-@ValidIdRange(min = 100000, max = 100999)
+@MessageLogger(projectCode = "HAWKBUS")
+@ValidIdRange(min = 100000, max = 109999)
 public interface MsgLogger {
+    MsgLogger LOGGER = Logger.getMessageLogger(MsgLogger.class, MsgLogger.class.getPackage().getName());
+
     @LogMessage(level = Level.ERROR)
     @Message(id = 100000, value = "A message was received that was not a valid text message")
     void errorNotValidTextMessage(@Cause Throwable cause);

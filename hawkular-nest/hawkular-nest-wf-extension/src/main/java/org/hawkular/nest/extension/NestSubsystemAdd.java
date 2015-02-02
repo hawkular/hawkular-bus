@@ -61,8 +61,7 @@ class NestSubsystemAdd extends AbstractAddStepHandler {
 
     static final NestSubsystemAdd INSTANCE = new NestSubsystemAdd();
 
-    private final MsgLogger msglog = Logger.getMessageLogger(MsgLogger.class, NestSubsystemAdd.class.getPackage()
-            .getName());
+    private final MsgLogger msglog = MsgLogger.LOGGER;
     private final Logger log = Logger.getLogger(NestSubsystemAdd.class);
 
     private NestSubsystemAdd() {

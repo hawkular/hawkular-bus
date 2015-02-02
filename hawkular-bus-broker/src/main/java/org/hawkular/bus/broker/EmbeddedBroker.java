@@ -36,8 +36,7 @@ import org.jboss.logging.Logger;
  * You can subclass this to provide additional functionality around configuration and management of the broker.
  */
 public class EmbeddedBroker {
-    private final MsgLogger msglog = Logger.getMessageLogger(MsgLogger.class, EmbeddedBroker.class.getPackage()
-            .getName());
+    private final MsgLogger msglog = MsgLogger.LOGGER;
     private final Logger log = Logger.getLogger(EmbeddedBroker.class);
     private InitializationParameters initialParameters;
     private BrokerService brokerService;

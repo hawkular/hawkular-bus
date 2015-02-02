@@ -16,6 +16,7 @@
  */
 package org.hawkular.bus.broker.log;
 
+import org.jboss.logging.Logger;
 import org.jboss.logging.Logger.Level;
 import org.jboss.logging.annotations.LogMessage;
 import org.jboss.logging.annotations.Message;
@@ -25,30 +26,32 @@ import org.jboss.logging.annotations.ValidIdRange;
 /**
  * @author John Mazzitelli
  */
-@MessageLogger(projectCode = "HAWK")
-@ValidIdRange(min = 102000, max = 102999)
+@MessageLogger(projectCode = "HAWKBUS")
+@ValidIdRange(min = 120000, max = 129999)
 public interface MsgLogger {
+    MsgLogger LOGGER = Logger.getMessageLogger(MsgLogger.class, MsgLogger.class.getPackage().getName());
+
     @LogMessage(level = Level.INFO)
-    @Message(id = 102000, value = "Attempting to start the broker")
+    @Message(id = 120000, value = "Attempting to start the broker")
     void infoStartingBroker();
 
     @LogMessage(level = Level.INFO)
-    @Message(id = 102001, value = "Started broker")
+    @Message(id = 120001, value = "Started broker")
     void infoStartedBroker();
 
     @LogMessage(level = Level.INFO)
-    @Message(id = 102002, value = "Attempting to stop the broker")
+    @Message(id = 120002, value = "Attempting to stop the broker")
     void infoStoppingBroker();
 
     @LogMessage(level = Level.INFO)
-    @Message(id = 102003, value = "Stopped broker")
+    @Message(id = 120003, value = "Stopped broker")
     void infoStoppedBroker();
 
     @LogMessage(level = Level.INFO)
-    @Message(id = 102004, value = "Initialized broker")
+    @Message(id = 120004, value = "Initialized broker")
     void infoInitializedBroker();
 
     @LogMessage(level = Level.INFO)
-    @Message(id = 102005, value = "%s")
+    @Message(id = 120005, value = "%s")
     void infoUsage(String usageString);
 }

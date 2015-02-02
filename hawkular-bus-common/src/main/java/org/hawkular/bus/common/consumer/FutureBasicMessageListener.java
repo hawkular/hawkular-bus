@@ -29,7 +29,6 @@ import javax.jms.MessageConsumer;
 
 import org.hawkular.bus.common.BasicMessage;
 import org.hawkular.bus.common.log.MsgLogger;
-import org.jboss.logging.Logger;
 
 import com.google.common.util.concurrent.ExecutionList;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -52,8 +51,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 public class FutureBasicMessageListener<T extends BasicMessage> extends BasicMessageListener<T> implements
         ListenableFuture<T> {
 
-    private final MsgLogger msglog = Logger.getMessageLogger(MsgLogger.class, FutureBasicMessageListener.class
-            .getPackage().getName());
+    private final MsgLogger msglog = MsgLogger.LOGGER;
 
     private static enum State {
         WAITING, DONE, CANCELLED

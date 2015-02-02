@@ -37,8 +37,7 @@ public class NestService implements Service<NestService> {
     public static final ServiceName SERVICE_NAME = ServiceName.of("org.hawkular.nest").append(
             NestSubsystemExtension.SUBSYSTEM_NAME);
 
-    private final MsgLogger msglog = Logger
-            .getMessageLogger(MsgLogger.class, NestService.class.getPackage().getName());
+    private final MsgLogger msglog = MsgLogger.LOGGER;
     private final Logger log = Logger.getLogger(NestService.class);
 
     /**

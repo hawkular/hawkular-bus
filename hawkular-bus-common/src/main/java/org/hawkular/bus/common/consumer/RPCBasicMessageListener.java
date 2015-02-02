@@ -24,7 +24,6 @@ import org.hawkular.bus.common.BasicMessage;
 import org.hawkular.bus.common.MessageProcessor;
 import org.hawkular.bus.common.log.MsgLogger;
 import org.hawkular.bus.common.producer.ProducerConnectionContext;
-import org.jboss.logging.Logger;
 
 /**
  * A listener that processes an incoming request that will require a response sent back to the sender of the request.
@@ -37,8 +36,7 @@ import org.jboss.logging.Logger;
 public abstract class RPCBasicMessageListener<T extends BasicMessage, U extends BasicMessage> extends
         AbstractBasicMessageListener<T> {
 
-    private final MsgLogger msglog = Logger.getMessageLogger(MsgLogger.class, RPCBasicMessageListener.class
-            .getPackage().getName());
+    private final MsgLogger msglog = MsgLogger.LOGGER;
 
     // this will be used to send our reply
     private MessageProcessor messageSender;

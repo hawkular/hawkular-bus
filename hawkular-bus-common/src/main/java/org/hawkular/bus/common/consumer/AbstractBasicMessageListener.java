@@ -41,7 +41,7 @@ import org.jboss.logging.Logger;
  */
 
 public abstract class AbstractBasicMessageListener<T extends BasicMessage> implements MessageListener {
-    private final MsgLogger msglog = Logger.getMessageLogger(MsgLogger.class, this.getClass().getPackage().getName());
+    private final MsgLogger msglog = MsgLogger.LOGGER;
     private final Logger log = Logger.getLogger(this.getClass());
 
     private ConsumerConnectionContext consumerConnectionContext;

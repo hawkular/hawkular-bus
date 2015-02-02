@@ -16,6 +16,7 @@
  */
 package org.hawkular.bus.broker.extension.log;
 
+import org.jboss.logging.Logger;
 import org.jboss.logging.Logger.Level;
 import org.jboss.logging.annotations.Cause;
 import org.jboss.logging.annotations.LogMessage;
@@ -26,86 +27,88 @@ import org.jboss.logging.annotations.ValidIdRange;
 /**
  * @author John Mazzitelli
  */
-@MessageLogger(projectCode = "HAWK")
-@ValidIdRange(min = 101000, max = 101999)
+@MessageLogger(projectCode = "HAWKBUS")
+@ValidIdRange(min = 110000, max = 119999)
 public interface MsgLogger {
+    MsgLogger LOGGER = Logger.getMessageLogger(MsgLogger.class, MsgLogger.class.getPackage().getName());
+
     @LogMessage(level = Level.WARN)
-    @Message(id = 101000, value = "Cannot determine absolute path of config file [%s]. Does it exist? - %s")
+    @Message(id = 110000, value = "Cannot determine absolute path of config file [%s]. Does it exist? - %s")
     void warnCannotDetermineConfigFilePath(String configFile, String causeString);
 
     @LogMessage(level = Level.INFO)
-    @Message(id = 101001, value = "Broker Service Starting")
+    @Message(id = 110001, value = "Broker Service Starting")
     void infoBrokerServiceStarting();
 
     @LogMessage(level = Level.INFO)
-    @Message(id = 101002, value = "Broker Service Started")
+    @Message(id = 110002, value = "Broker Service Started")
     void infoBrokerServiceStarted();
 
     @LogMessage(level = Level.INFO)
-    @Message(id = 101003, value = "Broker Service Stopping")
+    @Message(id = 110003, value = "Broker Service Stopping")
     void infoBrokerServiceStopping();
 
     @LogMessage(level = Level.INFO)
-    @Message(id = 101004, value = "Broker Service Stopped")
+    @Message(id = 110004, value = "Broker Service Stopped")
     void infoBrokerServiceStopped();
 
     @LogMessage(level = Level.INFO)
-    @Message(id = 101005, value = "Broker is already started")
+    @Message(id = 110005, value = "Broker is already started")
     void infoBrokerAlreadyStarted();
 
     @LogMessage(level = Level.INFO)
-    @Message(id = 101006, value = "Starting the broker now")
+    @Message(id = 110006, value = "Starting the broker now")
     void infoStartingBrokerNow();
 
     @LogMessage(level = Level.INFO)
-    @Message(id = 101007, value = "Broker told to bind socket to [%s:%s]")
+    @Message(id = 110007, value = "Broker told to bind socket to [%s:%s]")
     void infoBrokerBindingToSocket(String connectorAddress, String connectorPort);
 
     @LogMessage(level = Level.INFO)
-    @Message(id = 101008, value = "Broker told to discover other brokers via [%s:%s]")
+    @Message(id = 110008, value = "Broker told to discover other brokers via [%s:%s]")
     void infoBrokerDiscoveryEndpoint(String discoveryAddress, String discoveryPort);
 
     @LogMessage(level = Level.INFO)
-    @Message(id = 101009, value = "Broker told to use configuration file [%s]")
+    @Message(id = 110009, value = "Broker told to use configuration file [%s]")
     void infoBrokerConfigurationFile(String configFile);
 
     @LogMessage(level = Level.ERROR)
-    @Message(id = 101010, value = "Broker aborted with exception.")
+    @Message(id = 110010, value = "Broker aborted with exception.")
     void errorBrokerAborted(@Cause Throwable t);
 
     @LogMessage(level = Level.INFO)
-    @Message(id = 101011, value = "Broker is already stopped.")
+    @Message(id = 110011, value = "Broker is already stopped.")
     void infoBrokerAlreadyStopped();
 
     @LogMessage(level = Level.INFO)
-    @Message(id = 101012, value = "Stopping the broker now")
+    @Message(id = 110012, value = "Stopping the broker now")
     void infoStoppingBrokerNow();
 
     @LogMessage(level = Level.ERROR)
-    @Message(id = 101013, value = "Failed to shutdown broker")
+    @Message(id = 110013, value = "Failed to shutdown broker")
     void errorFailedToShutdownBroker(@Cause Throwable t);
 
     @LogMessage(level = Level.ERROR)
-    @Message(id = 101014, value = "The REST WAR could not be deployed; REST interface to the broker is unavailable: %s")
+    @Message(id = 110014, value = "The REST WAR could not be deployed; REST interface to the broker is unavailable: %s")
     void errorRestWarCouldNotBeDeployed(String causeString);
 
     @LogMessage(level = Level.INFO)
-    @Message(id = 101015, value = "Broker is not enabled and will not be deployed")
+    @Message(id = 110015, value = "Broker is not enabled and will not be deployed")
     void infoBrokerNotEnabled();
 
     @LogMessage(level = Level.INFO)
-    @Message(id = 101016, value = "Broker is enabled and will be deployed using config file [%s]")
+    @Message(id = 110016, value = "Broker is enabled and will be deployed using config file [%s]")
     void infoBrokerEnabledWithConfigFile(String configFile);
 
     @LogMessage(level = Level.INFO)
-    @Message(id = 101017, value = "Initializing broker subsystem")
+    @Message(id = 110017, value = "Initializing broker subsystem")
     void infoInitializingBrokerSubsystem();
 
     @LogMessage(level = Level.INFO)
-    @Message(id = 101018, value = "Asked to restart the broker. Will stop it, then restart it now.")
+    @Message(id = 110018, value = "Asked to restart the broker. Will stop it, then restart it now.")
     void infoAskedToRestartBroker();
 
     @LogMessage(level = Level.INFO)
-    @Message(id = 101019, value = "Asked to stop the broker.")
+    @Message(id = 110019, value = "Asked to stop the broker.")
     void infoAskedToStopBroker();
 }

@@ -17,7 +17,6 @@
 package org.hawkular.bus.common;
 
 import org.hawkular.bus.common.log.MsgLogger;
-import org.jboss.logging.Logger;
 import org.junit.Test;
 
 /**
@@ -27,7 +26,7 @@ public class LoggingTest {
 
     @Test
     public void test() {
-        MsgLogger log = Logger.getMessageLogger(MsgLogger.class, this.getClass().getPackage().getName());
+        MsgLogger log = MsgLogger.LOGGER;
         log.errorNotValidTextMessage(new Throwable("TESTING!"));
     }
 }

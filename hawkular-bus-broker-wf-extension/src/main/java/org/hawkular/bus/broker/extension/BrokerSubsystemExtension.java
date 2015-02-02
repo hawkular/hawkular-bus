@@ -49,8 +49,7 @@ import org.jboss.staxmapper.XMLExtendedStreamWriter;
 
 public class BrokerSubsystemExtension implements Extension {
 
-    private final MsgLogger msglog = Logger.getMessageLogger(MsgLogger.class, BrokerSubsystemExtension.class
-            .getPackage().getName());
+    private final MsgLogger msglog = MsgLogger.LOGGER;
     private final Logger log = Logger.getLogger(BrokerSubsystemExtension.class);
 
     public static final String NAMESPACE = "urn:org.hawkular.bus:broker:1.0";

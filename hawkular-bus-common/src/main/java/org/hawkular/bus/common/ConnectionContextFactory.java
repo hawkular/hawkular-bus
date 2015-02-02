@@ -45,8 +45,7 @@ import org.jboss.logging.Logger;
  */
 public class ConnectionContextFactory {
 
-    private final MsgLogger msglog = Logger.getMessageLogger(MsgLogger.class, ConnectionContextFactory.class
-            .getPackage().getName());
+    private final MsgLogger msglog = MsgLogger.LOGGER;
     private final Logger log = Logger.getLogger(ConnectionContextFactory.class);
     protected final ConnectionFactory connectionFactory;
     private Connection connection;

@@ -49,9 +49,7 @@ import org.jboss.staxmapper.XMLExtendedStreamWriter;
 
 public class NestSubsystemExtension implements Extension {
 
-    private final MsgLogger msglog = Logger.getMessageLogger(MsgLogger.class, NestSubsystemExtension.class
-            .getPackage()
-            .getName());
+    private final MsgLogger msglog = MsgLogger.LOGGER;
     private final Logger log = Logger.getLogger(NestSubsystemExtension.class);
 
     public static final String NAMESPACE = "urn:org.hawkular.nest:nest:1.0";

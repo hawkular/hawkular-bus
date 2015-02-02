@@ -21,7 +21,6 @@ import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationFailedException;
 import org.jboss.as.controller.OperationStepHandler;
 import org.jboss.dmr.ModelNode;
-import org.jboss.logging.Logger;
 import org.jboss.msc.service.ServiceName;
 import org.jboss.msc.service.ServiceNotFoundException;
 import org.jboss.msc.service.StartException;
@@ -30,8 +29,7 @@ class BrokerSubsystemStart implements OperationStepHandler {
 
     static final BrokerSubsystemStart INSTANCE = new BrokerSubsystemStart();
 
-    private final MsgLogger msglog = Logger.getMessageLogger(MsgLogger.class, BrokerSubsystemStart.class.getPackage()
-            .getName());
+    private final MsgLogger msglog = MsgLogger.LOGGER;
 
     private BrokerSubsystemStart() {
     }

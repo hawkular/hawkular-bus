@@ -116,6 +116,7 @@ public class FutureBasicMessageListener<T extends BasicMessage> extends BasicMes
         // From there on out we never take from the blocking Q.
         if (responseMessage == null) {
             responseMessage = responseQ.take();
+            state = State.DONE; // since we have a response, set state to DONE to ensure our caller knows our state
         }
         return responseMessage;
     }
@@ -134,6 +135,7 @@ public class FutureBasicMessageListener<T extends BasicMessage> extends BasicMes
                 throw new TimeoutException();
             }
             responseMessage = item;
+            state = State.DONE; // since we have a response, set state to DONE to ensure our caller knows our state
         }
 
         return responseMessage;
@@ -148,8 +150,8 @@ public class FutureBasicMessageListener<T extends BasicMessage> extends BasicMes
     protected void onBasicMessage(T basicMessage) {
         // if we already got a message or were cancelled, ignore any additional messages we might receive
         if (!isDone()) {
+            state = State.DONE;
             if (responseQ.offer(basicMessage)) {
-                state = State.DONE;
                 executionList.execute();
             } else {
                 msglog.errorCannotStoreIncomingMessageFutureInvalid();

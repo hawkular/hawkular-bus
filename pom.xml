@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.hawkular</groupId>
     <artifactId>hawkular-parent</artifactId>
-    <version>2</version>
+    <version>3</version>
   </parent>
 
   <groupId>org.hawkular.bus</groupId>
@@ -60,21 +60,9 @@
   </modules>
 
   <properties>
-
-    <!-- maven-compiler-plugin -->
+    <!-- TODO: for now, since Eclipse M2E v1.4 doesn't like using "1.8" -->
     <maven.compiler.source>1.7</maven.compiler.source>
     <maven.compiler.target>1.7</maven.compiler.target>
-
-    <!-- MAVEN VERSIONS -->
-
-    <plugin.version.org.bsc.maven-maven-processor-plugin>2.0.2</plugin.version.org.bsc.maven-maven-processor-plugin>
-    <plugin.version.wildfly-extension-maven-plugin>0.4.1-SNAPSHOT</plugin.version.wildfly-extension-maven-plugin>
-
-    <!-- DEPENDENCY VERSIONS -->
-
-    <version.org.jboss.logging-jboss-logging-annotations>1.2.0.Final</version.org.jboss.logging-jboss-logging-annotations>
-    <version.org.jboss.logging-jboss-logging-processor>1.2.0.Final</version.org.jboss.logging-jboss-logging-processor>
-
   </properties>
 
   <dependencyManagement>
@@ -103,12 +91,6 @@
         <version>${version.gnu.getopt}</version>
       </dependency>
 
-      <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>${version.junit}</version>
-      </dependency>
-
       <!-- ActiveMQ BOM -->
       <dependency>
         <groupId>org.apache.activemq</groupId>
@@ -123,13 +105,6 @@
         <artifactId>activemq-rar</artifactId>
         <version>${version.org.apache.activemq}</version>
         <type>rar</type>
-      </dependency>
-
-      <dependency>
-        <groupId>org.jboss.logging</groupId>
-        <artifactId>jboss-logging-annotations</artifactId>
-        <version>${version.org.jboss.logging-jboss-logging-annotations}</version>
-        <scope>provided</scope>
       </dependency>
 
       <dependency>
@@ -170,22 +145,6 @@
   </dependencyManagement>
 
   <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.bsc.maven</groupId>
-          <artifactId>maven-processor-plugin</artifactId>
-          <version>${plugin.version.org.bsc.maven-maven-processor-plugin}</version>
-        </plugin>
-
-        <plugin>
-          <groupId>org.jboss.plugins</groupId>
-          <artifactId>wildfly-extension-maven-plugin</artifactId>
-          <version>${plugin.version.wildfly-extension-maven-plugin}</version>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-
     <!-- needed for the Wildfly Extension plugin -->
     <plugins>
       <plugin>

@@ -60,9 +60,6 @@
   </modules>
 
   <properties>
-    <!-- TODO: for now, since Eclipse M2E v1.4 doesn't like using "1.8" -->
-    <maven.compiler.source>1.7</maven.compiler.source>
-    <maven.compiler.target>1.7</maven.compiler.target>
   </properties>
 
   <dependencyManagement>

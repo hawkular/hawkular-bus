@@ -86,8 +86,8 @@ public class MessageProcessor {
      * Since this is fire-and-forget - no response is expected of the remote endpoint.
      *
      * @param context information that determines where the message is sent
-     * @param basicMessage the message to send
-     * @param headers headers for the JMS transport
+     * @param basicMessage the message to send with optional headers included
+     * @param headers headers for the JMS transport that will override same-named headers in the basic message
      * @return the message ID
      * @throws JMSException
      *
@@ -152,10 +152,10 @@ public class MessageProcessor {
      * Future to wait for the response, rather than having to supply your own response listener.
      *
      * @param context information that determines where the message is sent
-     * @param basicMessage the request message to send
+     * @param basicMessage the request message to send with optional headers included
      * @param responseListener The listener that will process the response of the request. This listener should close
      *            its associated consumer when appropriate.
-     * @param headers Headers for the JMS transport
+     * @param headers headers for the JMS transport that will override same-named headers in the basic message
      *
      * @param T the expected basic message type that will be received as the response to the request
      *
@@ -243,9 +243,9 @@ public class MessageProcessor {
      * that is received back.
      *
      * @param context information that determines where the message is sent
-     * @param basicMessage the request message to send
+     * @param basicMessage the request message to send with optional headers included
      * @param expectedResponseMessageClass this is the message class of the expected response object.
-     * @param headers Headers for JMX transport
+     * @param headers headers for the JMS transport that will override same-named headers in the basic message
      *
      * @param R the expected basic message type that will be received as the response to the request
      *
@@ -274,8 +274,9 @@ public class MessageProcessor {
      * Creates a text message that can be send via a producer that contains the given BasicMessage's JSON encoded data.
      *
      * @param context the context whose session is used to create the message
-     * @param basicMessage contains the data that will be JSON-encoded and encapsulated in the created message
-     * @param headers headers for the Message
+     * @param basicMessage contains the data that will be JSON-encoded and encapsulated in the created message, with
+     *                     optional headers included
+     * @param headers headers for the Message that will override same-named headers in the basic message
      * @return the message that can be produced
      * @throws JMSException
      * @throws NullPointerException if the context is null or the context's session is null
@@ -291,6 +292,16 @@ public class MessageProcessor {
         }
         Message msg = session.createTextMessage(basicMessage.toJSON());
 
+        // if the basicMessage has headers, use those first
+        Map<String, String> basicMessageHeaders = basicMessage.getHeaders();
+        if (basicMessageHeaders != null) {
+            for (Map.Entry<String, String> entry : basicMessageHeaders.entrySet()) {
+                msg.setStringProperty(entry.getKey(), entry.getValue());
+            }
+        }
+
+        // If we were given headers separately, add those now.
+        // Notice these will override same-named headers that were found in the basic message itself.
         if (headers != null) {
             for (Map.Entry<String, String> entry : headers.entrySet()) {
                 msg.setStringProperty(entry.getKey(), entry.getValue());

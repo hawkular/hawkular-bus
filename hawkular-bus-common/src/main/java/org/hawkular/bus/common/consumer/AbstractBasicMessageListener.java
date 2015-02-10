@@ -19,6 +19,8 @@ package org.hawkular.bus.common.consumer;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.util.Enumeration;
+import java.util.HashMap;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -104,6 +106,15 @@ public abstract class AbstractBasicMessageListener<T extends BasicMessage> imple
                 basicMessage.setCorrelationId(correlationId);
             }
 
+            HashMap<String, String> rawHeaders = new HashMap<String, String>();
+            for (Enumeration<?> propNames = message.getPropertyNames(); propNames.hasMoreElements();) {
+                String propName = propNames.nextElement().toString();
+                rawHeaders.put(propName, message.getStringProperty(propName));
+            }
+            if (!rawHeaders.isEmpty()) {
+                basicMessage.setHeaders(rawHeaders);
+            }
+
             getLog().tracef("Received basic message: %s", basicMessage);
         } catch (JMSException e) {
             msglog.errorNotValidTextMessage(e);
@@ -131,6 +142,7 @@ public abstract class AbstractBasicMessageListener<T extends BasicMessage> imple
      *
      * @return class of T
      */
+    @SuppressWarnings("unchecked")
     protected Class<T> determineBasicMessageClass() {
         // all of this is usually going to just return BasicMessage.class - but in case there is a subclass hierarchy
         // that makes it more specific, this will help discover the message class.

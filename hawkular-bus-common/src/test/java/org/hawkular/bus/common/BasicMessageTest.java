@@ -20,6 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,12 +33,14 @@ public class BasicMessageTest {
     public void testHeaders() {
         // we don't get headers by default
         BasicMessage msg = new SimpleBasicMessage("my msg");
-        assertNull(msg.getHeaders());
+        assertNotNull(msg.getHeaders());
+        assertTrue(msg.getHeaders().isEmpty());
 
         // the headers are copied internally
         Map<String, String> headers = new HashMap<String, String>();
         msg.setHeaders(headers);
         assertNotNull(msg.getHeaders());
+        assertTrue(msg.getHeaders().isEmpty());
         assertNotSame(headers, msg.getHeaders());
 
         // we can't change the headers via the map returned by the getter

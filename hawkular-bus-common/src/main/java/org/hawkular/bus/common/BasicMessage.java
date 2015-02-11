@@ -99,13 +99,13 @@ public abstract class BasicMessage {
     /**
      * The headers that were shipped along side of the message when the message was received.
      * The returned map is an unmodifiable read-only view of the properties.
-     * Can return <code>null</code>.
+     * Will never return <code>null</code> but may return an empty map.
      *
      * @return a read-only view of the name/value properties that came with the message as separate headers.
      */
     public Map<String, String> getHeaders() {
         if (_headers == null) {
-            return null;
+            return Collections.emptyMap();
         }
         return Collections.unmodifiableMap(_headers);
     }
@@ -114,14 +114,15 @@ public abstract class BasicMessage {
      * Sets headers that will be sent with the message when the message gets delivered.
      * This completely replaces any existing headers already associated with this message.
      * Note that the given name/value pairs will be copied to an internal map.
-     * If the given map is null, this message's internal map will be destroyed.
+     * If the given map is null or empty, this message's internal map will be destroyed
+     * and {@link #getHeaders()} will return an empty map.
      *
      * Note that the header values are all expected to be strings.
      *
      * @param headers name/value properties
      */
     public void setHeaders(Map<String, String> headers) {
-        if (headers == null) {
+        if (headers == null || headers.isEmpty()) {
             this._headers = null;
         } else {
             if (this._headers == null) {

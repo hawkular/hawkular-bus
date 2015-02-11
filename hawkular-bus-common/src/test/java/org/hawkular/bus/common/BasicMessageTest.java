@@ -28,6 +28,43 @@ import org.junit.Test;
 
 public class BasicMessageTest {
 
+    @Test
+    public void testHeaders() {
+        // we don't get headers by default
+        BasicMessage msg = new SimpleBasicMessage("my msg");
+        assertNull(msg.getHeaders());
+
+        // the headers are copied internally
+        Map<String, String> headers = new HashMap<String, String>();
+        msg.setHeaders(headers);
+        assertNotNull(msg.getHeaders());
+        assertNotSame(headers, msg.getHeaders());
+
+        // we can't change the headers via the map returned by the getter
+        try {
+            msg.getHeaders().put("not-allowed", "not-allowed");
+            assert false : "Should not have been allowed to modify the returned map";
+        } catch (UnsupportedOperationException expected) {
+            // expected
+        }
+
+        // show that the setter completely replaces the old headers
+        assertEquals(0, msg.getHeaders().size());
+        headers.put("one", "111");
+        headers.put("two", "222");
+        msg.setHeaders(headers);
+        assertEquals(2, msg.getHeaders().size());
+        assertEquals("111", msg.getHeaders().get("one"));
+        assertEquals("222", msg.getHeaders().get("two"));
+
+        headers.clear();
+        assertEquals("Clearing our map should not have affected the msg internal map", 2, msg.getHeaders().size());
+        headers.put("foo", "bar");
+        msg.setHeaders(headers);
+        assertEquals(1, msg.getHeaders().size());
+        assertEquals("bar", msg.getHeaders().get("foo"));
+    }
+
     // tests a minimal basic record with no details
     @Test
     public void simpleConversion() {

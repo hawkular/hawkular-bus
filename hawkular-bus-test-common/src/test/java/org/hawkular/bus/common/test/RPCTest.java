@@ -414,14 +414,14 @@ public class RPCTest {
 
         @Override
         public void onSuccess(SpecificMessage result) {
-            latch.countDown();
             msg = result;
+            latch.countDown();
         }
 
         @Override
         public void onFailure(Throwable t) {
-            latch.countDown();
             error = (t != null) ? t : new Exception("unknown throwable occurred");
+            latch.countDown();
         }
 
         public SpecificMessage getResult(long waitTime, TimeUnit timeUnit) throws Throwable {

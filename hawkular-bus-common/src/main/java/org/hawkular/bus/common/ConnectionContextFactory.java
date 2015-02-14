@@ -43,7 +43,7 @@ import org.jboss.logging.Logger;
  *
  * Subclasses are free to extend this class to add or override functionality or to provide stricter type-checking.
  */
-public class ConnectionContextFactory {
+public class ConnectionContextFactory implements AutoCloseable {
 
     private final MsgLogger msglog = MsgLogger.LOGGER;
     private final Logger log = Logger.getLogger(ConnectionContextFactory.class);
@@ -155,6 +155,7 @@ public class ConnectionContextFactory {
      *
      * @throws JMSException
      */
+    @Override
     public void close() throws JMSException {
         Connection conn = getConnection();
         if (conn != null) {

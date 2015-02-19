@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.hawkular</groupId>
     <artifactId>hawkular-parent</artifactId>
-    <version>6</version>
+    <version>7</version>
   </parent>
 
   <groupId>org.hawkular.bus</groupId>
@@ -32,21 +32,6 @@
   <packaging>pom</packaging>
   <name>Hawkular Bus Framework</name>
   <inceptionYear>2015</inceptionYear>
-
-  <pluginRepositories>
-    <!-- needed for the Wildfly Extension plugin -->
-    <pluginRepository>
-      <id>clojars</id>
-      <name>clojars</name>
-      <url>https://clojars.org/repo</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </pluginRepository>
-  </pluginRepositories>
 
   <modules>
     <module>hawkular-bus-common</module>
@@ -131,35 +116,5 @@
 
     </dependencies>
   </dependencyManagement>
-
-  <build>
-    <!-- needed for the Wildfly Extension plugin -->
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-enforcer-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>enforce-rules</id>
-            <goals>
-              <goal>enforce</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <rules combine.self="override">
-            <requireNoRepositories>
-              <allowedPluginRepositories>
-                <repository>clojars</repository>
-              </allowedPluginRepositories>
-            </requireNoRepositories>
-            <requirePluginVersions>
-              <unCheckedPluginList>org.jboss.plugins:wildfly-extension-maven-plugin</unCheckedPluginList>
-            </requirePluginVersions>
-          </rules>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 
 </project>

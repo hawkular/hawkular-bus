@@ -143,7 +143,7 @@
 
       <!-- USAGE: mvn -Dorg.hawkular.wildfly.home=/opt/wildfly8 wildfly-extension:deploy -->
       <plugin>
-        <groupId>org.jboss.plugins</groupId>
+        <groupId>org.wildfly.plugins</groupId>
         <artifactId>wildfly-extension-maven-plugin</artifactId>
         <configuration>
           <moduleZip>${project.build.directory}/${project.build.finalName}-module.zip</moduleZip>

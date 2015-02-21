@@ -164,7 +164,7 @@
                 <insert>
                   <select>/server/socket-binding-group[@name='standard-sockets']</select>
                   <xml><![CDATA[<socket-binding name="org.hawkular.bus.broker.discovery" port="0" mulicast-address="224.0.0.4" multicast-port="63636"/>]]></xml>
-                  <attribute>org.hawkular.bus.broker.discovery</attribute>
+                  <attribute>name</attribute>
                 </insert>
               </edit>
             </configuration>

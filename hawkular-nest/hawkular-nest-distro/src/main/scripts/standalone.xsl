@@ -145,7 +145,7 @@
 
   <!-- Tweak EE bindings -->
   <xsl:template match="@jms-connection-factory[.='java:jboss/DefaultJMSConnectionFactory']">
-    <xsl:attribute name="jms-connection-factory">java:jboss/HawkularBusConnectionFactory</xsl:attribute>
+    <xsl:attribute name="jms-connection-factory">java:/HawkularBusConnectionFactory</xsl:attribute>
   </xsl:template>
 
   <xsl:template match="@datasource[.='java:jboss/datasources/ExampleDS']">

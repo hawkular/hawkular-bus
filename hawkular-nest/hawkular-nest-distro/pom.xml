@@ -184,9 +184,26 @@
               </edit>
             </configuration>
           </execution>
+          <execution>
+            <id>install-nest-module</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>deploy</goal>
+            </goals>
+            <configuration>
+              <jbossHome>${assembly.dir}/${wildfly.dist.zip.root.dir}</jbossHome>
+              <serverConfig>standalone/configuration/standalone.xml</serverConfig>
+              <modulesHome>modules/system/layers/base</modulesHome>
+              <moduleZip>${project.build.directory}/hawkular-modules/hawkular-nest-wf-extension.zip</moduleZip>
+              <subsystem>${basedir}/src/main/scripts/subsystem-hawkular-nest-wf-extension.xml</subsystem>
+              <!-- TODO DELETE THIS once wildfly plugin is fixed; we don't need to specify this -->
+              <socketBinding>${basedir}/src/main/scripts/socketbinding-hawkular-bus-broker-wf-extension.xml</socketBinding>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
 
+      <!-- further customize standalone.xml -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>xml-maven-plugin</artifactId>

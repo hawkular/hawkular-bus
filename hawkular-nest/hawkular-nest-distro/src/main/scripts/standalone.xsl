@@ -93,20 +93,22 @@
           </connection-definition>
         </connection-definitions>
         <admin-objects>
-          <admin-object class-name="org.apache.activemq.command.ActiveMQTopic"
-                        jndi-name="java:/topic/HawkularNotifications"
+        <xsl:comment><![CDATA[
+          <admin-object use-java-context="true"
                         enabled="true"
-                        use-java-context="true"
-                        pool-name="HawkularNotifications">
-            <config-property name="PhysicalName">HawkularNotifications</config-property>
+                        class-name="org.apache.activemq.command.ActiveMQQueue"
+                        jndi-name="java:/queue/HawkularQueueName"
+                        pool-name="HawkularQueueName">
+            <config-property name="PhysicalName">HawkularQueueName</config-property>
           </admin-object>
-          <admin-object class-name="org.apache.activemq.command.ActiveMQTopic"
-                        jndi-name="java:/topic/HawkularMetricData"
+          <admin-object use-java-context="true"
                         enabled="true"
-                        use-java-context="true"
-                        pool-name="HawkularMetricData">
-            <config-property name="PhysicalName">HawkularMetricData</config-property>
+                        class-name="org.apache.activemq.command.ActiveMQTopic"
+                        jndi-name="java:/topic/HawkularTopicName"
+                        pool-name="HawkularTopicName">
+            <config-property name="PhysicalName">HawkularTopicName</config-property>
           </admin-object>
+        ]]></xsl:comment>
         </admin-objects>
       </resource-adapter>
     </resource-adapters>

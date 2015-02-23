@@ -277,7 +277,7 @@
                 <configuration>
                   <target>
                     <unzip src="${project.build.directory}/${project.build.finalName}-distribution.zip" dest="${project.build.directory}" />
-                    <chmod dir="${project.build.directory}/wildfly-${version.org.wildfly}/bin" includes="*.sh"
+                    <chmod dir="${project.build.directory}/${wildfly.dist.zip.root.dir}/bin" includes="*.sh"
                       perm="u+x" type="file" />
                   </target>
                 </configuration>

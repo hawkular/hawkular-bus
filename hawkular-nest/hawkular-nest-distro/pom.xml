@@ -110,11 +110,24 @@
               <includeArtifactIds>
                 hawkular-nest-wf-extension,
                 hawkular-bus-broker-wf-extension,
-                hawkular-bus-ra-wf-module
               </includeArtifactIds>
               <stripVersion>true</stripVersion>
               <stripClassifier>true</stripClassifier>
               <overWriteIfNew>true</overWriteIfNew>
+              <excludeTransitive>true</excludeTransitive>
+            </configuration>
+          </execution>
+          <execution>
+            <id>unpack-ra-module</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${assembly.dir}/${wildfly.dist.zip.root.dir}/modules/system/layers/base</outputDirectory>
+              <includeArtifactIds>
+                hawkular-bus-ra-wf-module
+              </includeArtifactIds>
               <excludeTransitive>true</excludeTransitive>
             </configuration>
           </execution>

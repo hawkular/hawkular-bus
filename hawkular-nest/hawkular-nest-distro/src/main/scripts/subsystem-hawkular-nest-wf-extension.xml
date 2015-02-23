@@ -1,6 +1,6 @@
 <subsystem xmlns="urn:org.hawkular.nest:nest:1.0" enabled="true">
 
-  <agent-name>autogenerate</agent-name>
+  <nest-name>autogenerate</nest-name>
 
   <custom-configuration>
     <property name="custom-prop" value="custom-prop-val"/>

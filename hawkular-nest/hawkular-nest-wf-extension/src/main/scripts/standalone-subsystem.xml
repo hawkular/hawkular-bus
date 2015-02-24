@@ -19,7 +19,7 @@
 -->
 <subsystem xmlns="urn:org.hawkular.nest:nest:1.0" enabled="true">
 
-  <agent-name>foo</agent-name>
+  <nest-name>foo</nest-name>
 
   <custom-configuration>
     <property name="custom-prop" value="custom-prop-val"/>

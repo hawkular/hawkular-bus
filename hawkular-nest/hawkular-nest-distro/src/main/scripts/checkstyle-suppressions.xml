@@ -23,5 +23,8 @@
 
 <suppressions>
   <!-- we want to remain as faithful to the Wildfly style as possible -->
-  <suppress checks="[a-zA-Z0-9]" files="standalone.xml"/>
+  <suppress checks="[a-zA-Z0-9]" files="standalone\.xml"/>
+
+  <!-- these are snippets of XML possibly not fully formed - we can't check them since they aren't valid XML -->
+  <suppress checks="[a-zA-Z0-9]" files="(subsystem.*\.xml|socketbinding.*\.xml)"/>
 </suppressions>

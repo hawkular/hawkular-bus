@@ -78,7 +78,6 @@
           <excludes combine.children="append">
             <exclude>src/main/scripts/subsystem*.xml</exclude>
             <exclude>src/main/scripts/socketbinding*.xml</exclude>
-            <exclude>src/main/scripts/*.xsl</exclude>
           </excludes>
         </configuration>
       </plugin>

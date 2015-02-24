@@ -20,10 +20,11 @@
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:xalan="http://xml.apache.org/xalan"
+                xmlns:ds="urn:jboss:domain:datasources:2.0"
                 xmlns:ra="urn:jboss:domain:resource-adapters:2.0"
                 xmlns:ejb3="urn:jboss:domain:ejb3:2.0"
                 version="2.0"
-                exclude-result-prefixes="xalan ra ejb3">
+                exclude-result-prefixes="xalan ds ra ejb3">
 
   <!-- will indicate if this is a "dev" build or "production" build -->
   <xsl:param name="nest.build.type"/>
@@ -155,13 +156,44 @@
     </xsl:copy>
   </xsl:template>
 
-  <!-- Tweak the out-of-box datasource -->
-  <xsl:template match="@pool-name[.='ExampleDS']">
-    <xsl:attribute name="pool-name">HawkularDS</xsl:attribute>
+  <!-- Remove the out-of-box datasource example and add our own datasource -->
+  <xsl:template name="datasources">
+    <datasources>
+        <datasource jta="true" jndi-name="java:jboss/datasources/HawkularDS" pool-name="HawkularDS" enabled="true" use-ccm="true">
+        <connection-url>jdbc:h2:${jboss.server.data.dir}/hawkular_db</connection-url>
+        <driver-class>org.h2.Driver</driver-class>
+        <driver>h2</driver>
+        <security>
+          <user-name>sa</user-name>
+          <password>sa</password>
+        </security>
+        <validation>
+          <validate-on-match>false</validate-on-match>
+          <background-validation>false</background-validation>
+        </validation>
+        <timeout>
+          <set-tx-query-timeout>false</set-tx-query-timeout>
+          <blocking-timeout-millis>0</blocking-timeout-millis>
+          <idle-timeout-minutes>0</idle-timeout-minutes>
+          <query-timeout>0</query-timeout>
+          <use-try-lock>0</use-try-lock>
+          <allocation-retry>0</allocation-retry>
+          <allocation-retry-wait-millis>0</allocation-retry-wait-millis>
+        </timeout>
+        <statement>
+          <share-prepared-statements>false</share-prepared-statements>
+        </statement>
+      </datasource>
+      <drivers>
+        <driver name="h2" module="com.h2database.h2">
+          <xa-datasource-class>org.h2.jdbcx.JdbcDataSource</xa-datasource-class>
+        </driver>
+      </drivers>
+    </datasources>
   </xsl:template>
 
-  <xsl:template match="@jndi-name[.='java:jboss/datasources/ExampleDS']">
-    <xsl:attribute name="jndi-name">java:jboss/datasources/HawkularDS</xsl:attribute>
+  <xsl:template match="ds:datasources">
+    <xsl:call-template name="datasources" />
   </xsl:template>
 
   <!-- Tweak EE bindings -->

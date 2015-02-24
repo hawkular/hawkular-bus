@@ -55,10 +55,4 @@
     </fileSet>
   </fileSets>
 
-  <!--
-    <include>org.hawkular.nest:hawkular-nest-wf-extension:zip:module:${project.version}</include>
-    <include>org.hawkular.bus:hawkular-bus-ra-wf-module:zip:module:${project.version}</include>
-  -->
-
 </assembly>
-

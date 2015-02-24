@@ -82,6 +82,26 @@
         </configuration>
       </plugin>
 
+      <!-- purge any previous nest distro dependency we extracted, ensures a fresh standalone.xml -->
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>clean-old-nest</id>
+            <phase>initialize</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target>
+                <delete dir="${assembly.dir}" />
+                <delete dir="${project.build.directory}/dependency-maven-plugin-markers" />
+              </target>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
       <!-- unpack the wildfly distribution and copy our hawkular modules in a tmp location -->
       <plugin>
         <artifactId>maven-dependency-plugin</artifactId>

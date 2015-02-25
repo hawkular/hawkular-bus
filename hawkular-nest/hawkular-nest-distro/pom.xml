@@ -180,6 +180,7 @@
       <plugin>
         <groupId>org.wildfly.plugins</groupId>
         <artifactId>wildfly-extension-maven-plugin</artifactId>
+        <version>0.6.0</version> <!-- TODO DELETE ME when parent pom v8 is used -->
         <executions>
           <execution>
             <id>install-bus-broker-module</id>

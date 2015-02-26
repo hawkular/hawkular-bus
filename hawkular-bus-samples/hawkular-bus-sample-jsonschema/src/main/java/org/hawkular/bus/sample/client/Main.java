@@ -52,8 +52,8 @@ public class Main {
                 @Override
                 protected void onBasicMessage(Person person) {
                     System.out.println("\n========== RECEIVED MESSAGE START ==========");
-                    System.out.printf("Consumed Person: firstN=[%s], lastN=[%s], age=[%d]\n", person.getFirstName(),
-                            person.getLastName(), person.getAge());
+                    System.out.printf("Consumed Person: firstN=[%s], lastN=[%s], age=[%d], phone-numbers=[%s]\n",
+                            person.getFirstName(), person.getLastName(), person.getAge(), person.getPhoneNumbers());
                     System.out.println("Consumed Person.toString: " + person.toString());
                     System.out.println("Consumed Person.hashCode: " + person.hashCode());
                     System.out.println("========== RECEIVED MESSAGE END ==========\n");
@@ -81,6 +81,8 @@ public class Main {
             person.setAge(18);
             person.setFirstName("John");
             person.setLastName("Doe");
+            person.getPhoneNumbers().add("555-1212");
+            person.getPhoneNumbers().add("888-WOT-GORILLA");
             MessageProcessor processor = new MessageProcessor();
             processor.send(pc, person);
 

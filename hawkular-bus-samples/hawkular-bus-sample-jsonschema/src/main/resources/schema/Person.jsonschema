@@ -5,6 +5,7 @@
     "javaType": "org.hawkular.bus.common.BasicMessage"
   },
   "javaType": "org.hawkular.bus.sample.msg.Person",
+  "description": "A person.",
   "properties": {
     "firstName": {
       "type": "string"
@@ -13,9 +14,25 @@
       "type": "string"
     },
     "age": {
-      "description": "Age in years",
+      "description": "Age in years.",
       "type": "integer",
-      "minimum": 0
+      "minimum": 0,
+      "maximum": 99
+    },
+    "phoneNumbers": {
+      "description": "A set of phone numbers associated with this person.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "books": {
+      "description": "A list of books owned by this person.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
     }
   },
   "required": ["firstName", "lastName"]

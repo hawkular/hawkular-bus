@@ -54,6 +54,7 @@
           <annotationStyle>gson</annotationStyle>
           <includeToString>false</includeToString>
           <includeHashcodeAndEquals>false</includeHashcodeAndEquals>
+          <initializeCollections>true</initializeCollections>
         </configuration>
         <executions>
           <execution>

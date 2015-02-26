@@ -34,5 +34,6 @@
   <modules>
     <module>hawkular-bus-sample-client</module>
     <module>hawkular-bus-sample-mdb</module>
+    <module>hawkular-bus-sample-jsonschema</module>
   </modules>
 </project>

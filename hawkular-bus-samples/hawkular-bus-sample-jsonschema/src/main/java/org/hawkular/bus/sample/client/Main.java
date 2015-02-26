@@ -22,7 +22,9 @@ import org.hawkular.bus.common.MessageProcessor;
 import org.hawkular.bus.common.consumer.BasicMessageListener;
 import org.hawkular.bus.common.consumer.ConsumerConnectionContext;
 import org.hawkular.bus.common.producer.ProducerConnectionContext;
+import org.hawkular.bus.sample.msg.Address;
 import org.hawkular.bus.sample.msg.Person;
+import org.hawkular.bus.sample.msg.PhoneNumber;
 
 /**
  * A simple sample client used to show the API needed to consume and produce messages.
@@ -52,9 +54,11 @@ public class Main {
                 @Override
                 protected void onBasicMessage(Person person) {
                     System.out.println("\n========== RECEIVED MESSAGE START ==========");
-                    System.out.printf("Consumed Person: firstN=[%s], lastN=[%s], age=[%d], phone-numbers=[%s]\n",
-                            person.getFirstName(), person.getLastName(), person.getAge(), person.getPhoneNumbers());
+                    System.out.printf("Consumed Person: firstN=[%s], lastN=[%s], age=[%d], address.street=[%s]\n",
+                            person.getFirstName(), person.getLastName(), person.getAge(), person.getAddress()
+                                    .getStreet());
                     System.out.println("Consumed Person.toString: " + person.toString());
+                    System.out.println("Consumed Person.toJSON: " + person.toJSON());
                     System.out.println("Consumed Person.hashCode: " + person.hashCode());
                     System.out.println("========== RECEIVED MESSAGE END ==========\n");
                 }
@@ -81,8 +85,20 @@ public class Main {
             person.setAge(18);
             person.setFirstName("John");
             person.setLastName("Doe");
-            person.getPhoneNumbers().add("555-1212");
-            person.getPhoneNumbers().add("888-WOT-GORILLA");
+            person.getFavoriteColors().add("blue");
+            person.getFavoriteColors().add("yellow");
+            Address address = new Address();
+            address.setStreet("Main Street");
+            address.setCity("Anyplace, Kansas");
+            person.setAddress(address);
+            PhoneNumber phone1 = new PhoneNumber();
+            phone1.setKind("home");
+            phone1.setDigits("555-1212");
+            PhoneNumber phone2 = new PhoneNumber();
+            phone2.setKind("cell");
+            phone2.setDigits("800-WOT-GORILLA");
+            person.getPhoneNumbers().add(phone1);
+            person.getPhoneNumbers().add(phone2);
             MessageProcessor processor = new MessageProcessor();
             processor.send(pc, person);
 

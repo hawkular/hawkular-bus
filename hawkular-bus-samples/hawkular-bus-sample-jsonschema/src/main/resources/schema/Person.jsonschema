@@ -19,8 +19,8 @@
       "minimum": 0,
       "maximum": 99
     },
-    "phoneNumbers": {
-      "description": "A set of phone numbers associated with this person.",
+    "favoriteColors": {
+      "description": "A set of colors that this person likes.",
       "type": "array",
       "items": {
         "type": "string"
@@ -33,6 +33,37 @@
       "items": {
         "type": "string"
       }
+    },
+    "address": {
+      "description": "The home address of this person.",
+      "type": "object",
+      "javaType": "org.hawkular.bus.sample.msg.Address",
+      "properties": {
+        "street": {
+          "type": "string"
+        },
+        "city": {
+          "type": "string"
+        }
+      }
+    },
+    "phoneNumbers": {
+      "description": "Phone numbers associated with this person.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "javaType": "org.hawkular.bus.sample.msg.PhoneNumber",
+        "properties": {
+          "kind": {
+            "description": "Indicates the kind of number, such as home, cell, or work.",
+            "type": "string"
+          },
+          "digits": {
+            "type": "string"
+          }
+        }
+      },
+      "uniqueItems": true
     }
   },
   "required": ["firstName", "lastName"]

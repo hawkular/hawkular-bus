@@ -55,6 +55,9 @@
       <logger category="org.hawkular">
         <level name="DEBUG"/>
       </logger>
+      <logger category="org.hawkular.alerts">
+        <level name="DEBUG"/>
+      </logger>
       <logger category="org.hawkular.bus">
         <level name="DEBUG"/>
       </logger>
@@ -64,6 +67,9 @@
     </xsl:if>
     <xsl:if test="$nest.build.type='production'">
       <logger category="org.hawkular">
+        <level name="INFO"/>
+      </logger>
+      <logger category="org.hawkular.alerts">
         <level name="INFO"/>
       </logger>
       <logger category="org.hawkular.bus">

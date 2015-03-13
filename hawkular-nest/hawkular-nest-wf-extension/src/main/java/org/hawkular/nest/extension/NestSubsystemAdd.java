@@ -144,10 +144,10 @@ class NestSubsystemAdd extends AbstractAddStepHandler {
 
     @Override
     protected void populateModel(ModelNode operation, ModelNode model) throws OperationFailedException {
-        NestSubsystemDefinition.AGENT_ENABLED_ATTRIBDEF.validateAndSet(operation, model);
-        NestSubsystemDefinition.AGENT_NAME_ATTRIBDEF.validateAndSet(operation, model);
+        NestSubsystemDefinition.NEST_ENABLED_ATTRIBDEF.validateAndSet(operation, model);
+        NestSubsystemDefinition.NEST_NAME_ATTRIBDEF.validateAndSet(operation, model);
         NestSubsystemDefinition.CUSTOM_CONFIG_ATTRIBDEF.validateAndSet(operation, model);
-        log.debugf("Populating the Agent subsystem model: %s=%s", operation, model);
+        log.debugf("Populating the Nest subsystem model: %s=%s", operation, model);
     }
 
     @Override
@@ -155,7 +155,7 @@ class NestSubsystemAdd extends AbstractAddStepHandler {
             ServiceVerificationHandler verificationHandler, List<ServiceController<?>> newControllers)
             throws OperationFailedException {
 
-        boolean enabled = NestSubsystemDefinition.AGENT_ENABLED_ATTRIBDEF.resolveModelAttribute(context, model)
+        boolean enabled = NestSubsystemDefinition.NEST_ENABLED_ATTRIBDEF.resolveModelAttribute(context, model)
                 .asBoolean(NestSubsystemExtension.NEST_ENABLED_DEFAULT);
 
         if (!enabled) {
@@ -166,10 +166,10 @@ class NestSubsystemAdd extends AbstractAddStepHandler {
         msglog.infoNestEnabled();
 
         // set up our runtime custom configuration properties that should be used instead of the out-of-box config
-        ModelNode node = NestSubsystemDefinition.AGENT_NAME_ATTRIBDEF.resolveModelAttribute(context, model);
-        String agentName = NestSubsystemExtension.NEST_NAME_DEFAULT;
+        ModelNode node = NestSubsystemDefinition.NEST_NAME_ATTRIBDEF.resolveModelAttribute(context, model);
+        String nestName = NestSubsystemExtension.NEST_NAME_DEFAULT;
         if (node.isDefined()) {
-            agentName = node.asString();
+            nestName = node.asString();
         }
 
         // allow the user to provide their own config props
@@ -189,7 +189,7 @@ class NestSubsystemAdd extends AbstractAddStepHandler {
 
         // create our service
         NestService service = new NestService();
-        service.setNestName(agentName);
+        service.setNestName(nestName);
         service.setCustomConfigurationProperties(customConfigProps);
 
         // install the service

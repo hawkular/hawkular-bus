@@ -38,7 +38,7 @@ class NestSubsystemStatus implements OperationStepHandler {
             NestService service = (NestService) opContext.getServiceRegistry(true).getRequiredService(name).getValue();
             isStarted = service.isStarted();
         } catch (ServiceNotFoundException snfe) {
-            // the agent just isn't deployed, so obviously, it isn't started
+            // the nest just isn't deployed, so obviously, it isn't started
             isStarted = false;
         }
         opContext.getResult().set(isStarted ? "STARTED" : "STOPPED");

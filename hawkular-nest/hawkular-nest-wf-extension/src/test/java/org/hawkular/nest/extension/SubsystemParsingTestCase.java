@@ -100,9 +100,9 @@ public class SubsystemParsingTestCase extends SubsystemBaseParsingTestCase {
                 .resolve().asBoolean());
 
         // Sanity check to test the service was there
-        NestService agent = (NestService) services.getContainer().getRequiredService(NestService.SERVICE_NAME)
+        NestService nest = (NestService) services.getContainer().getRequiredService(NestService.SERVICE_NAME)
                 .getValue();
-        Assert.assertNotNull(agent);
+        Assert.assertNotNull(nest);
     }
 
     /**
@@ -161,9 +161,9 @@ public class SubsystemParsingTestCase extends SubsystemBaseParsingTestCase {
         KernelServices services = createKernelServicesBuilder(null).setSubsystemXml(subsystemXml).build();
 
         // Sanity check to test the service was there
-        NestService agent = (NestService) services.getContainer().getRequiredService(NestService.SERVICE_NAME)
+        NestService nest = (NestService) services.getContainer().getRequiredService(NestService.SERVICE_NAME)
                 .getValue();
-        Assert.assertNotNull(agent);
+        Assert.assertNotNull(nest);
 
         // Checks that the subsystem was removed from the model
         super.assertRemoveSubsystemResources(services);
@@ -181,13 +181,13 @@ public class SubsystemParsingTestCase extends SubsystemBaseParsingTestCase {
         String subsystemXml = getSubsystemXml();
         KernelServices services = createKernelServicesBuilder(null).setSubsystemXml(subsystemXml).build();
 
-        PathAddress agentSubsystemPath = PathAddress.pathAddress(PathElement.pathElement(SUBSYSTEM,
+        PathAddress nestSubsystemPath = PathAddress.pathAddress(PathElement.pathElement(SUBSYSTEM,
                 NestSubsystemExtension.SUBSYSTEM_NAME));
 
-        // ask for resource description: /subsystem=agent:read-resource-description
+        // ask for resource description: /subsystem=nest:read-resource-description
         ModelNode resourceDescriptionOp = new ModelNode();
         resourceDescriptionOp.get(OP).set(READ_RESOURCE_DESCRIPTION_OPERATION);
-        resourceDescriptionOp.get(OP_ADDR).set(agentSubsystemPath.toModelNode());
+        resourceDescriptionOp.get(OP_ADDR).set(nestSubsystemPath.toModelNode());
         resourceDescriptionOp.get("operations").set(true); // we want to see the operations also
         ModelNode result = services.executeOperation(resourceDescriptionOp);
         ModelNode content = checkResultAndGetContents(result);
@@ -232,7 +232,7 @@ public class SubsystemParsingTestCase extends SubsystemBaseParsingTestCase {
         NestService service = (NestService) services.getContainer().getService(NestService.SERVICE_NAME).getValue();
         Assert.assertNotNull(service);
 
-        PathAddress agentSubsystemPath = PathAddress.pathAddress(PathElement.pathElement(SUBSYSTEM,
+        PathAddress nestSubsystemPath = PathAddress.pathAddress(PathElement.pathElement(SUBSYSTEM,
                 NestSubsystemExtension.SUBSYSTEM_NAME));
 
         // get the startup model from subsystem xml
@@ -246,7 +246,7 @@ public class SubsystemParsingTestCase extends SubsystemBaseParsingTestCase {
         configNode.add("foo", "true");
         ModelNode addOp = new ModelNode();
         addOp.get(OP).set(WRITE_ATTRIBUTE_OPERATION);
-        addOp.get(OP_ADDR).set(agentSubsystemPath.toModelNode());
+        addOp.get(OP_ADDR).set(nestSubsystemPath.toModelNode());
         addOp.get(NAME).set(NestSubsystemExtension.CUSTOM_CONFIG_ELEMENT);
         addOp.get(VALUE).set(configNode);
         ModelNode result = services.executeOperation(addOp);
@@ -277,7 +277,7 @@ public class SubsystemParsingTestCase extends SubsystemBaseParsingTestCase {
         // Use read-attribute instead of reading the whole model to get an attribute value
         ModelNode readOp = new ModelNode();
         readOp.get(OP).set(READ_ATTRIBUTE_OPERATION);
-        readOp.get(OP_ADDR).set(agentSubsystemPath.toModelNode().resolve());
+        readOp.get(OP_ADDR).set(nestSubsystemPath.toModelNode().resolve());
         readOp.get(NAME).set(NestSubsystemExtension.NEST_ENABLED_ATTR);
         result = services.executeOperation(readOp);
         Assert.assertTrue(checkResultAndGetContents(result).resolve().asBoolean());
@@ -298,7 +298,7 @@ public class SubsystemParsingTestCase extends SubsystemBaseParsingTestCase {
         // execute status
         // ModelNode statusOp = new ModelNode();
         // statusOp.get(OP).set(NestSubsystemExtension.NEST_STATUS_OP);
-        // statusOp.get(OP_ADDR).set(agentSubsystemPath.toModelNode().resolve());
+        // statusOp.get(OP_ADDR).set(nestSubsystemPath.toModelNode().resolve());
         // result = services.executeOperation(statusOp);
         // Assert.assertTrue(checkResultAndGetContents(result).asBoolean());
     }

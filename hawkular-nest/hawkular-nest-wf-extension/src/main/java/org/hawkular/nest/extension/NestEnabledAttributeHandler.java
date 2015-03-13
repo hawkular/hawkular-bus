@@ -29,7 +29,7 @@ class NestEnabledAttributeHandler extends AbstractWriteAttributeHandler<Void> {
     private final Logger log = Logger.getLogger(NestEnabledAttributeHandler.class);
 
     private NestEnabledAttributeHandler() {
-        super(NestSubsystemDefinition.AGENT_ENABLED_ATTRIBDEF);
+        super(NestSubsystemDefinition.NEST_ENABLED_ATTRIBDEF);
     }
 
     @Override

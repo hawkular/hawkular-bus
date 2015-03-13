@@ -32,14 +32,14 @@ public class NestSubsystemDefinition extends SimpleResourceDefinition {
 
     public static final NestSubsystemDefinition INSTANCE = new NestSubsystemDefinition();
 
-    protected static final SimpleAttributeDefinition AGENT_ENABLED_ATTRIBDEF = new SimpleAttributeDefinitionBuilder(
+    protected static final SimpleAttributeDefinition NEST_ENABLED_ATTRIBDEF = new SimpleAttributeDefinitionBuilder(
             NestSubsystemExtension.NEST_ENABLED_ATTR,
             ModelType.BOOLEAN).setAllowExpression(true).setXmlName(NestSubsystemExtension.NEST_ENABLED_ATTR)
             .setFlags(AttributeAccess.Flag.RESTART_RESOURCE_SERVICES)
             .setDefaultValue(new ModelNode(NestSubsystemExtension.NEST_ENABLED_DEFAULT))
             .setAllowNull(false).build();
 
-    protected static final SimpleAttributeDefinition AGENT_NAME_ATTRIBDEF = new SimpleAttributeDefinitionBuilder(
+    protected static final SimpleAttributeDefinition NEST_NAME_ATTRIBDEF = new SimpleAttributeDefinitionBuilder(
             NestSubsystemExtension.NEST_NAME_ELEMENT,
             ModelType.STRING).setAllowExpression(true).setFlags(AttributeAccess.Flag.RESTART_RESOURCE_SERVICES)
             .setDefaultValue(new ModelNode(NestSubsystemExtension.NEST_NAME_DEFAULT)).setAllowNull(true).build();
@@ -60,8 +60,8 @@ public class NestSubsystemDefinition extends SimpleResourceDefinition {
 
     @Override
     public void registerAttributes(ManagementResourceRegistration rr) {
-        rr.registerReadWriteAttribute(AGENT_ENABLED_ATTRIBDEF, null, NestEnabledAttributeHandler.INSTANCE);
-        registerReloadRequiredWriteAttributeHandler(rr, AGENT_NAME_ATTRIBDEF);
+        rr.registerReadWriteAttribute(NEST_ENABLED_ATTRIBDEF, null, NestEnabledAttributeHandler.INSTANCE);
+        registerReloadRequiredWriteAttributeHandler(rr, NEST_NAME_ATTRIBDEF);
         registerReloadRequiredWriteAttributeHandler(rr, CUSTOM_CONFIG_ATTRIBDEF);
     }
 

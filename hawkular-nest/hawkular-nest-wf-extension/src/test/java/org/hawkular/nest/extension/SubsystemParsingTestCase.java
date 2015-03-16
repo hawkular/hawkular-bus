@@ -42,6 +42,7 @@ import org.jboss.msc.service.ServiceNotFoundException;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Test;
 
 public class SubsystemParsingTestCase extends SubsystemBaseParsingTestCase {
 
@@ -60,7 +61,7 @@ public class SubsystemParsingTestCase extends SubsystemBaseParsingTestCase {
     /**
      * Tests that the xml is parsed into the correct operations
      */
-    @org.junit.Test
+    @Test
     public void testParseSubsystem() throws Exception {
         // Parse the subsystem xml into operations
         String subsystemXml = getSubsystemXml();
@@ -84,6 +85,7 @@ public class SubsystemParsingTestCase extends SubsystemBaseParsingTestCase {
     /**
      * Test that the model created from the xml looks as expected
      */
+    @Test
     public void testInstallIntoController() throws Exception {
         // Parse the subsystem xml and install into the controller
         String subsystemXml = getSubsystemXml();
@@ -109,6 +111,7 @@ public class SubsystemParsingTestCase extends SubsystemBaseParsingTestCase {
      * Starts a controller with a given subsystem xml and then checks that a second controller started with the xml
      * marshalled from the first one results in the same model
      */
+    @Test
     public void testParseAndMarshalModel() throws Exception {
         // Parse the subsystem xml and install into the first controller
         String subsystemXml = getSubsystemXml();
@@ -130,6 +133,7 @@ public class SubsystemParsingTestCase extends SubsystemBaseParsingTestCase {
      * Starts a controller with the given subsystem xml and then checks that a second controller started with the
      * operations from its describe action results in the same model
      */
+    @Test
     public void testDescribeHandler() throws Exception {
         String subsystemXml = getSubsystemXml();
         KernelServices servicesA = createKernelServicesBuilder(null).setSubsystemXml(subsystemXml).build();
@@ -155,6 +159,7 @@ public class SubsystemParsingTestCase extends SubsystemBaseParsingTestCase {
     /**
      * Tests that the subsystem can be removed
      */
+    @Test
     public void testSubsystemRemoval() throws Exception {
         // Parse the subsystem xml and install into the first controller
         String subsystemXml = getSubsystemXml();
@@ -177,6 +182,7 @@ public class SubsystemParsingTestCase extends SubsystemBaseParsingTestCase {
         }
     }
 
+    @Test
     public void testResourceDescription() throws Exception {
         String subsystemXml = getSubsystemXml();
         KernelServices services = createKernelServicesBuilder(null).setSubsystemXml(subsystemXml).build();
@@ -224,6 +230,7 @@ public class SubsystemParsingTestCase extends SubsystemBaseParsingTestCase {
         }
     }
 
+    @Test
     public void testExecuteOperations() throws Exception {
         String subsystemXml = getSubsystemXml();
         KernelServices services = createKernelServicesBuilder(null).setSubsystemXml(subsystemXml).build();

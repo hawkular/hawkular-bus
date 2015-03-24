@@ -160,7 +160,7 @@
   <xsl:template name="datasources">
     <datasources>
         <datasource jta="true" jndi-name="java:jboss/datasources/HawkularDS" pool-name="HawkularDS" enabled="true" use-ccm="true">
-        <connection-url>jdbc:h2:${jboss.server.data.dir}/hawkular_db</connection-url>
+        <connection-url>jdbc:h2:${jboss.server.data.dir}/hawkular_db;MVCC=TRUE</connection-url>
         <driver-class>org.h2.Driver</driver-class>
         <driver>h2</driver>
         <security>

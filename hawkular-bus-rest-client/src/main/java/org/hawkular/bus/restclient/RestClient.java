@@ -110,25 +110,25 @@ public class RestClient {
     /**
      * Sends a message to the REST endpoint in order to put a message on the given topic.
      *
-     * @param name name of the topic
+     * @param topicName name of the topic
      * @param jsonPayload the actual message (as a JSON string) to put on the bus
      * @param headers any headers to send with the message (can be null or empty)
      * @throws Exception
      */
-    public void postTopicMessage(String name, String jsonPayload, Map<String, String> headers) throws Exception {
-        postMessage(Type.TOPIC, name, jsonPayload, headers);
+    public void postTopicMessage(String topicName, String jsonPayload, Map<String, String> headers) throws Exception {
+        postMessage(Type.TOPIC, topicName, jsonPayload, headers);
     }
 
     /**
      * Sends a message to the REST endpoint in order to put a message on the given queue.
      *
-     * @param name name of the queue
+     * @param queueName name of the queue
      * @param jsonPayload the actual message (as a JSON string) to put on the bus
      * @param headers any headers to send with the message (can be null or empty)
      * @throws Exception
      */
-    public void postQueueMessage(String name, String jsonPayload, Map<String, String> headers) throws Exception {
-        postMessage(Type.QUEUE, name, jsonPayload, headers);
+    public void postQueueMessage(String queueName, String jsonPayload, Map<String, String> headers) throws Exception {
+        postMessage(Type.QUEUE, queueName, jsonPayload, headers);
     }
 
     protected void postMessage(Type type, String name, String jsonPayload, Map<String, String> headers)

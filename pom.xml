@@ -36,6 +36,7 @@
   <modules>
     <module>hawkular-bus-common</module>
     <module>hawkular-bus-mdb</module>
+    <module>hawkular-bus-rest-client</module>
     <module>hawkular-bus-broker</module>
     <module>hawkular-bus-test-common</module>
     <module>hawkular-bus-broker-wf-extension</module>

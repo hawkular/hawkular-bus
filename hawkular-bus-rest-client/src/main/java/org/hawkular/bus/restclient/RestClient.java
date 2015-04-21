@@ -18,6 +18,7 @@ package org.hawkular.bus.restclient;
 
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Map;
 
@@ -54,9 +55,10 @@ public class RestClient {
      *
      * @param host
      * @param port if null or -1, no port will be specified in the URL
-     * @throws MalformedURLException if one of the parameters consists of invalid URL syntax
+     * @throws RestClientException if the endpoint cannot be used to refer to queues or topics
+     *                             or if one of the parameters consists of invalid URL syntax
      */
-    public RestClient(String host, Integer port) throws MalformedURLException {
+    public RestClient(String host, Integer port) throws RestClientException {
         this("http", host, port);
     }
 
@@ -66,10 +68,19 @@ public class RestClient {
      * @param protocol http or https
      * @param host
      * @param port if null or -1, no port will be specified in the URL
-     * @throws MalformedURLException if one of the parameters consists of invalid URL syntax
+     * @throws RestClientException if the endpoint cannot be used to refer to queues or topics
+     *                             or if one of the parameters consists of invalid URL syntax
      */
-    public RestClient(String protocol, String host, Integer port) throws MalformedURLException {
-        this(new URL(protocol, host, ((port != null) ? port.intValue() : -1), DEFAULT_URL_PATH));
+    public RestClient(String protocol, String host, Integer port) throws RestClientException {
+        this(buildDefaultURL(protocol, host, port));
+    }
+
+    private static URL buildDefaultURL(String protocol, String host, Integer port) throws RestClientException {
+        try {
+            return new URL(protocol, host, ((port != null) ? port.intValue() : -1), DEFAULT_URL_PATH);
+        } catch (MalformedURLException e) {
+            throw new RestClientException(e);
+        }
     }
 
     /**
@@ -79,10 +90,9 @@ public class RestClient {
      * If the given URL does not end with a "/", one will be added to it.
      *
      * @param endpoint the REST server endpoint, not including the queue/topic name
-     * @throws MalformedURLException if failed to append ending slash to the endpoint URL if one was required
-     *                               or if the endpoint cannot be used to refer to queues or topics
+     * @throws RestClientException if the endpoint cannot be used to refer to queues or topics
      */
-    public RestClient(URL endpoint) throws MalformedURLException {
+    public RestClient(URL endpoint) throws RestClientException {
         // make sure the endpoint ends with a "/" since we later will append the queue/topic name to it
         if (endpoint.toString().endsWith("/")){
             this.endpoint = endpoint;
@@ -113,10 +123,12 @@ public class RestClient {
      * @param topicName name of the topic
      * @param jsonPayload the actual message (as a JSON string) to put on the bus
      * @param headers any headers to send with the message (can be null or empty)
-     * @throws Exception
+     * @return the response
+     * @throws RestClientException if the response was not a 200 status code
      */
-    public void postTopicMessage(String topicName, String jsonPayload, Map<String, String> headers) throws Exception {
-        postMessage(Type.TOPIC, topicName, jsonPayload, headers);
+    public HttpResponse postTopicMessage(String topicName, String jsonPayload, Map<String, String> headers)
+            throws RestClientException {
+        return postMessage(Type.TOPIC, topicName, jsonPayload, headers);
     }
 
     /**
@@ -125,22 +137,34 @@ public class RestClient {
      * @param queueName name of the queue
      * @param jsonPayload the actual message (as a JSON string) to put on the bus
      * @param headers any headers to send with the message (can be null or empty)
-     * @throws Exception
+     * @return the response
+     * @throws RestClientException if the response was not a 200 status code
      */
-    public void postQueueMessage(String queueName, String jsonPayload, Map<String, String> headers) throws Exception {
-        postMessage(Type.QUEUE, queueName, jsonPayload, headers);
+    public HttpResponse postQueueMessage(String queueName, String jsonPayload, Map<String, String> headers)
+            throws RestClientException {
+        return postMessage(Type.QUEUE, queueName, jsonPayload, headers);
     }
 
-    protected void postMessage(Type type, String name, String jsonPayload, Map<String, String> headers)
-            throws Exception {
+    protected HttpResponse postMessage(Type type, String name, String jsonPayload, Map<String, String> headers)
+            throws RestClientException {
         URL messageUrl = getEndpointForType(type, name);
-        sendPost(messageUrl.toURI(), jsonPayload, headers);
+        URI uri;
+        try {
+            uri = messageUrl.toURI();
+        } catch (URISyntaxException e) {
+            throw new RestClientException(e);
+        }
+        HttpResponse response = sendPost(uri, jsonPayload, headers);
+        return response;
     }
 
-    protected void sendPost(URI uri, String jsonPayload, Map<String, String> headers) throws Exception {
+    protected HttpResponse sendPost(URI uri, String jsonPayload, Map<String, String> headers)
+            throws RestClientException {
         LOG.tracef("Posting message to bus. uri=[%s], json=[%s], headers[%s]", uri, jsonPayload, headers);
 
         HttpPost request = null;
+        HttpResponse httpResponse = null;
+
         try {
             request = new HttpPost(uri);
             if (headers != null) {
@@ -149,7 +173,7 @@ public class RestClient {
                 }
             }
             request.setEntity(new StringEntity(jsonPayload, ContentType.APPLICATION_JSON));
-            HttpResponse httpResponse = httpclient.execute(request);
+            httpResponse = httpclient.execute(request);
             StatusLine statusLine = httpResponse.getStatusLine();
 
             if (statusLine.getStatusCode() != 200) {
@@ -157,9 +181,12 @@ public class RestClient {
                         + "], reason=["
                         + statusLine.getReasonPhrase() + "], url=[" + request.getURI() + "]");
             }
+
+            return httpResponse;
         } catch (Exception e) {
-            LOG.debugf("Failed to post message to bus via URI [%s]. Cause: [%s]", uri.toString(), e.toString());
-            throw e;
+            String errStr = String.format("Failed to post message to bus via URI [%s]", uri.toString());
+            LOG.debugf("%s. Cause=[%s]", errStr, e.toString());
+            throw new RestClientException(httpResponse, errStr, e);
         } finally {
             if (request != null) {
                 request.releaseConnection();
@@ -167,21 +194,25 @@ public class RestClient {
         }
     }
 
-    protected URL getEndpointForType(Type type, String name) throws MalformedURLException {
+    protected URL getEndpointForType(Type type, String name) throws RestClientException {
         switch (type) {
             case QUEUE:
                 return appendToURL(endpoint, name + "?type=queue");
             case TOPIC:
                 return appendToURL(endpoint, name + "?type=topic");
             default: {
-                throw new RuntimeException("Invalid type - please report this bug");
+                throw new RuntimeException("Invalid type [" + type + "] - please report this bug");
             }
         }
     }
 
-    protected URL appendToURL(URL url, String appendage) throws MalformedURLException {
+    protected URL appendToURL(URL url, String appendage) throws RestClientException {
         String oldUrlString = url.toString();
         String newUrlString = oldUrlString + appendage;
-        return new URL(newUrlString);
+        try {
+            return new URL(newUrlString);
+        } catch (MalformedURLException e) {
+            throw new RestClientException(String.format("URL [%s] cannot be appended with [%s]", url, appendage), e);
+        }
     }
 }

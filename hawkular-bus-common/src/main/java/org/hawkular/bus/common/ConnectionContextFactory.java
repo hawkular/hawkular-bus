@@ -53,11 +53,10 @@ public class ConnectionContextFactory implements AutoCloseable {
     /**
      * Initializes the factory with the given broker URL.
      *
-     * @param brokerURL
-     *            the broker that is used for the contexts created by this factory - all messages sent and received
-     *            through the contexts will go through this broker.
+     * @param brokerURL the broker that is used for the contexts created by this factory;
+     *                  all messages sent and received through the contexts will go through this broker.
      *
-     * @throws JMSException
+     * @throws JMSException any error
      */
     public ConnectionContextFactory(String brokerURL) throws JMSException {
         connectionFactory = new ActiveMQConnectionFactory(brokerURL);
@@ -67,13 +66,12 @@ public class ConnectionContextFactory implements AutoCloseable {
     /**
      * Initializes the factory with the given broker URL and the given security credentials.
      *
-     * @param brokerURL
-     *            the broker that is used for the contexts created by this factory - all messages sent and received
-     *            through the contexts will go through this broker.
-     * @param username
-     * @param password
+     * @param brokerURL the broker that is used for the contexts created by this factory;
+     *                  all messages sent and received through the contexts will go through this broker.
+     * @param username user to connect to
+     * @param password credentials of user
      *
-     * @throws JMSException
+     * @throws JMSException any error
      */
     public ConnectionContextFactory(String brokerURL, String username, String password) throws JMSException {
         connectionFactory = new ActiveMQConnectionFactory(username, password, brokerURL);
@@ -84,10 +82,9 @@ public class ConnectionContextFactory implements AutoCloseable {
     /**
      * Initializes with the given factory.
      *
-     * @param connectionFactory
-     *            the factory that will be used to create contexts.
+     * @param connectionFactory the factory that will be used to create contexts.
      *
-     * @throws JMSException
+     * @throws JMSException any error
      */
     public ConnectionContextFactory(ConnectionFactory connectionFactory) throws JMSException {
         this.connectionFactory = connectionFactory;
@@ -99,10 +96,9 @@ public class ConnectionContextFactory implements AutoCloseable {
      * Creates a new producer connection context, reusing any existing connection that might have already been created.
      * The destination of the connection's session will be that of the given endpoint.
      *
-     * @param endpoint
-     *            where the producer will send messages
+     * @param endpoint where the producer will send messages
      * @return the new producer connection context fully populated
-     * @throws JMSException
+     * @throws JMSException any error
      */
     public ProducerConnectionContext createProducerConnectionContext(Endpoint endpoint) throws JMSException {
         ProducerConnectionContext context = new ProducerConnectionContext();
@@ -117,27 +113,24 @@ public class ConnectionContextFactory implements AutoCloseable {
      * Creates a new consumer connection context, reusing any existing connection that might have already been created.
      * The destination of the connection's session will be that of the given endpoint.
      *
-     * @param endpoint
-     *            where the consumer will listen for messages
+     * @param endpoint where the consumer will listen for messages
      * @return the new consumer connection context fully populated
-     * @throws JMSException
+     * @throws JMSException any error
      */
     public ConsumerConnectionContext createConsumerConnectionContext(Endpoint endpoint) throws JMSException {
         return createConsumerConnectionContext(endpoint, null);
     }
 
     /**
-     * Creates a new consumer connection context, reusing any existing connection that might have already been created.
-     * The destination of the connection's session will be that of the given endpoint. The consumer will filter messages
-     * based on the given message selector expression (which may be null in which case the consumer will consume all
-     * messages).
+     * Creates a new consumer connection context, reusing any existing connection that might have
+     * already been created. The destination of the connection's session will be that of the given endpoint.
+     * The consumer will filter messages based on the given message selector expression (which may be
+     * null in which case the consumer will consume all messages).
      *
-     * @param endpoint
-     *            where the consumer will listen for messages
-     * @param messageSelector
-     *            message consumer's message selector expression.
+     * @param endpoint where the consumer will listen for messages
+     * @param messageSelector message consumer's message selector expression.
      * @return the new consumer connection context fully populated
-     * @throws JMSException
+     * @throws JMSException any error
      */
     public ConsumerConnectionContext createConsumerConnectionContext(Endpoint endpoint, String messageSelector)
             throws JMSException {
@@ -150,10 +143,11 @@ public class ConnectionContextFactory implements AutoCloseable {
     }
 
     /**
-     * This method should be called when this context factory is no longer needed. This will free up resources and close
-     * any open connections it has cached. Note this will invalidate contexts created by this factory.
+     * This method should be called when this context factory is no longer needed. This will free up
+     * resources and close any open connections it has cached.
+     * Note this will invalidate contexts created by this factory.
      *
-     * @throws JMSException
+     * @throws JMSException any error
      */
     @Override
     public void close() throws JMSException {
@@ -191,7 +185,7 @@ public class ConnectionContextFactory implements AutoCloseable {
      * connection via this method if you want that connection cached here. See
      * also {@link #createOrReuseConnection(ConnectionContext, boolean)}.
      *
-     * @param connection
+     * @param connection the connection
      *
      * @see #createOrReuseConnection(ConnectionContext, boolean)
      */
@@ -217,11 +211,9 @@ public class ConnectionContextFactory implements AutoCloseable {
      * is created or reused, that connection will be stored in the given
      * context.
      *
-     * @param context
-     *            the connection will be stored in this context
-     * @param start
-     *            if true, the created connection will be started.
-     * @throws JMSException
+     * @param context the connection will be stored in this context
+     * @param start if true, the created connection will be started.
+     * @throws JMSException any error
      */
     protected void createOrReuseConnection(ConnectionContext context, boolean start) throws JMSException {
         Connection conn = getConnection();
@@ -256,13 +248,11 @@ public class ConnectionContextFactory implements AutoCloseable {
      * If the caller wants the created connection cached in this processor
      * object, {@link #setConnection(Connection)} must be passed the connection
      * found in the context after this method returns. See also
-     * {@link #createOrReuseConnection(ConnectionContext, boolean).
+     * {@link #createOrReuseConnection(ConnectionContext, boolean)}.
      *
-     * @param context
-     *            the context where the new connection is stored
-     * @throws JMSException
-     * @throws IllegalStateException
-     *             if the context is null
+     * @param context the context where the new connection is stored
+     * @throws JMSException any error
+     * @throws IllegalStateException if the context is null
      *
      * @see #createOrReuseConnection(ConnectionContext, boolean)
      * @see #setConnection(Connection)
@@ -280,11 +270,9 @@ public class ConnectionContextFactory implements AutoCloseable {
      * Creates a default session using the context's connection. This implementation creates a non-transacted,
      * auto-acknowledged session. Subclasses are free to override this behavior.
      *
-     * @param context
-     *            the context where the new session is stored
-     * @throws JMSException
-     * @throws IllegalStateException
-     *             if the context is null or the context's connection is null
+     * @param context the context where the new session is stored
+     * @throws JMSException any error
+     * @throws IllegalStateException if the context is null or the context's connection is null
      */
     protected void createSession(ConnectionContext context) throws JMSException {
         if (context == null) {
@@ -301,13 +289,10 @@ public class ConnectionContextFactory implements AutoCloseable {
     /**
      * Creates a destination using the context's session. The destination correlates to the given named queue or topic.
      *
-     * @param context
-     *            the context where the new destination is stored
-     * @param endpoint
-     *            identifies the queue or topic
-     * @throws JMSException
-     * @throws IllegalStateException
-     *             if the context is null or the context's session is null or endpoint is null
+     * @param context the context where the new destination is stored
+     * @param endpoint identifies the queue or topic
+     * @throws JMSException any error
+     * @throws IllegalStateException if the context is null or the context's session is null or endpoint is null
      */
     protected void createDestination(ConnectionContext context, Endpoint endpoint) throws JMSException {
         if (endpoint == null) {
@@ -340,11 +325,10 @@ public class ConnectionContextFactory implements AutoCloseable {
     /**
      * Creates a message producer using the context's session and destination.
      *
-     * @param context
-     *            the context where the new producer is stored
-     * @throws JMSException
-     * @throws IllegalStateException
-     *             if the context is null or the context's session is null or the context's destination is null
+     * @param context the context where the new producer is stored
+     * @throws JMSException any error
+     * @throws IllegalStateException if the context is null or the context's session is null
+     *                               or the context's destination is null
      */
     protected void createProducer(ProducerConnectionContext context) throws JMSException {
         if (context == null) {
@@ -365,13 +349,11 @@ public class ConnectionContextFactory implements AutoCloseable {
     /**
      * Creates a message consumer using the context's session and destination.
      *
-     * @param context
-     *            the context where the new consumer is stored
-     * @param messageSelector
-     *            the message selector expression that the consumer will use to filter messages
-     * @throws JMSException
-     * @throws IllegalStateException
-     *             if the context is null or the context's session is null or the context's destination is null
+     * @param context the context where the new consumer is stored
+     * @param messageSelector the message selector expression that the consumer will use to filter messages
+     * @throws JMSException any error
+     * @throws IllegalStateException if the context is null or the context's session is null
+     *                               or the context's destination is null
      */
     protected void createConsumer(ConsumerConnectionContext context, String messageSelector) throws JMSException {
         if (context == null) {

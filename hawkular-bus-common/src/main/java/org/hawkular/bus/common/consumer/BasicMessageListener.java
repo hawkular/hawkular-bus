@@ -54,7 +54,7 @@ public abstract class BasicMessageListener<T extends BasicMessage> extends Abstr
     /**
      * Subclasses implement this method to process the received message.
      *
-     * @param message the message to process
+     * @param basicMessage the message to process
      */
     protected abstract void onBasicMessage(T basicMessage);
 }

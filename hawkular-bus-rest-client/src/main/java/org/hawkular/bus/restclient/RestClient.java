@@ -53,7 +53,7 @@ public class RestClient {
     /**
      * Creates the sender with a default HTTP endpoint of the REST server.
      *
-     * @param host
+     * @param host the remote server
      * @param port if null or -1, no port will be specified in the URL
      * @throws RestClientException if the endpoint cannot be used to refer to queues or topics
      *                             or if one of the parameters consists of invalid URL syntax
@@ -66,7 +66,7 @@ public class RestClient {
      * Creates the sender with a default endpoint of the REST server.
      *
      * @param protocol http or https
-     * @param host
+     * @param host the remote server
      * @param port if null or -1, no port will be specified in the URL
      * @throws RestClientException if the endpoint cannot be used to refer to queues or topics
      *                             or if one of the parameters consists of invalid URL syntax

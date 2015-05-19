@@ -124,7 +124,7 @@ public abstract class RPCBasicMessageListener<T extends BasicMessage, U extends 
     /**
      * Subclasses implement this method to process the received message.
      *
-     * @param message the message to process
+     * @param basicMessage the message to process
      * @return the response message - this will be forwarded to the sender of the request message
      */
     protected abstract U onBasicMessage(T basicMessage);

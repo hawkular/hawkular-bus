@@ -50,9 +50,9 @@ public class MessageProcessor {
      *
      * @param context information that determines where to listen
      * @param listener the listener that processes the incoming messages
-     * @throws JMSException
+     * @throws JMSException any error
      *
-     * @see {@link org.hawkular.bus.common.ConnectionContextFactory#createConsumerConnectionContext(Endpoint)}
+     * @see org.hawkular.bus.common.ConnectionContextFactory#createConsumerConnectionContext(Endpoint)
      */
     public <T extends BasicMessage> void listen(ConsumerConnectionContext context,
             AbstractBasicMessageListener<T> listener) throws JMSException {
@@ -89,9 +89,9 @@ public class MessageProcessor {
      * @param basicMessage the message to send with optional headers included
      * @param headers headers for the JMS transport that will override same-named headers in the basic message
      * @return the message ID
-     * @throws JMSException
+     * @throws JMSException any error
      *
-     * @see {@link ConnectionContextFactory#createProducerConnectionContext(Endpoint)}
+     * @see ConnectionContextFactory#createProducerConnectionContext(Endpoint)
      */
     public MessageId send(ProducerConnectionContext context, BasicMessage basicMessage, Map<String, String> headers)
             throws JMSException {
@@ -148,7 +148,7 @@ public class MessageProcessor {
      * expect multiple response messages.
      *
      * If the caller merely wants to wait for a single response and obtain the response message to process it further,
-     * consider using instead the method {@link #sendRPC(ProducerConnectionContext, BasicMessage)} and use its returned
+     * consider using instead the method {@link #sendRPC} and use its returned
      * Future to wait for the response, rather than having to supply your own response listener.
      *
      * @param context information that determines where the message is sent
@@ -157,12 +157,10 @@ public class MessageProcessor {
      *            its associated consumer when appropriate.
      * @param headers headers for the JMS transport that will override same-named headers in the basic message
      *
-     * @param T the expected basic message type that will be received as the response to the request
-     *
      * @return the RPC context which includes information about the handling of the expected response
-     * @throws JMSException
+     * @throws JMSException any error
      *
-     * @see {@link org.hawkular.bus.common.ConnectionContextFactory#createProducerConnectionContext(Endpoint)}
+     * @see org.hawkular.bus.common.ConnectionContextFactory#createProducerConnectionContext(Endpoint)
      */
     public <T extends BasicMessage> RPCConnectionContext sendAndListen(ProducerConnectionContext context,
             BasicMessage basicMessage, BasicMessageListener<T> responseListener, Map<String, String> headers)
@@ -247,12 +245,10 @@ public class MessageProcessor {
      * @param expectedResponseMessageClass this is the message class of the expected response object.
      * @param headers headers for the JMS transport that will override same-named headers in the basic message
      *
-     * @param R the expected basic message type that will be received as the response to the request
-     *
      * @return a future that allows you to wait for and get the response of the given response type
-     * @throws JMSException
+     * @throws JMSException any error
      *
-     * @see {@link org.hawkular.bus.common.ConnectionContextFactory#createProducerConnectionContext(Endpoint)}
+     * @see org.hawkular.bus.common.ConnectionContextFactory#createProducerConnectionContext(Endpoint)
      */
     public <R extends BasicMessage> ListenableFuture<R> sendRPC(ProducerConnectionContext context,
             BasicMessage basicMessage, Class<R> expectedResponseMessageClass, Map<String, String> headers)
@@ -278,7 +274,7 @@ public class MessageProcessor {
      *                     optional headers included
      * @param headers headers for the Message that will override same-named headers in the basic message
      * @return the message that can be produced
-     * @throws JMSException
+     * @throws JMSException any error
      * @throws NullPointerException if the context is null or the context's session is null
      */
     protected Message createMessage(ConnectionContext context, BasicMessage basicMessage, Map<String, String> headers)

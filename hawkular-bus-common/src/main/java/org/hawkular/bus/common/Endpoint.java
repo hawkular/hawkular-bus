@@ -36,7 +36,7 @@ public class Endpoint {
     /**
      * An endpoint as specified in URI format: "type://name"
      *
-     * @param destination
+     * @param destination the endpoint
      * @throws IllegalArgumentException invalid or null destination string
      */
     public Endpoint(String destination) throws IllegalArgumentException {

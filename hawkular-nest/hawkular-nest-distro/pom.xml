@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.hawkular.nest</groupId>
     <artifactId>hawkular-nest-parent</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
   </parent>
 
   <artifactId>hawkular-nest-distro</artifactId>
@@ -197,7 +197,7 @@
               <edit>
                 <insert>
                   <select>/server/socket-binding-group[@name='standard-sockets']</select>
-                  <xml><![CDATA[<socket-binding name="org.hawkular.bus.broker.discovery" port="0" multicast-address="224.0.0.4" multicast-port="63636"/>]]></xml>
+                  <xml><![CDATA[<socket-binding name="org.hawkular.bus.broker.discovery" port="0" multicast-address="224.0.0.4" multicast-port="63636" />]]></xml>
                   <attribute>name</attribute>
                 </insert>
               </edit>
@@ -296,8 +296,7 @@
                 <configuration>
                   <target>
                     <unzip src="${project.build.directory}/${project.build.finalName}-distribution.zip" dest="${project.build.directory}" />
-                    <chmod dir="${project.build.directory}/${wildfly.dist.zip.root.dir}/bin" includes="*.sh"
-                      perm="u+x" type="file" />
+                    <chmod dir="${project.build.directory}/${wildfly.dist.zip.root.dir}/bin" includes="*.sh" perm="u+x" type="file" />
                   </target>
                 </configuration>
                 <goals>

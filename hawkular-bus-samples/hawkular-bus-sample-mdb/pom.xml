@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.hawkular.bus</groupId>
     <artifactId>hawkular-bus-samples-parent</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
   </parent>
 
   <artifactId>hawkular-bus-sample-mdb</artifactId>
@@ -106,8 +106,7 @@
                 <phase>install</phase>
                 <configuration>
                   <target>
-                    <property name="org.hawkular.wildfly.home"
-                      value="${basedir}/../../../hawkular-bus/hawkular-nest/hawkular-nest-distro/target/wildfly-${version.org.wildfly}" />
+                    <property name="org.hawkular.wildfly.home" value="${basedir}/../../../hawkular-bus/hawkular-nest/hawkular-nest-distro/target/wildfly-${version.org.wildfly}" />
                     <property name="org.hawkular.wildfly.deployments" value="modules/system/layers/base/org/hawkular/nest/main/deployments" />
                     <copy file="${project.build.directory}/${project.build.finalName}.war" todir="${org.hawkular.wildfly.home}/${org.hawkular.wildfly.deployments}" />
                   </target>

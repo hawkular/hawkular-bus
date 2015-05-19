@@ -33,6 +33,13 @@
   <name>Hawkular Bus Framework</name>
   <inceptionYear>2015</inceptionYear>
 
+  <scm>
+    <connection>scm:git:git@github.com:hawkular/hawkular-bus.git</connection>
+    <developerConnection>scm:git:git@github.com:hawkular/hawkular-bus.git</developerConnection>
+    <url>https://github.com/hawkular/hawkular-bus</url>
+    <tag>head</tag>
+  </scm>
+
   <modules>
     <module>hawkular-bus-common</module>
     <module>hawkular-bus-mdb</module>

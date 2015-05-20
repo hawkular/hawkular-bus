@@ -42,7 +42,7 @@ public class ProducerConnection extends ConnectionContextFactory {
     protected void prepareProducer(String brokerURL, Endpoint endpoint) throws JMSException {
         pcc = new ProducerConnectionContext();
         createConnection(pcc);
-        setConnection(pcc.getConnection());
+        cacheConnection(pcc.getConnection(), false);
         getConnection().start();
         createSession(pcc);
         createDestination(pcc, endpoint);

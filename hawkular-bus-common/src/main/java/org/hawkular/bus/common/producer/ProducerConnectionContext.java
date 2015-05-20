@@ -16,6 +16,9 @@
  */
 package org.hawkular.bus.common.producer;
 
+import java.io.IOException;
+
+import javax.jms.JMSException;
 import javax.jms.MessageProducer;
 
 import org.hawkular.bus.common.ConnectionContext;
@@ -29,5 +32,18 @@ public class ProducerConnectionContext extends ConnectionContext {
 
     public void setMessageProducer(MessageProducer producer) {
         this.producer = producer;
+    }
+
+    @Override
+    public void close() throws IOException {
+        if (producer != null) {
+            try {
+                producer.close();
+            } catch (JMSException e) {
+                throw new IOException(e);
+            }
+        }
+
+        super.close();
     }
 }

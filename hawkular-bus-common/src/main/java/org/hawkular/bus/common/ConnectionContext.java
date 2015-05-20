@@ -16,15 +16,19 @@
  */
 package org.hawkular.bus.common;
 
+import java.io.Closeable;
+import java.io.IOException;
+
 import javax.jms.Connection;
 import javax.jms.Destination;
+import javax.jms.JMSException;
 import javax.jms.Session;
 
 /**
  * This is a simple POJO that just contains objects related to particular connection. This object does not distinguish
  * between a producer's connection or consumer's connection - that is the job of the subclasses.
  */
-public class ConnectionContext {
+public class ConnectionContext implements Closeable {
     private Connection connection;
     private Session session;
     private Destination destination;
@@ -62,5 +66,23 @@ public class ConnectionContext {
         this.connection = source.connection;
         this.session = source.session;
         this.destination = source.destination;
+    }
+
+    @Override
+    public void close() throws IOException {
+        if (session != null) {
+            try {
+                session.close();
+            } catch (JMSException e) {
+                throw new IOException(e);
+            }
+        }
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (JMSException e) {
+                throw new IOException(e);
+            }
+        }
     }
 }

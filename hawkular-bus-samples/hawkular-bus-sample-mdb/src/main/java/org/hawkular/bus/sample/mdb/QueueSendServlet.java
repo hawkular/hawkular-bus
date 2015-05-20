@@ -66,17 +66,18 @@ public class QueueSendServlet extends HttpServlet {
             InitialContext ctx = new InitialContext();
             QueueConnectionFactory qconFactory = (QueueConnectionFactory) ctx.lookup(CONN_FACTORY);
 
-            ConnectionContextFactory ccf = new ConnectionContextFactory(qconFactory);
-            ProducerConnectionContext pcc = ccf.createProducerConnectionContext(new Endpoint(Endpoint.Type.QUEUE,
-                    QUEUE_NAME));
+            try (ConnectionContextFactory ccf = new ConnectionContextFactory(qconFactory)) {
+                ProducerConnectionContext pcc = ccf.createProducerConnectionContext(new Endpoint(Endpoint.Type.QUEUE,
+                        QUEUE_NAME));
 
-            SimpleBasicMessage msg = new SimpleBasicMessage(userMessage);
-            MessageId mid = new MessageProcessor().send(pcc, msg, FNF_HEADER);
+                SimpleBasicMessage msg = new SimpleBasicMessage(userMessage);
+                MessageId mid = new MessageProcessor().send(pcc, msg, FNF_HEADER);
 
-            PrintWriter out = response.getWriter();
-            out.println("<h1>Fire and Forget</h1>");
-            out.println("<p>Message Sent [" + msg + "]</p>");
-            out.println("<p>(messageId=" + mid + ")</p>");
+                PrintWriter out = response.getWriter();
+                out.println("<h1>Fire and Forget</h1>");
+                out.println("<p>Message Sent [" + msg + "]</p>");
+                out.println("<p>(messageId=" + mid + ")</p>");
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -100,6 +101,7 @@ public class QueueSendServlet extends HttpServlet {
             out.println("<h1>RPC</h1>");
             out.println("<p>Message Sent [" + msg + "]</p>");
             out.println("<p>Check server logs for response.</p>");
+
         } catch (Exception e) {
             e.printStackTrace();
         }

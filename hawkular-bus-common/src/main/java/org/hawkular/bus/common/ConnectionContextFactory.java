@@ -35,11 +35,12 @@ import org.jboss.logging.Logger;
  * {@link ConsumerConnectionContext consumer} contexts. You can then pass these created contexts to
  * {@link MessageProcessor} to send and receive messages.
  *
- * This class can cache a connection that can then be used to share across multiple contexts. See
- * {@link #createOrReuseConnection(ConnectionContext, boolean)}.
+ * This class can reuse a connection so that it is shared across multiple contexts. See
+ * {@link #createOrReuseConnection(ConnectionContext, boolean)}. If this object was told not to reuse
+ * its connection, it will create a new connection for each context is creates.
  *
  * When you are done with sending and receiving messages through the created contexts, you should call {@link #close()}
- * to free up resources and close all connections to the broker.
+ * to free up resources and close the connection to the broker.
  *
  * Subclasses are free to extend this class to add or override functionality or to provide stricter type-checking.
  */
@@ -47,6 +48,7 @@ public class ConnectionContextFactory implements AutoCloseable {
 
     private final MsgLogger msglog = MsgLogger.LOGGER;
     private final Logger log = Logger.getLogger(ConnectionContextFactory.class);
+    private final boolean reuseConnection;
     protected final ConnectionFactory connectionFactory;
     private Connection connection;
 
@@ -59,7 +61,23 @@ public class ConnectionContextFactory implements AutoCloseable {
      * @throws JMSException any error
      */
     public ConnectionContextFactory(String brokerURL) throws JMSException {
-        connectionFactory = new ActiveMQConnectionFactory(brokerURL);
+        this(false, brokerURL);
+    }
+
+    /**
+     * Initializes the factory with the given broker URL.
+     *
+     * @param reuseConnection if true this factory will reuse its connection so contexts it creates can share it.
+     *                        Use this with caution because if a shared connection is closed, all contexts created
+     *                        with that connection will no longer work.
+     * @param brokerURL the broker that is used for the contexts created by this factory;
+     *                  all messages sent and received through the contexts will go through this broker.
+     *
+     * @throws JMSException any error
+     */
+    public ConnectionContextFactory(boolean reuseConnection, String brokerURL) throws JMSException {
+        this.reuseConnection = reuseConnection;
+        this.connectionFactory = new ActiveMQConnectionFactory(brokerURL);
         log.debugf("%s has been created: %s", this.getClass().getSimpleName(), brokerURL);
     }
 
@@ -74,7 +92,26 @@ public class ConnectionContextFactory implements AutoCloseable {
      * @throws JMSException any error
      */
     public ConnectionContextFactory(String brokerURL, String username, String password) throws JMSException {
-        connectionFactory = new ActiveMQConnectionFactory(username, password, brokerURL);
+        this(false, brokerURL, username, password);
+    }
+
+    /**
+     * Initializes the factory with the given broker URL and the given security credentials.
+     *
+     * @param reuseConnection if true this factory will reuse its connection so contexts it creates can share it.
+     *                        Use this with caution because if a shared connection is closed, all contexts created
+     *                        with that connection will no longer work.
+     * @param brokerURL the broker that is used for the contexts created by this factory;
+     *                  all messages sent and received through the contexts will go through this broker.
+     * @param username user to connect to
+     * @param password credentials of user
+     *
+     * @throws JMSException any error
+     */
+    public ConnectionContextFactory(boolean reuseConnection, String brokerURL, String username, String password)
+            throws JMSException {
+        this.reuseConnection = reuseConnection;
+        this.connectionFactory = new ActiveMQConnectionFactory(username, password, brokerURL);
         log.debugf("%s has been created: [%s] with username [%s]", this.getClass().getSimpleName(), brokerURL,
                 username);
     }
@@ -87,6 +124,21 @@ public class ConnectionContextFactory implements AutoCloseable {
      * @throws JMSException any error
      */
     public ConnectionContextFactory(ConnectionFactory connectionFactory) throws JMSException {
+        this(false, connectionFactory);
+    }
+
+    /**
+     * Initializes with the given factory.
+     *
+     * @param reuseConnection if true this factory will reuse its connection so contexts it creates can share it.
+     *                        Use this with caution because if a shared connection is closed, all contexts created
+     *                        with that connection will no longer work.
+     * @param connectionFactory the factory that will be used to create contexts.
+     *
+     * @throws JMSException any error
+     */
+    public ConnectionContextFactory(boolean reuseConnection, ConnectionFactory connectionFactory) throws JMSException {
+        this.reuseConnection = reuseConnection;
         this.connectionFactory = connectionFactory;
         log.debugf("%s has been created with an existing connection factory: %s", this.getClass().getSimpleName(),
                 connectionFactory);
@@ -143,19 +195,25 @@ public class ConnectionContextFactory implements AutoCloseable {
     }
 
     /**
-     * This method should be called when this context factory is no longer needed. This will free up
-     * resources and close any open connections it has cached.
-     * Note this will invalidate contexts created by this factory.
+     * This will close its open connection that it has cached, thus freeing up resources.
+     * This method should be called when this context factory is no longer needed. But realize
+     * that any contexts that were created with the cached connection will be invalidated
+     * since this method will close that connection.
      *
      * @throws JMSException any error
      */
     @Override
     public void close() throws JMSException {
-        Connection conn = getConnection();
-        if (conn != null) {
-            conn.close();
-        }
+        cacheConnection(null, true);
         log.debugf("%s has been closed", this);
+    }
+
+    /**
+     * @return true if this factory will reuse its connection. Otherwise,
+     *         it will always create new connections for each context it creates.
+     */
+    protected boolean isReuseConnection() {
+        return reuseConnection;
     }
 
     protected ConnectionFactory getConnectionFactory() {
@@ -177,6 +235,7 @@ public class ConnectionContextFactory implements AutoCloseable {
 
     /**
      * To store a connection in this processor object, call this setter.
+     * If there was already a cached connection, it will be closed.
      *
      * NOTE: Calling {@link #createConnection(ConnectionContext)} does
      * <b>not</b> set this processor's connection - that method only creates the
@@ -186,11 +245,15 @@ public class ConnectionContextFactory implements AutoCloseable {
      * also {@link #createOrReuseConnection(ConnectionContext, boolean)}.
      *
      * @param connection the connection
+     * @param closeExistingConnection if true, and if there was already a connection
+     *                                cached, that connection will be closed. Otherwise
+     *                                it will be left alone but the new connection
+     *                                will take its place.
      *
      * @see #createOrReuseConnection(ConnectionContext, boolean)
      */
-    protected void setConnection(Connection connection) {
-        if (this.connection != null) {
+    protected void cacheConnection(Connection connection, boolean closeExistingConnection) {
+        if (this.connection != null && closeExistingConnection) {
             try {
                 // make sure it is closed to free up any resources it was using
                 this.connection.close();
@@ -198,6 +261,7 @@ public class ConnectionContextFactory implements AutoCloseable {
                 msglog.errorCannotCloseConnectionMemoryMightLeak(e);
             }
         }
+
         this.connection = connection;
     }
 
@@ -211,20 +275,33 @@ public class ConnectionContextFactory implements AutoCloseable {
      * is created or reused, that connection will be stored in the given
      * context.
      *
+     * Note that if this object was told not to cache connections, this method
+     * will always create a new connection and store it in this object, overwriting
+     * any previously created connection (see {@link #cacheConnection}).
+     *
      * @param context the connection will be stored in this context
      * @param start if true, the created connection will be started.
      * @throws JMSException any error
      */
     protected void createOrReuseConnection(ConnectionContext context, boolean start) throws JMSException {
-        Connection conn = getConnection();
-        if (conn != null) {
-            // already have a connection cached, give it to the context
-            context.setConnection(conn);
+        Connection conn;
+
+        if (isReuseConnection()) {
+            conn = getConnection();
+            if (conn != null) {
+                // already have a connection cached, give it to the context
+                context.setConnection(conn);
+            } else {
+                // there is no connection yet; create it and cache it
+                createConnection(context);
+                conn = context.getConnection();
+                cacheConnection(conn, false);
+            }
         } else {
-            // there is no connection yet; create it and cache it
+            // we are not to cache connections - always create one
             createConnection(context);
             conn = context.getConnection();
-            setConnection(conn);
+            cacheConnection(conn, false);
         }
 
         if (start) {
@@ -234,7 +311,7 @@ public class ConnectionContextFactory implements AutoCloseable {
                 conn.start();
             } catch (JMSException e) {
                 msglog.errorFailedToStartConnection(e);
-                setConnection(null);
+                cacheConnection(null, true);
                 throw e;
             }
         }
@@ -246,7 +323,7 @@ public class ConnectionContextFactory implements AutoCloseable {
      *
      * NOTE: this does <b>not</b> set the connection in this processor object.
      * If the caller wants the created connection cached in this processor
-     * object, {@link #setConnection(Connection)} must be passed the connection
+     * object, {@link #cacheConnection} must be passed the connection
      * found in the context after this method returns. See also
      * {@link #createOrReuseConnection(ConnectionContext, boolean)}.
      *
@@ -255,7 +332,7 @@ public class ConnectionContextFactory implements AutoCloseable {
      * @throws IllegalStateException if the context is null
      *
      * @see #createOrReuseConnection(ConnectionContext, boolean)
-     * @see #setConnection(Connection)
+     * @see #cacheConnection
      */
     protected void createConnection(ConnectionContext context) throws JMSException {
         if (context == null) {

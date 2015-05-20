@@ -77,6 +77,10 @@ public interface MsgLogger {
     void errorCannotStoreIncomingMessageFutureInvalid();
 
     @LogMessage(level = Level.ERROR)
-    @Message(id = 100011, value = "Failed to close consumer")
+    @Message(id = 100011, value = "Failed to close consumer in future")
     void errorFailedToCloseFutureConsumer(@Cause Throwable t);
+
+    @LogMessage(level = Level.ERROR)
+    @Message(id = 100012, value = "Failed to close resources used to reply to RPC client")
+    void errorFailedToCloseResourcesToRPCClient(@Cause Throwable t);
 }

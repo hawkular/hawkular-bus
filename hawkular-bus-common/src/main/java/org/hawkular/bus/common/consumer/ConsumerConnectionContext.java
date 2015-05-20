@@ -16,6 +16,9 @@
  */
 package org.hawkular.bus.common.consumer;
 
+import java.io.IOException;
+
+import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
 
 import org.hawkular.bus.common.ConnectionContext;
@@ -29,5 +32,18 @@ public class ConsumerConnectionContext extends ConnectionContext {
 
     public void setMessageConsumer(MessageConsumer consumer) {
         this.consumer = consumer;
+    }
+
+    @Override
+    public void close() throws IOException {
+        if (consumer != null) {
+            try {
+                consumer.close();
+            } catch (JMSException e) {
+                throw new IOException(e);
+            }
+        }
+
+        super.close();
     }
 }

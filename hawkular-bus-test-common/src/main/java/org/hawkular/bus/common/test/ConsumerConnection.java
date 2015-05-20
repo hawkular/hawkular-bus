@@ -45,7 +45,7 @@ public class ConsumerConnection extends ConnectionContextFactory {
             throws JMSException {
         ccc = new ConsumerConnectionContext();
         createConnection(ccc);
-        setConnection(ccc.getConnection());
+        cacheConnection(ccc.getConnection(), false);
         getConnection().start();
         createSession(ccc);
         createDestination(ccc, endpoint);

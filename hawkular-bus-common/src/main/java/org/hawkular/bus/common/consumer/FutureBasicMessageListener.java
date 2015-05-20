@@ -16,6 +16,7 @@
  */
 package org.hawkular.bus.common.consumer;
 
+import java.io.IOException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CancellationException;
@@ -24,11 +25,9 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.jms.JMSException;
-import javax.jms.MessageConsumer;
-
 import org.hawkular.bus.common.BasicMessage;
 import org.hawkular.bus.common.log.MsgLogger;
+import org.jboss.logging.Logger;
 
 import com.google.common.util.concurrent.ExecutionList;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -165,13 +164,12 @@ public class FutureBasicMessageListener<T extends BasicMessage> extends BasicMes
         }
     }
 
-    protected void closeConsumer() throws JMSException {
+    protected void closeConsumer() throws IOException {
         ConsumerConnectionContext cc = getConsumerConnectionContext();
         if (cc != null) {
-            MessageConsumer consumer = cc.getMessageConsumer();
-            if (consumer != null) {
-                consumer.close();
-            }
+            Logger.getLogger(getClass()).debugf("Future listener closing consumer on destination [%s]",
+                    cc.getDestination());
+            cc.close();
         }
         return;
     }

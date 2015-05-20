@@ -16,6 +16,8 @@
  */
 package org.hawkular.bus.common.consumer;
 
+import java.io.IOException;
+
 import javax.jms.Destination;
 import javax.jms.Message;
 import javax.jms.Session;
@@ -82,17 +84,20 @@ public abstract class RPCBasicMessageListener<T extends BasicMessage, U extends 
         U responseBasicMessage = onBasicMessage(basicMessage);
 
         // send the response back to the sender of the request
+        ConsumerConnectionContext consumerConnectionContext = null;
         try {
             Destination replyTo = message.getJMSReplyTo();
 
             if (replyTo != null) {
+                getLog().debugf("RPC client asked to get response sent to [%s]", replyTo);
+
                 MessageProcessor sender = getMessageSender();
                 if (sender == null) {
                     msglog.errorNoMessageSenderInListener();
                     return;
                 }
 
-                ConsumerConnectionContext consumerConnectionContext = getConsumerConnectionContext();
+                consumerConnectionContext = getConsumerConnectionContext();
                 if (consumerConnectionContext == null) {
                     msglog.errorNoConnectionContextInListener();
                     return;
@@ -106,11 +111,10 @@ public abstract class RPCBasicMessageListener<T extends BasicMessage, U extends 
                 Session session = producerContext.getSession();
                 if (session == null) {
                     msglog.errorNoSessionInListener();
-                    return;
+                } else {
+                    producerContext.setMessageProducer(session.createProducer(replyTo));
+                    sender.send(producerContext, responseBasicMessage);
                 }
-                producerContext.setMessageProducer(session.createProducer(replyTo));
-
-                sender.send(producerContext, responseBasicMessage);
 
             } else {
                 getLog().debug("Sender did not tell us where to reply - will not send any response back");
@@ -118,6 +122,14 @@ public abstract class RPCBasicMessageListener<T extends BasicMessage, U extends 
         } catch (Exception e) {
             msglog.errorFailedToSendResponse(e);
             return;
+        } finally {
+            if (consumerConnectionContext != null) {
+                try {
+                    consumerConnectionContext.close();
+                } catch (IOException e) {
+                    msglog.errorFailedToCloseResourcesToRPCClient(e);
+                }
+            }
         }
     }
 

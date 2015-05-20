@@ -83,6 +83,7 @@
       </plugin>
 
       <!-- purge any previous nest distro dependency we extracted, ensures a fresh standalone.xml -->
+      <!-- THIS SCREWS US UP WHEN USING RELEASE PLUGIN
       <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
@@ -101,6 +102,7 @@
           </execution>
         </executions>
       </plugin>
+      -->
 
       <!-- unpack the wildfly distribution and copy our hawkular modules in a tmp location -->
       <plugin>

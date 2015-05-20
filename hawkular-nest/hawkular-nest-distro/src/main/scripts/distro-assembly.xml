@@ -31,7 +31,7 @@
     <!-- non-binary files -->
     <fileSet>
       <directory>${assembly.dir}</directory>
-      <outputDirectory>/</outputDirectory>
+      <outputDirectory></outputDirectory>
       <excludes>
         <exclude>**/*.sh</exclude>
       </excludes>
@@ -43,7 +43,7 @@
     <!-- all scripts and other files that go in the /bin directory - will have u+x file perm set-->
     <fileSet>
       <directory>${assembly.dir}</directory>
-      <outputDirectory>/</outputDirectory>
+      <outputDirectory></outputDirectory>
       <includes>
         <include>**/*.sh</include>
       </includes>

@@ -66,15 +66,15 @@ public class BrokerSubsystemExtension implements Extension {
     // will be set as system properties whose values will be the values that are given to the extension.
     // If a user wants to use their own broker XML file, then they can re-use these ${x} variables in that configuration
     // file to maintain configurability via the extension rather than hardcoding them into the xml file itself.
-    protected static final String BROKER_NAME_SYSPROP = "org.hawkular.bus.broker.name";
-    protected static final String BROKER_PERSISTENT_SYSPROP = "org.hawkular.bus.broker.persistent";
-    protected static final String BROKER_USE_JMX_SYSPROP = "org.hawkular.bus.broker.use-jmx";
-    protected static final String BROKER_CONNECTOR_NAME_SYSPROP = "org.hawkular.bus.broker.connector.name";
-    protected static final String BROKER_CONNECTOR_PROTOCOL_SYSPROP = "org.hawkular.bus.broker.connector.protocol";
-    protected static final String BROKER_CONNECTOR_ADDRESS_SYSPROP = "org.hawkular.bus.broker.connector.address";
-    protected static final String BROKER_CONNECTOR_PORT_SYSPROP = "org.hawkular.bus.broker.connector.port";
-    protected static final String BROKER_DISCOVERY_ADDRESS_SYSPROP = "org.hawkular.bus.broker.discovery.address";
-    protected static final String BROKER_DISCOVERY_PORT_SYSPROP = "org.hawkular.bus.broker.discovery.port";
+    protected static final String BROKER_NAME_SYSPROP = "org-hawkular-bus-broker-name";
+    protected static final String BROKER_PERSISTENT_SYSPROP = "org-hawkular-bus-broker-persistent";
+    protected static final String BROKER_USE_JMX_SYSPROP = "org-hawkular-bus-broker-use-jmx";
+    protected static final String BROKER_CONNECTOR_NAME_SYSPROP = "org-hawkular-bus-broker-connector-name";
+    protected static final String BROKER_CONNECTOR_PROTOCOL_SYSPROP = "org-hawkular-bus-broker-connector-protocol";
+    protected static final String BROKER_CONNECTOR_ADDRESS_SYSPROP = "org-hawkular-bus-broker-connector-address";
+    protected static final String BROKER_CONNECTOR_PORT_SYSPROP = "org-hawkular-bus-broker-connector-port";
+    protected static final String BROKER_DISCOVERY_ADDRESS_SYSPROP = "org-hawkular-bus-broker-discovery-address";
+    protected static final String BROKER_DISCOVERY_PORT_SYSPROP = "org-hawkular-bus-broker-discovery-port";
 
     // The following define the XML elements and attributes of the extension itself (these appear in WildFly's
     // standalone.xml for this extension).

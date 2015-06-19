@@ -124,13 +124,13 @@
     </dependency>
 
     <dependency>
-      <groupId>org.wildfly</groupId>
+      <groupId>org.wildfly.core</groupId>
       <artifactId>wildfly-controller</artifactId>
       <scope>provided</scope>
     </dependency>
 
     <dependency>
-      <groupId>org.wildfly</groupId>
+      <groupId>org.wildfly.core</groupId>
       <artifactId>wildfly-server</artifactId>
       <scope>provided</scope>
     </dependency>
@@ -143,7 +143,7 @@
     </dependency>
 
     <dependency>
-      <groupId>org.wildfly</groupId>
+      <groupId>org.wildfly.core</groupId>
       <artifactId>wildfly-subsystem-test-framework</artifactId>
       <scope>test</scope>
     </dependency>

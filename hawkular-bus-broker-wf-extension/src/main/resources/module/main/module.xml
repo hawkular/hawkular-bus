@@ -23,8 +23,8 @@
   <resources>
     <!--  Resources not replicated in the activemg rar, which is declared and exported below -->
     <resource-root path="${project.build.finalName}.jar" />
-    <resource-root path="activemq-jaas-5.10.0.jar" />
-    <resource-root path="activemq-web-5.10.0.jar" />
+    <resource-root path="activemq-jaas-${version.org.apache.activemq}.jar" />
+    <resource-root path="activemq-web-${version.org.apache.activemq}.jar" />
     <resource-root path="jetty-continuation-7.6.9.v20130131.jar" />
     <resource-root path="jetty-http-7.6.9.v20130131.jar" />
     <resource-root path="jetty-io-7.6.9.v20130131.jar" />

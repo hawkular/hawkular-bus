@@ -18,11 +18,11 @@
 
 -->
 
-<module xmlns="urn:jboss:module:1.0" name="org.hawkular.bus.broker">
+<module xmlns="urn:jboss:module:1.0" name="${moduleName}">
 
   <resources>
     <!--  Resources not replicated in the activemg rar, which is declared and exported below -->
-    <resource-root path="hawkular-bus-broker-wf-extension-0.1.1-SNAPSHOT.jar" />
+    <resource-root path="${project.build.finalName}.jar" />
     <resource-root path="activemq-jaas-5.10.0.jar" />
     <resource-root path="activemq-web-5.10.0.jar" />
     <resource-root path="jetty-continuation-7.6.9.v20130131.jar" />
@@ -30,7 +30,7 @@
     <resource-root path="jetty-io-7.6.9.v20130131.jar" />
     <resource-root path="jetty-util-7.6.9.v20130131.jar" />
     <resource-root path="jetty-websocket-7.6.9.v20130131.jar" />
-    <resource-root path="hawkular-bus-broker-0.1.1-SNAPSHOT.jar" />
+    <resource-root path="hawkular-bus-broker-${project.version}.jar" />
     <resource-root path="rome-1.0.jar" />
     <resource-root path="spring-web-3.2.8.RELEASE.jar" />
     <resource-root path="spring-webmvc-3.2.8.RELEASE.jar" />

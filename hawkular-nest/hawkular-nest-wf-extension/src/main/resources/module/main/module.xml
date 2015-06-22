@@ -29,7 +29,7 @@
   </resources>
 
   <dependencies>
-    <module name="org.hawkular.bus.broker" />
+    <module name="org.hawkular.bus.broker" export="true" />
 
     <!-- modules required by any subsystem -->
     <module name="javax.api" />
@@ -44,7 +44,7 @@
     <!-- other dependencies we need -->
     <module name="com.google.guava" export="true" />
     <module name="gnu.getopt" />
-    <module name="javax.jms.api" />
+    <module name="javax.jms.api"  export="true" />
     <module name="javax.management.j2ee.api" />
     <module name="javax.transaction.api" />
     <module name="org.apache.commons.logging" />

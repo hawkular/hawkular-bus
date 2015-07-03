@@ -16,18 +16,20 @@
  */
 package org.hawkular.bus.common.test;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.Map;
-
 import org.hawkular.bus.common.SimpleBasicMessage;
-
-import com.google.gson.annotations.Expose;
 
 /**
  * Test subclass of BasicMessage.
  */
 public class SpecificMessage extends SimpleBasicMessage {
-    @Expose
+    @JsonInclude
     private final String specific;
+
+    public SpecificMessage() {
+        this.specific = null;
+    }
 
     public SpecificMessage(String message, Map<String, String> details, String specific) {
         super(message, details);

@@ -16,9 +16,12 @@
  */
 package org.hawkular.bus.common;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.annotations.Expose;
+import java.io.IOException;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * A message that contains a complex object, which gets serialized into JSON.
@@ -29,7 +32,7 @@ import com.google.gson.annotations.Expose;
  * @author John Mazzitelli
  */
 public class ObjectMessage extends BasicMessage {
-    @Expose
+    @JsonInclude
     private String message; // the object in JSON form
     private Class<?> objectClass; // the ad-hoc class that this object message represents
 
@@ -43,9 +46,19 @@ public class ObjectMessage extends BasicMessage {
         }
         setObjectClass(object.getClass());
 
-        final Gson gson = new GsonBuilder().create();
-        final String msg = gson.toJson(object);
-        setMessage(msg);
+        final ObjectMapper mapper = new ObjectMapper();
+        mapper.setVisibilityChecker(mapper.getSerializationConfig().getDefaultVisibilityChecker()
+                .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
+                .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
+                .withSetterVisibility(JsonAutoDetect.Visibility.NONE)
+                .withCreatorVisibility(JsonAutoDetect.Visibility.NONE));
+        final String msg;
+        try {
+            msg = mapper.writeValueAsString(object);
+            setMessage(msg);
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException("Object cannot be parsed as JSON.", e);
+        }
     }
 
     public ObjectMessage(Class<?> clazz) {
@@ -87,7 +100,11 @@ public class ObjectMessage extends BasicMessage {
             throw new IllegalStateException("Do not know what the class is that represents the JSON data");
         }
 
-        final Gson gson = new GsonBuilder().create();
-        return gson.fromJson(getMessage(), clazz);
+        final ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.readValue(getMessage(), clazz);
+        } catch (IOException e) {
+            throw new IllegalStateException("JSON message cannot be converted to object.", e);
+        }
     }
 }

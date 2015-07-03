@@ -27,8 +27,10 @@ public class ObjectMessageTest {
             assert false : "should have failed - didn't tell it the class";
         } catch (IllegalStateException expected) {
         }
-
-        msg.setMessage("foo");
+        /*
+            Jackson library needs quotes for single json string representation
+         */
+        msg.setMessage("\"foo\"");
         msg.setObjectClass(String.class);
         Object o = msg.getObject();
         assert o.getClass() == String.class;

@@ -20,18 +20,17 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.gson.annotations.Expose;
-
+import com.fasterxml.jackson.annotation.JsonInclude;
 /**
  * A simple message that is sent over the message bus.
  */
 public class SimpleBasicMessage extends BasicMessage {
     // the basic message body - it will be exposed to the JSON output
-    @Expose
+    @JsonInclude
     private String message;
 
     // some optional additional details about the basic message
-    @Expose
+    @JsonInclude
     private Map<String, String> details;
 
     protected SimpleBasicMessage() {

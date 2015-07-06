@@ -64,12 +64,6 @@
       <!-- - A element's inner order is <groupId>, <artifactId>, [<type>,] [<classifier>,] <version> -->
 
       <dependency>
-        <groupId>com.google.code.gson</groupId>
-        <artifactId>gson</artifactId>
-        <version>${version.com.google.code.gson}</version>
-      </dependency>
-
-      <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
         <version>${version.com.google.guava}</version>

@@ -134,7 +134,7 @@
               </includeArtifactIds>
               <stripVersion>true</stripVersion>
               <stripClassifier>true</stripClassifier>
-              <overWriteIfNew>true</overWriteIfNew>
+              <overWriteIfNewer>true</overWriteIfNewer>
               <excludeTransitive>true</excludeTransitive>
             </configuration>
           </execution>

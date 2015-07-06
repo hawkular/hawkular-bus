@@ -16,12 +16,15 @@
  */
 package org.hawkular.bus.common;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Basic information that is sent over the message bus.
@@ -37,8 +40,11 @@ import com.google.gson.GsonBuilder;
  */
 public abstract class BasicMessage {
     // these are passed out-of-band of the message body - these attributes will therefore not be JSON encoded
+    @JsonIgnore
     private MessageId _messageId;
+    @JsonIgnore
     private MessageId _correlationId;
+    @JsonIgnore
     private Map<String, String> _headers;
 
     /**
@@ -50,8 +56,12 @@ public abstract class BasicMessage {
      * @return the message object that was represented by the JSON string
      */
     public static <T extends BasicMessage> T fromJSON(String json, Class<T> clazz) {
-        final Gson gson = createGsonBuilder();
-        return gson.fromJson(json, clazz);
+        final ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.readValue(json, clazz);
+        } catch (IOException e) {
+            throw new IllegalStateException("JSON message cannot be converted to object.", e);
+        }
     }
 
     /**
@@ -60,8 +70,17 @@ public abstract class BasicMessage {
      * @return JSON encoded data that represents this message.
      */
     public String toJSON() {
-        final Gson gson = createGsonBuilder();
-        return gson.toJson(this);
+        final ObjectMapper mapper = new ObjectMapper();
+        mapper.setVisibilityChecker(mapper.getSerializationConfig().getDefaultVisibilityChecker()
+                .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
+                .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
+                .withSetterVisibility(JsonAutoDetect.Visibility.NONE)
+                .withCreatorVisibility(JsonAutoDetect.Visibility.NONE));
+        try {
+            return mapper.writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException("Object cannot be parsed as JSON.", e);
+        }
     }
 
     protected BasicMessage() {
@@ -148,9 +167,5 @@ public abstract class BasicMessage {
         str.append(toJSON());
         str.append("]]");
         return str.toString();
-    }
-
-    protected static Gson createGsonBuilder() {
-        return new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
     }
 }

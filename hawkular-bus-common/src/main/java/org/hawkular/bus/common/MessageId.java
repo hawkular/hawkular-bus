@@ -22,6 +22,10 @@ package org.hawkular.bus.common;
 public class MessageId {
     private final String id;
 
+    public MessageId() {
+        this.id = null;
+    }
+
     public MessageId(String id) {
         if (id == null || id.length() == 0) {
             throw new IllegalArgumentException("ID cannot be null or empty");

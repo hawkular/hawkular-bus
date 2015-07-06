@@ -25,7 +25,6 @@
     <resource-root path="${project.build.finalName}.jar" />
     <resource-root path="hawkular-bus-common-${project.version}.jar" />
     <resource-root path="hawkular-bus-mdb-${project.version}.jar" />
-    <resource-root path="gson-${version.com.google.code.gson}.jar" />
   </resources>
 
   <dependencies>

@@ -25,6 +25,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 
 /**
  * Basic information that is sent over the message bus.
@@ -57,6 +58,7 @@ public abstract class BasicMessage {
      */
     public static <T extends BasicMessage> T fromJSON(String json, Class<T> clazz) {
         final ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         try {
             return mapper.readValue(json, clazz);
         } catch (IOException e) {

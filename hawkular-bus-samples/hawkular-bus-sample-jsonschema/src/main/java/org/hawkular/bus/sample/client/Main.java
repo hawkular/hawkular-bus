@@ -24,6 +24,7 @@ import org.hawkular.bus.common.consumer.ConsumerConnectionContext;
 import org.hawkular.bus.common.producer.ProducerConnectionContext;
 import org.hawkular.bus.sample.msg.Address;
 import org.hawkular.bus.sample.msg.Person;
+import org.hawkular.bus.sample.msg.Person.Title;
 import org.hawkular.bus.sample.msg.PhoneNumber;
 
 /**
@@ -54,9 +55,13 @@ public class Main {
                 @Override
                 protected void onBasicMessage(Person person) {
                     System.out.println("\n========== RECEIVED MESSAGE START ==========");
-                    System.out.printf("Consumed Person: firstN=[%s], lastN=[%s], age=[%d], address.street=[%s]\n",
-                            person.getFirstName(), person.getLastName(), person.getAge(), person.getAddress()
-                                    .getStreet());
+                    System.out.println("Consumed Person:");
+                    System.out.printf("title=[%s], firstN=[%s], lastN=[%s], age=[%d], address.street=[%s]\n",
+                            person.getTitle(),
+                            person.getFirstName(),
+                            person.getLastName(),
+                            person.getAge(),
+                            person.getAddress().getStreet());
                     System.out.println("Consumed Person.toString: " + person.toString());
                     System.out.println("Consumed Person.toJSON: " + person.toJSON());
                     System.out.println("Consumed Person.hashCode: " + person.hashCode());
@@ -85,6 +90,7 @@ public class Main {
             person.setAge(18);
             person.setFirstName("John");
             person.setLastName("Doe");
+            person.setTitle(Title.DR);
             person.getFavoriteColors().add("blue");
             person.getFavoriteColors().add("yellow");
             Address address = new Address();

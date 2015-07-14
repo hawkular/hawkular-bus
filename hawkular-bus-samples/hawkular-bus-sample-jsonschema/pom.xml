@@ -55,7 +55,7 @@
         <configuration>
           <sourceDirectory>${basedir}/src/main/resources/schema</sourceDirectory>
           <targetPackage>org.hawkular.bus.sample.msg</targetPackage>
-          <annotationStyle>jackson</annotationStyle>
+          <annotationStyle>jackson2</annotationStyle>
           <includeToString>false</includeToString>
           <includeHashcodeAndEquals>false</includeHashcodeAndEquals>
           <initializeCollections>true</initializeCollections>

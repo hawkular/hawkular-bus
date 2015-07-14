@@ -5,6 +5,7 @@
     "javaType": "org.hawkular.bus.common.BasicMessage"
   },
   "javaType": "org.hawkular.bus.sample.msg.Person",
+  "additionalProperties": false,
   "description": "A person.",
   "properties": {
     "firstName": {

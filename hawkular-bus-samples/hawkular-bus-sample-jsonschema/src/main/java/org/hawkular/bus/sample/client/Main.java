@@ -16,6 +16,8 @@
  */
 package org.hawkular.bus.sample.client;
 
+import java.util.HashMap;
+
 import org.hawkular.bus.common.ConnectionContextFactory;
 import org.hawkular.bus.common.Endpoint;
 import org.hawkular.bus.common.MessageProcessor;
@@ -56,12 +58,14 @@ public class Main {
                 protected void onBasicMessage(Person person) {
                     System.out.println("\n========== RECEIVED MESSAGE START ==========");
                     System.out.println("Consumed Person:");
-                    System.out.printf("title=[%s], firstN=[%s], lastN=[%s], age=[%d], address.street=[%s]\n",
+                    System.out.printf(
+                            "title=[%s], firstN=[%s], lastN=[%s], age=[%d], address.street=[%s], hobbies=[%s]\n",
                             person.getTitle(),
                             person.getFirstName(),
                             person.getLastName(),
                             person.getAge(),
-                            person.getAddress().getStreet());
+                            person.getAddress().getStreet(),
+                            person.getHobbies());
                     System.out.println("Consumed Person.toString: " + person.toString());
                     System.out.println("Consumed Person.toJSON: " + person.toJSON());
                     System.out.println("Consumed Person.hashCode: " + person.hashCode());
@@ -105,6 +109,10 @@ public class Main {
             phone2.setDigits("800-WOT-GORILLA");
             person.getPhoneNumbers().add(phone1);
             person.getPhoneNumbers().add(phone2);
+            person.setHobbies(new HashMap<String, Number>(3));
+            person.getHobbies().put("golf", 6);
+            person.getHobbies().put("cooking", 3);
+            person.getHobbies().put("tennis", 4);
             MessageProcessor processor = new MessageProcessor();
             processor.send(pc, person);
 

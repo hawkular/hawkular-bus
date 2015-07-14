@@ -38,6 +38,11 @@
         "type": "string"
       }
     },
+    "hobbies": {
+      "description": "A map of hobbies, whose value is a number from 1 to 10 based on how much the person likes it.",
+      "type": "object",
+      "javaType": "java.util.Map<String, Number>"
+    },
     "address": {
       "description": "The home address of this person.",
       "type": "object",

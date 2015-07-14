@@ -42,6 +42,7 @@
       "description": "The home address of this person.",
       "type": "object",
       "javaType": "org.hawkular.bus.sample.msg.Address",
+      "additionalProperties": false,
       "properties": {
         "street": {
           "type": "string"
@@ -57,6 +58,7 @@
       "items": {
         "type": "object",
         "javaType": "org.hawkular.bus.sample.msg.PhoneNumber",
+        "additionalProperties": false,
         "properties": {
           "kind": {
             "description": "Indicates the kind of number, such as home, cell, or work.",

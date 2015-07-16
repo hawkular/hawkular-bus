@@ -1,6 +1,11 @@
 = hawkular-bus
 :source-language: java
 
+ifdef::env-github[]
+[link=https://travis-ci.org/hawkular/hawkular-bus]
+image::https://travis-ci.org/hawkular/hawkular-bus.svg?branch=master[Build Status,70,18]
+endif::[]
+
 Hawkular messaging framework used for communicating between Hawkular components.
 
 == Issue reporting

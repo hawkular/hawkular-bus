@@ -45,7 +45,7 @@ public class ObjectMessage extends BasicMessage {
         mapper.setVisibilityChecker(mapper.getSerializationConfig().getDefaultVisibilityChecker()
             .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
             .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
-                .withSetterVisibility(JsonAutoDetect.Visibility.NONE));
+            .withSetterVisibility(JsonAutoDetect.Visibility.NONE));
     }
 
     public ObjectMessage() {

@@ -19,6 +19,7 @@ package org.hawkular.bus.common;
 import java.io.IOException;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,10 +35,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class ObjectMessage extends BasicMessage {
     @JsonInclude
     private String message; // the object in JSON form
+
+    @JsonIgnore
     private Class<?> objectClass; // the ad-hoc class that this object message represents
 
+    @JsonIgnore
+    private final ObjectMapper mapper = new ObjectMapper();
+    {
+        mapper.setVisibilityChecker(mapper.getSerializationConfig().getDefaultVisibilityChecker()
+            .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
+            .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
+            .withSetterVisibility(JsonAutoDetect.Visibility.NONE)
+            .withCreatorVisibility(JsonAutoDetect.Visibility.NONE));
+    }
+
     public ObjectMessage() {
-        // the owner of the object will have to tell us the object class later
     }
 
     public ObjectMessage(Object object) {
@@ -46,12 +58,6 @@ public class ObjectMessage extends BasicMessage {
         }
         setObjectClass(object.getClass());
 
-        final ObjectMapper mapper = new ObjectMapper();
-        mapper.setVisibilityChecker(mapper.getSerializationConfig().getDefaultVisibilityChecker()
-                .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
-                .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
-                .withSetterVisibility(JsonAutoDetect.Visibility.NONE)
-                .withCreatorVisibility(JsonAutoDetect.Visibility.NONE));
         final String msg;
         try {
             msg = mapper.writeValueAsString(object);
@@ -66,11 +72,6 @@ public class ObjectMessage extends BasicMessage {
             throw new IllegalArgumentException("clazz is null");
         }
         setObjectClass(clazz);
-    }
-
-    @Override
-    public String toJSON() {
-        return message; // we override the superclass JSON encoding - our message *is* the JSON string
     }
 
     /**
@@ -100,7 +101,6 @@ public class ObjectMessage extends BasicMessage {
             throw new IllegalStateException("Do not know what the class is that represents the JSON data");
         }
 
-        final ObjectMapper mapper = new ObjectMapper();
         try {
             return mapper.readValue(getMessage(), clazz);
         } catch (IOException e) {

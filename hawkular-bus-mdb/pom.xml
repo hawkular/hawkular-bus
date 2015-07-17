@@ -51,6 +51,12 @@
       <scope>provided</scope>
     </dependency>
 
+    <dependency>
+      <groupId>org.jboss.logging</groupId>
+      <artifactId>jboss-logging</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
     <!-- The EJB API is provided by the container -->
     <dependency>
       <groupId>org.jboss.spec.javax.ejb</groupId>

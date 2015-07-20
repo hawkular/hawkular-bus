@@ -28,7 +28,7 @@
 
   <groupId>org.hawkular.bus</groupId>
   <artifactId>hawkular-bus-parent</artifactId>
-  <version>0.2.1</version>
+  <version>0.2.2-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Hawkular Bus Framework</name>
   <inceptionYear>2015</inceptionYear>
@@ -37,7 +37,7 @@
     <connection>scm:git:git@github.com:hawkular/hawkular-bus.git</connection>
     <developerConnection>scm:git:git@github.com:hawkular/hawkular-bus.git</developerConnection>
     <url>https://github.com/hawkular/hawkular-bus</url>
-    <tag>0.2.1</tag>
+    <tag>head</tag>
   </scm>
 
   <modules>

@@ -28,7 +28,6 @@
 
   <groupId>org.hawkular.nest</groupId>
   <artifactId>hawkular-nest-parent</artifactId>
-  <version>0.3.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Hawkular Nest: Nest Root Parent</name>
   <inceptionYear>2015</inceptionYear>

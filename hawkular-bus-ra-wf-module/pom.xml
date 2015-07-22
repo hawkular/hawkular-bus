@@ -27,7 +27,6 @@
   </parent>
 
   <artifactId>hawkular-bus-ra-wf-module</artifactId>
-  <version>0.3.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Hawkular Bus: Resource Adapter WildFly Module</name>
 

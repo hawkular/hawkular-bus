@@ -29,7 +29,7 @@
   <groupId>org.hawkular.nest</groupId>
   <artifactId>hawkular-nest-parent</artifactId>
   <packaging>pom</packaging>
-  <name>Hawkular Nest Root Parent</name>
+  <name>Hawkular Nest: Nest Root Parent</name>
   <inceptionYear>2015</inceptionYear>
 
   <modules>

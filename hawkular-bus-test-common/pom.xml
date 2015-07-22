@@ -28,7 +28,7 @@
 
   <artifactId>hawkular-bus-test-common</artifactId>
   <packaging>jar</packaging>
-  <name>Hawkular Bus Framework Common Test Library</name>
+  <name>Hawkular Bus: Bus Framework Common Test Library</name>
   <description>Hawkular Bus Framework Common Test Library for use with testing consumers and producers</description>
 
   <dependencies>

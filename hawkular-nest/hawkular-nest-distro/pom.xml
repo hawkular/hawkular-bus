@@ -28,7 +28,7 @@
 
   <artifactId>hawkular-nest-distro</artifactId>
   <packaging>pom</packaging>
-  <name>Hawkular Nest Distribution</name>
+  <name>Hawkular Nest: Nest Distribution</name>
   <inceptionYear>2015</inceptionYear>
 
   <properties>

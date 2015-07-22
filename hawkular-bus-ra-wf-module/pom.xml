@@ -28,7 +28,7 @@
 
   <artifactId>hawkular-bus-ra-wf-module</artifactId>
   <packaging>pom</packaging>
-  <name>Hawkular Bus Resource Adapter WildFly Module</name>
+  <name>Hawkular Bus: Resource Adapter WildFly Module</name>
 
   <dependencies>
     <dependency>

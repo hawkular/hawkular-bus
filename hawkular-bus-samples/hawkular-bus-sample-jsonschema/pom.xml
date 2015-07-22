@@ -27,7 +27,7 @@
   </parent>
 
   <artifactId>hawkular-bus-sample-jsonschema</artifactId>
-  <name>Hawkular JSON Schema-to-POJO Sample</name>
+  <name>Hawkular Bus: JSON Schema-to-POJO Sample</name>
 
   <dependencies>
     <dependency>

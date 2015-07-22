@@ -27,7 +27,7 @@
   </parent>
 
   <artifactId>hawkular-bus-sample-client</artifactId>
-  <name>Hawkular Bus Sample Client</name>
+  <name>Hawkular Bus: Sample Client</name>
 
   <dependencies>
     <dependency>

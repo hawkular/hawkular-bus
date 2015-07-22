@@ -28,7 +28,7 @@
 
   <artifactId>hawkular-nest-wf-extension</artifactId>
   <packaging>jar</packaging>
-  <name>Hawkular Nest WildFly Extension</name>
+  <name>Hawkular Nest: Nest WildFly Extension</name>
 
   <properties>
     <!-- this is used to replace the variable in module.xml -->

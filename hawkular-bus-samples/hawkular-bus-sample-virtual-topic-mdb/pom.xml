@@ -28,7 +28,7 @@
 
   <artifactId>hawkular-bus-sample-vt-mdb</artifactId>
   <packaging>war</packaging>
-  <name>Hawkular Bus Sample Virtual Topics MDB Web Application</name>
+  <name>Hawkular Bus: Sample Virtual Topics MDB Web Application</name>
 
   <dependencies>
     <!-- The hawkular platform will provide these -->

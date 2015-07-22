@@ -28,7 +28,7 @@
 
   <artifactId>hawkular-bus-broker</artifactId>
   <packaging>jar</packaging>
-  <name>Hawkular Bus Broker</name>
+  <name>Hawkular Bus: Bus Broker</name>
 
   <dependencies>
     <dependency>

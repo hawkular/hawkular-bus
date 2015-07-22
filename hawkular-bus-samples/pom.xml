@@ -28,7 +28,7 @@
 
   <artifactId>hawkular-bus-samples-parent</artifactId>
   <packaging>pom</packaging>
-  <name>Hawkular Bus Samples</name>
+  <name>Hawkular Bus: Samples</name>
   <description>Parent to some example code for working with messaging.</description>
 
   <modules>

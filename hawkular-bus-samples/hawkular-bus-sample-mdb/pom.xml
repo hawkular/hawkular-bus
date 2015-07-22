@@ -28,7 +28,7 @@
 
   <artifactId>hawkular-bus-sample-mdb</artifactId>
   <packaging>war</packaging>
-  <name>Hawkular Bus Sample MDB Web Application</name>
+  <name>Hawkular Bus: Sample MDB Web Application</name>
 
   <dependencies>
     <!-- The hawkular platform will provide these -->

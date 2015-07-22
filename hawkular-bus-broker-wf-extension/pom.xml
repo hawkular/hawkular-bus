@@ -28,7 +28,7 @@
 
   <artifactId>hawkular-bus-broker-wf-extension</artifactId>
   <packaging>jar</packaging>
-  <name>Hawkular Bus Broker WildFly Extension</name>
+  <name>Hawkular Bus: Bus Broker WildFly Extension</name>
 
   <properties>
     <!-- this is used to replace the variable in module.xml -->

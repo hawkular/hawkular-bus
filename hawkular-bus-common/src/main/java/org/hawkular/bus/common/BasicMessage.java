@@ -16,7 +16,7 @@
  */
 package org.hawkular.bus.common;
 
-import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,8 +24,8 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Basic information that is sent over the message bus.
@@ -57,13 +57,39 @@ public abstract class BasicMessage {
      * @return the message object that was represented by the JSON string
      */
     public static <T extends BasicMessage> T fromJSON(String json, Class<T> clazz) {
-        final ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         try {
+            Method buildObjectMapperForDeserializationMethod = findBuildObjectMapperForDeserializationMethod(clazz);
+            final ObjectMapper mapper = (ObjectMapper) buildObjectMapperForDeserializationMethod.invoke(null);
             return mapper.readValue(json, clazz);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new IllegalStateException("JSON message cannot be converted to object.", e);
         }
+    }
+
+    private static Method findBuildObjectMapperForDeserializationMethod(Class<? extends BasicMessage> clazz) {
+        try {
+            Method m = clazz.getDeclaredMethod("buildObjectMapperForDeserialization");
+            return m;
+        } catch (Exception e) {
+            // the given subclass doesn't have a method to build a mapper, maybe its superclass does.
+            // eventually we'll get to the BasicMessage class and we know it does have one.
+            return findBuildObjectMapperForDeserializationMethod((Class<? extends BasicMessage>) clazz.getSuperclass());
+        }
+    }
+
+    /**
+     * This is static, so really there is no true overriding it in subclasses.
+     * However, fromJSON will do the proper reflection in order to invoke
+     * the proper method for the class that is being deserialized. So subclasses
+     * that want to provide their own ObjectMapper will define their own
+     * method that matches the signature of this method and it will be used.
+     *
+     * @return object mapper to be used for deserializing JSON.
+     */
+    protected static ObjectMapper buildObjectMapperForDeserialization() {
+        final ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        return mapper;
     }
 
     /**
@@ -72,17 +98,25 @@ public abstract class BasicMessage {
      * @return JSON encoded data that represents this message.
      */
     public String toJSON() {
+        final ObjectMapper mapper = buildObjectMapperForSerialization();
+        try {
+            return mapper.writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException("Object cannot be parsed as JSON.", e);
+        }
+    }
+
+    /**
+     * @return object mapper to be used to serialize a message to JSON
+     */
+    protected ObjectMapper buildObjectMapperForSerialization() {
         final ObjectMapper mapper = new ObjectMapper();
         mapper.setVisibilityChecker(mapper.getSerializationConfig().getDefaultVisibilityChecker()
                 .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
                 .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
                 .withSetterVisibility(JsonAutoDetect.Visibility.NONE)
                 .withCreatorVisibility(JsonAutoDetect.Visibility.NONE));
-        try {
-            return mapper.writeValueAsString(this);
-        } catch (JsonProcessingException e) {
-            throw new IllegalStateException("Object cannot be parsed as JSON.", e);
-        }
+        return mapper;
     }
 
     protected BasicMessage() {

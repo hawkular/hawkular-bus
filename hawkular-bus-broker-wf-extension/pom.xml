@@ -27,7 +27,6 @@
   </parent>
 
   <artifactId>hawkular-bus-broker-wf-extension</artifactId>
-  <version>0.3.2.Final-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Hawkular Bus: Bus Broker WildFly Extension</name>
 

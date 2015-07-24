@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.hawkular.bus</groupId>
     <artifactId>hawkular-feed-comm-parent</artifactId>
-    <version>0.3.2-SNAPSHOT</version>
+    <version>0.3.2.Final</version>
   </parent>
 
   <artifactId>hawkular-feed-comm-war</artifactId>

@@ -22,9 +22,9 @@ import org.hawkular.feedcomm.ws.server.ConnectedFeeds;
 import org.hawkular.feedcomm.ws.server.ConnectedUIClients;
 
 public class CommandContext {
-    public final ConnectedFeeds connectedFeeds;
-    public final ConnectedUIClients connectedUIClients;
-    public final ConnectionFactory connectionFactory;
+    private final ConnectedFeeds connectedFeeds;
+    private final ConnectedUIClients connectedUIClients;
+    private final ConnectionFactory connectionFactory;
 
     public CommandContext(ConnectedFeeds f, ConnectedUIClients ui, ConnectionFactory cf) {
         this.connectedFeeds = f;

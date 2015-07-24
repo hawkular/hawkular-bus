@@ -23,11 +23,11 @@
   <parent>
     <groupId>org.hawkular.bus</groupId>
     <artifactId>hawkular-bus-parent</artifactId>
-    <version>0.3.1</version>
+    <version>0.3.2-SNAPSHOT</version>
   </parent>
 
   <artifactId>hawkular-bus-mdb</artifactId>
-  <version>0.3.1.Final</version>
+  <version>0.3.2.Final-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Hawkular Bus: Bus Framework MDB API</name>
   <description>Convenience library for use by Message Drive Beans.</description>

@@ -27,7 +27,6 @@
   </parent>
 
   <artifactId>hawkular-bus-test-common</artifactId>
-  <version>0.3.3-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Hawkular Bus: Bus Framework Common Test Library</name>
   <description>Hawkular Bus Framework Common Test Library for use with testing consumers and producers</description>

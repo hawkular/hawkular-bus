@@ -27,7 +27,6 @@
   </parent>
 
   <artifactId>hawkular-bus-rest-client</artifactId>
-  <version>0.3.3-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Hawkular Bus: REST Client Library</name>
   <description>Hawkular client library that can be used to consume and produce bus messages using the bus' REST API.</description>

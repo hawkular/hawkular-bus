@@ -27,7 +27,6 @@
   </parent>
 
   <artifactId>hawkular-feed-comm-parent</artifactId>
-  <version>0.3.3-SNAPSHOT</version>
   <name>Hawkular Bus: Feed Communications Parent</name>
   <packaging>pom</packaging>
 

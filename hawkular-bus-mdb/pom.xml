@@ -27,7 +27,6 @@
   </parent>
 
   <artifactId>hawkular-bus-mdb</artifactId>
-  <version>0.3.3-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Hawkular Bus: Bus Framework MDB API</name>
   <description>Convenience library for use by Message Drive Beans.</description>

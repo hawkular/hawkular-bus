@@ -1,0 +1,28 @@
+{
+  "type": "object",
+  "extends": {
+    "type": "object",
+    "javaType": "org.hawkular.bus.common.BasicMessage"
+  },
+  "javaType": "org.hawkular.feedcomm.api.ExecuteOperationResponse",
+  "additionalProperties": false,
+  "description": "A response describing the results of an operation execution.",
+  "properties": {
+    "resourceId": {
+      "type": "string"
+    },
+    "operationName": {
+      "type": "string"
+    },
+    "status": {
+      "description": "The success or failure flag.",
+      "type": "string"
+    },
+    "message": {
+      "description": "An additional message describing the results.",
+      "type": "string"
+    }
+  },
+  "required": ["resourceId", "operationName", "status"]
+}
+

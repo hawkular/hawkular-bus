@@ -18,7 +18,6 @@ package org.hawkular.feedcomm.ws.command.ui;
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
 
 import org.hawkular.bus.common.ConnectionContextFactory;
 import org.hawkular.bus.common.Endpoint;
@@ -37,23 +36,15 @@ import org.hawkular.feedcomm.ws.command.CommandContext;
 public class ExecuteOperationCommand implements Command<ExecuteOperationRequest, GenericSuccessResponse> {
     public static final Class<ExecuteOperationRequest> REQUEST_CLASS = ExecuteOperationRequest.class;
 
-    private static String LAST_FEED_FOR_TESTING_ONLY_DELETE_ME = null;
-
     @Override
     public GenericSuccessResponse execute(ExecuteOperationRequest request, CommandContext context) throws Exception {
 
         // determine what feed needs to be sent the message
         String feedId;
 
-        // TODO: THIS IS JUST FOR TESTING - JUST PICK A FEED, ANY FEED.
-        //       IN THE FUTURE, WE NEED TO LOOK AT THE RESOURCE ID AND FIGURE OUT THE FEED RESPONSIBLE FOR IT
-        Set<String> feeds = context.getConnectedFeeds().getAllFeeds();
-        if (feeds.isEmpty()) {
-            feedId = LAST_FEED_FOR_TESTING_ONLY_DELETE_ME; // if its null, oh, well, we just get NPE
-        } else {
-            feedId = feeds.iterator().next();
-            LAST_FEED_FOR_TESTING_ONLY_DELETE_ME = feedId;
-        }
+        // TODO: this is only useful for wildfly agent IDs - because we know its got the feed in it.
+        //       we need a "real" way to do this - need to ask inventory what the feed ID is
+        feedId = request.getResourceId().split("~", 3)[0]; // the feedID is the first one in the array
 
         GenericSuccessResponse response;
         try (ConnectionContextFactory ccf = new ConnectionContextFactory(context.getConnectionFactory())) {

@@ -58,4 +58,8 @@ public interface MsgLogger extends BasicLogger {
     @Message(id = 7, value = "Cannot process an execute-operation message")
     void errorCannotProcessExecuteOperationMessage(@Cause Exception e);
 
+    @LogMessage(level = Logger.Level.WARN)
+    @Message(id = 8, value = "Received the following error message and stack trace from remote endpoint: %s\n%s")
+    void warnReceivedGenericErrorResponse(String errorMessage, String stackTrack);
+
 }

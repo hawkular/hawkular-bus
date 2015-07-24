@@ -42,6 +42,7 @@ import org.hawkular.feedcomm.ws.MsgLogger;
 import org.hawkular.feedcomm.ws.command.Command;
 import org.hawkular.feedcomm.ws.command.CommandContext;
 import org.hawkular.feedcomm.ws.command.EchoCommand;
+import org.hawkular.feedcomm.ws.command.GenericErrorResponseCommand;
 import org.hawkular.feedcomm.ws.command.ui.ExecuteOperationCommand;
 
 /**
@@ -56,6 +57,7 @@ public class UIClientCommWebSocket {
     static {
         VALID_COMMANDS = new HashMap<>();
         VALID_COMMANDS.put(EchoCommand.REQUEST_CLASS.getName(), EchoCommand.class);
+        VALID_COMMANDS.put(GenericErrorResponseCommand.REQUEST_CLASS.getName(), GenericErrorResponseCommand.class);
         VALID_COMMANDS.put(ExecuteOperationCommand.REQUEST_CLASS.getName(), ExecuteOperationCommand.class);
     }
 

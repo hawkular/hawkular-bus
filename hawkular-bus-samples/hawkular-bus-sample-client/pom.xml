@@ -74,6 +74,7 @@
             </executions>
             <configuration>
               <mainClass>org.hawkular.bus.sample.client.Main</mainClass>
+              <classpathScope>test</classpathScope>
               <systemProperties>
                 <systemProperty>
                   <key>log4j.configuration</key>

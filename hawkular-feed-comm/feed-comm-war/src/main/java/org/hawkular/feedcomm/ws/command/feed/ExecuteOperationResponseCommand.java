@@ -17,7 +17,6 @@
 package org.hawkular.feedcomm.ws.command.feed;
 
 import org.hawkular.bus.common.BasicMessage;
-import org.hawkular.feedcomm.api.ExecuteOperationRequest;
 import org.hawkular.feedcomm.api.ExecuteOperationResponse;
 import org.hawkular.feedcomm.ws.MsgLogger;
 import org.hawkular.feedcomm.ws.command.Command;
@@ -27,7 +26,7 @@ import org.hawkular.feedcomm.ws.command.CommandContext;
  * A feed telling us it finished its operation execution attempt.
  */
 public class ExecuteOperationResponseCommand implements Command<ExecuteOperationResponse, BasicMessage> {
-    public static final Class<ExecuteOperationRequest> REQUEST_CLASS = ExecuteOperationRequest.class;
+    public static final Class<ExecuteOperationResponse> REQUEST_CLASS = ExecuteOperationResponse.class;
 
     @Override
     public BasicMessage execute(ExecuteOperationResponse response, CommandContext context) throws Exception {

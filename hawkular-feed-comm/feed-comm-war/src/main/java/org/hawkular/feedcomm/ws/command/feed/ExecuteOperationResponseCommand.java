@@ -17,9 +17,9 @@
 package org.hawkular.feedcomm.ws.command.feed;
 
 import org.hawkular.bus.common.BasicMessage;
-import org.hawkular.feedcomm.api.ExecuteOperationRequest;
 import org.hawkular.feedcomm.api.ExecuteOperationResponse;
 import org.hawkular.feedcomm.ws.MsgLogger;
+import org.hawkular.feedcomm.ws.WebSocketHelper;
 import org.hawkular.feedcomm.ws.command.Command;
 import org.hawkular.feedcomm.ws.command.CommandContext;
 
@@ -27,7 +27,7 @@ import org.hawkular.feedcomm.ws.command.CommandContext;
  * A feed telling us it finished its operation execution attempt.
  */
 public class ExecuteOperationResponseCommand implements Command<ExecuteOperationResponse, BasicMessage> {
-    public static final Class<ExecuteOperationRequest> REQUEST_CLASS = ExecuteOperationRequest.class;
+    public static final Class<ExecuteOperationResponse> REQUEST_CLASS = ExecuteOperationResponse.class;
 
     @Override
     public BasicMessage execute(ExecuteOperationResponse response, CommandContext context) throws Exception {
@@ -38,6 +38,9 @@ public class ExecuteOperationResponseCommand implements Command<ExecuteOperation
         String msg = response.getMessage();
         MsgLogger.LOG.infof("Operation execution completed. Resource=[%s], Operation=[%s], Status=[%s], Message=[%s]",
                 resId, opName, status, msg);
+
+        // TODO: today we don't know which UI sent the original request, so for now, tell all UIs what the response was
+        new WebSocketHelper().sendBasicMessageSync(context.getConnectedUIClients().getAllSessions(), response);
 
         return null;
     }

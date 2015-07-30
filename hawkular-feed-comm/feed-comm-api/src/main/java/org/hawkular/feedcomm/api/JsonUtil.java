@@ -16,45 +16,48 @@
  */
 package org.hawkular.feedcomm.api;
 
-import java.io.IOException;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.util.Collections;
+import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-// probably not needed, but its here in case its useful later
 public abstract class JsonUtil {
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     // prohibit instantiation
     private JsonUtil() {
     }
 
-    // probably not needed, but its here in case its useful later
-    public static String toJson(Object obj) {
-        final ObjectMapper mapper = new ObjectMapper();
-        mapper.setVisibilityChecker(mapper.getSerializationConfig().getDefaultVisibilityChecker()
-                .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
-                .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
-                .withSetterVisibility(JsonAutoDetect.Visibility.NONE)
-                .withCreatorVisibility(JsonAutoDetect.Visibility.NONE));
-        final String json;
-        try {
-            json = mapper.writeValueAsString(obj);
-        } catch (JsonProcessingException e) {
-            throw new IllegalArgumentException("Object cannot be parsed as JSON", e);
-        }
-        return json;
-    }
-
-    // probably not needed, but its here in case its useful later
-    public static <T> T fromJson(String json, Class<T> clazz) {
-        final ObjectMapper mapper = new ObjectMapper();
+    /**
+     * This will parse a JSON object whose JSON text is in the given input stream.
+     * The input stream will remain open so the caller can stream any extra data that might
+     * appear after it.
+     *
+     * Because of the way the JSON parser works, some extra data might have been read from the stream
+     * that wasn't part of the JSON message. In that case, a non-empty byte array containing the extra read
+     * data is returned in the map value.
+     *
+     * @param in input stream that has a JSON message at the head.
+     * @param clazz the Java class representing the type of JSON object
+     * @return a map whose key is the JSON object that was parsed and whose value is a byte array containing
+     *         extra data that was read from the stream but not part of the JSON message.
+     */
+    public static <T> Map<T, byte[]> fromJson(InputStream in, Class<T> clazz) {
         final T obj;
-        try {
-            obj = mapper.readValue(json, clazz);
-        } catch (IOException e) {
-            throw new IllegalArgumentException("JSON message cannot be converted to object of type:" + clazz, e);
+        final byte[] remainder;
+        try (JsonParser parser = new JsonFactory().configure(Feature.AUTO_CLOSE_SOURCE, false).createParser(in)) {
+            obj = OBJECT_MAPPER.readValues(parser, clazz).next();
+            ByteArrayOutputStream remainderStream = new ByteArrayOutputStream();
+            int released = parser.releaseBuffered(remainderStream);
+            remainder = (released > 0) ? remainderStream.toByteArray() : new byte[0];
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Stream cannot be converted to JSON object of type [" + clazz + "]", e);
         }
-        return obj;
+        return Collections.singletonMap(obj, remainder);
     }
 }

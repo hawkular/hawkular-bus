@@ -16,7 +16,11 @@
  */
 package org.hawkular.feedcomm.ws;
 
-
+import org.hawkular.feedcomm.ws.command.EchoCommand;
+import org.hawkular.feedcomm.ws.command.GenericErrorResponseCommand;
+import org.hawkular.feedcomm.ws.command.feed.ExecuteOperationResponseCommand;
+import org.hawkular.feedcomm.ws.command.ui.ExecuteOperationCommand;
+import org.hawkular.feedcomm.ws.server.ValidCommandsMap;
 
 /**
  * Global constants.
@@ -32,6 +36,24 @@ public interface Constants {
      */
     String CONNECTION_FACTORY_JNDI = "java:/HawkularBusConnectionFactory";
 
+
+    /**
+     * These are the only valid commands that can come from feeds.
+     */
+    ValidCommandsMap VALID_COMMANDS_FROM_FEED = new ValidCommandsMap()
+            .put(EchoCommand.REQUEST_CLASS.getName(), EchoCommand.class)
+            .put(GenericErrorResponseCommand.REQUEST_CLASS.getName(), GenericErrorResponseCommand.class)
+            .put(ExecuteOperationResponseCommand.REQUEST_CLASS.getName(), ExecuteOperationResponseCommand.class);
+
+    /**
+     * These are the only valid commands that can come from UI clients.
+     */
+    ValidCommandsMap VALID_COMMANDS_FROM_UI = new ValidCommandsMap()
+            .put(EchoCommand.REQUEST_CLASS.getName(), EchoCommand.class)
+            .put(GenericErrorResponseCommand.REQUEST_CLASS.getName(), GenericErrorResponseCommand.class)
+            .put(ExecuteOperationCommand.REQUEST_CLASS.getName(), ExecuteOperationCommand.class);
+
     // QUEUES AND TOPICS
     String DEST_FEED_EXECUTE_OP = "FeedExecuteOperation";
+
 }

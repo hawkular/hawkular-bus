@@ -17,6 +17,7 @@
 package org.hawkular.feedcomm.ws;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -86,7 +87,7 @@ public class WebSocketHelper {
         }
 
         if (text == null) {
-            throw new IllegalArgumentException("message must not be null");
+            throw new IllegalArgumentException("text message must not be null");
         }
 
         MsgLogger.LOG.infof("Attempting to send async message to [%d] clients: [%s]", sessions.size(), text);
@@ -119,7 +120,7 @@ public class WebSocketHelper {
         }
 
         if (text == null) {
-            throw new IllegalArgumentException("message must not be null");
+            throw new IllegalArgumentException("text message must not be null");
         }
 
         MsgLogger.LOG.infof("Attempting to send message to [%d] clients: [%s]", sessions.size(), text);
@@ -128,6 +129,66 @@ public class WebSocketHelper {
             if (session.isOpen()) {
                 Basic basicRemote = session.getBasicRemote();
                 basicRemote.sendText(text);
+            }
+        }
+
+        return;
+    }
+
+    /**
+     * Sends binary data to clients asynchronously.
+     *
+     * @param sessions the client sessions where the message will be sent
+     * @param binaryData the binary data to send
+     */
+    public void sendBinaryAsync(Collection<Session> sessions, ByteBuffer binaryData) {
+        if (sessions == null || sessions.isEmpty()) {
+            return;
+        }
+
+        if (binaryData == null) {
+            throw new IllegalArgumentException("binaryData must not be null");
+        }
+
+        MsgLogger.LOG.infof("Attempting to send async binary data to [%d] clients", sessions.size());
+
+        for (Session session : sessions) {
+            if (session.isOpen()) {
+                Async asyncRemote = session.getAsyncRemote();
+                if (this.asyncTimeout != null) {
+                    asyncRemote.setSendTimeout(this.asyncTimeout.longValue());
+                }
+                asyncRemote.sendBinary(binaryData);
+            }
+        }
+
+        return;
+    }
+
+    /**
+     * Sends binary data to clients synchronously. If you send to multiple sessions, but an error occurred
+     * trying to deliver to one of the sessions, this method aborts, throws an exception, and the rest
+     * of the sessions will not get the message.
+     *
+     * @param sessions the client sessions where the message will be sent
+     * @param binaryData the binary data to send
+     * @throws IOException if a problem occurred during delivery of the data to a session.
+     */
+    public void sendBinarySync(Collection<Session> sessions, ByteBuffer binaryData) throws IOException {
+        if (sessions == null || sessions.isEmpty()) {
+            return;
+        }
+
+        if (binaryData == null) {
+            throw new IllegalArgumentException("binaryData must not be null");
+        }
+
+        MsgLogger.LOG.infof("Attempting to send message to [%d] clients: [%s]", sessions.size(), binaryData);
+
+        for (Session session : sessions) {
+            if (session.isOpen()) {
+                Basic basicRemote = session.getBasicRemote();
+                basicRemote.sendBinary(binaryData);
             }
         }
 
@@ -148,5 +209,13 @@ public class WebSocketHelper {
 
     public void sendTextSync(Session session, String text) throws IOException {
         sendTextSync(Collections.singletonList(session), text);
+    }
+
+    public void sendBinaryAsync(Session session, ByteBuffer binaryData) {
+        sendBinaryAsync(Collections.singletonList(session), binaryData);
+    }
+
+    public void sendBinarySync(Session session, ByteBuffer binaryData) throws IOException {
+        sendBinarySync(Collections.singletonList(session), binaryData);
     }
 }

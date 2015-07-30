@@ -18,8 +18,7 @@
 package org.hawkular.feedcomm.ws.server;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.InputStream;
 
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -36,26 +35,14 @@ import javax.websocket.server.ServerEndpoint;
 import org.hawkular.bus.common.BasicMessage;
 import org.hawkular.feedcomm.api.ApiDeserializer;
 import org.hawkular.feedcomm.api.GenericErrorResponseBuilder;
+import org.hawkular.feedcomm.ws.Constants;
 import org.hawkular.feedcomm.ws.MsgLogger;
 import org.hawkular.feedcomm.ws.command.Command;
 import org.hawkular.feedcomm.ws.command.CommandContext;
-import org.hawkular.feedcomm.ws.command.EchoCommand;
-import org.hawkular.feedcomm.ws.command.GenericErrorResponseCommand;
-import org.hawkular.feedcomm.ws.command.feed.ExecuteOperationResponseCommand;
 
 @ServerEndpoint("/feed/{feedId}")
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class FeedCommWebSocket {
-
-    private static final Map<String, Class<? extends Command<?, ?>>> VALID_COMMANDS;
-
-    static {
-        VALID_COMMANDS = new HashMap<>();
-        VALID_COMMANDS.put(EchoCommand.REQUEST_CLASS.getName(), EchoCommand.class);
-        VALID_COMMANDS.put(GenericErrorResponseCommand.REQUEST_CLASS.getName(), GenericErrorResponseCommand.class);
-        VALID_COMMANDS.put(ExecuteOperationResponseCommand.REQUEST_CLASS.getName(),
-                ExecuteOperationResponseCommand.class);
-    }
 
     @Inject
     private ConnectedFeeds connectedFeeds;
@@ -68,14 +55,13 @@ public class FeedCommWebSocket {
 
     @OnOpen
     public void feedSessionOpen(Session session, @PathParam("feedId") String feedId) {
-        MsgLogger.LOG.infof("Feed [%s] session opened", feedId);
+        MsgLogger.LOG.infoFeedSessionOpened(feedId);
         boolean successfullyAddedSession = connectedFeeds.addSession(feedId, session);
         if (successfullyAddedSession) {
             try {
                 feedListenerGenerator.addListeners(feedId);
             } catch (Exception e) {
-                MsgLogger.LOG.errorf(e, "Failed to add message listeners for feed [%s]. Closing session [%s]", feedId,
-                        session.getId());
+                MsgLogger.LOG.errorFailedToAddMessageListenersForFeed(feedId, session.getId(), e);
                 try {
                     session.close(new CloseReason(CloseCodes.UNEXPECTED_CONDITION, "Internal server error"));
                 } catch (IOException ioe) {
@@ -99,7 +85,7 @@ public class FeedCommWebSocket {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public String feedMessage(String nameAndJsonStr, Session session, @PathParam("feedId") String feedId) {
 
-        MsgLogger.LOG.infof("Received message from feed [%s]", feedId);
+        MsgLogger.LOG.infoReceivedMessageFromFeed(feedId);
 
         String requestClassName = "?";
         BasicMessage response;
@@ -108,7 +94,7 @@ public class FeedCommWebSocket {
             BasicMessage request = new ApiDeserializer().deserialize(nameAndJsonStr);
             requestClassName = request.getClass().getName();
 
-            Class<? extends Command<?, ?>> commandClass = VALID_COMMANDS.get(requestClassName);
+            Class<? extends Command<?, ?>> commandClass = Constants.VALID_COMMANDS_FROM_FEED.get(requestClassName);
             if (commandClass == null) {
                 MsgLogger.LOG.errorInvalidCommandRequestFeed(feedId, requestClassName);
                 String errorMessage = "Invalid command request: " + requestClassName;
@@ -133,9 +119,14 @@ public class FeedCommWebSocket {
         return responseText;
     }
 
+    @OnMessage
+    public String feedBinaryData(InputStream binaryDataStream, Session session) {
+        return null;
+    }
+
     @OnClose
     public void feedSessionClose(Session session, CloseReason reason, @PathParam("feedId") String feedId) {
-        MsgLogger.LOG.infof("Feed [%s] session closed. Reason=[%s]", feedId, reason);
+        MsgLogger.LOG.infoFeedSessionClosed(feedId, reason);
         boolean removed = connectedFeeds.removeSession(feedId, session) != null;
         if (removed) {
             feedListenerGenerator.removeListeners(feedId);

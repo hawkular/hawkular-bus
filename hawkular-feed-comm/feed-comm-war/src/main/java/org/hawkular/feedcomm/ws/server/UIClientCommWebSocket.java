@@ -17,8 +17,7 @@
 
 package org.hawkular.feedcomm.ws.server;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.InputStream;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -41,9 +40,6 @@ import org.hawkular.feedcomm.ws.Constants;
 import org.hawkular.feedcomm.ws.MsgLogger;
 import org.hawkular.feedcomm.ws.command.Command;
 import org.hawkular.feedcomm.ws.command.CommandContext;
-import org.hawkular.feedcomm.ws.command.EchoCommand;
-import org.hawkular.feedcomm.ws.command.GenericErrorResponseCommand;
-import org.hawkular.feedcomm.ws.command.ui.ExecuteOperationCommand;
 
 /**
  * This is similiar to the feed web socket endpoint, however, it has a different set of allowed commants
@@ -52,14 +48,6 @@ import org.hawkular.feedcomm.ws.command.ui.ExecuteOperationCommand;
 @ServerEndpoint("/ui/ws")
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class UIClientCommWebSocket {
-
-    private static final Map<String, Class<? extends Command<?, ?>>> VALID_COMMANDS;
-    static {
-        VALID_COMMANDS = new HashMap<>();
-        VALID_COMMANDS.put(EchoCommand.REQUEST_CLASS.getName(), EchoCommand.class);
-        VALID_COMMANDS.put(GenericErrorResponseCommand.REQUEST_CLASS.getName(), GenericErrorResponseCommand.class);
-        VALID_COMMANDS.put(ExecuteOperationCommand.REQUEST_CLASS.getName(), ExecuteOperationCommand.class);
-    }
 
     @Inject
     private ConnectedFeeds connectedFeeds;
@@ -78,12 +66,14 @@ public class UIClientCommWebSocket {
             MsgLogger.LOG.warnf("Injection of ConnectionFactory is not working - looking it up explicitly");
             InitialContext ctx = new InitialContext();
             this.connectionFactory = (ConnectionFactory) ctx.lookup(Constants.CONNECTION_FACTORY_JNDI);
+        } else {
+            MsgLogger.LOG.warnf("Injection of ConnectionFactory works - you can remove the hack");
         }
     }
 
     @OnOpen
     public void uiClientSessionOpen(Session session) {
-        MsgLogger.LOG.infof("UI client session [%s] opened", session.getId());
+        MsgLogger.LOG.infoUIClientSessionOpened(session.getId());
         connectedUIClients.addSession(session);
     }
 
@@ -98,7 +88,7 @@ public class UIClientCommWebSocket {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public String uiClientMessage(String nameAndJsonStr, Session session) {
 
-        MsgLogger.LOG.infof("Received message from UI client [%s]", session.getId());
+        MsgLogger.LOG.infoReceivedMessageFromUI(session.getId());
 
         String requestClassName = "?";
         BasicMessage response;
@@ -107,7 +97,7 @@ public class UIClientCommWebSocket {
             BasicMessage request = new ApiDeserializer().deserialize(nameAndJsonStr);
             requestClassName = request.getClass().getName();
 
-            Class<? extends Command<?, ?>> commandClass = VALID_COMMANDS.get(requestClassName);
+            Class<? extends Command<?, ?>> commandClass = Constants.VALID_COMMANDS_FROM_UI.get(requestClassName);
             if (commandClass == null) {
                 MsgLogger.LOG.errorInvalidCommandRequestUIClient(session.getId(), requestClassName);
                 String errorMessage = "Invalid command request: " + requestClassName;
@@ -131,9 +121,14 @@ public class UIClientCommWebSocket {
         return responseText;
     }
 
+    @OnMessage
+    public String uiClientBinaryData(InputStream binaryDataStream, Session session) {
+        return null;
+    }
+
     @OnClose
     public void uiClientSessionClose(Session session, CloseReason reason) {
-        MsgLogger.LOG.infof("UI client session [%s] closed. Reason=[%s]", session.getId(), reason);
+        MsgLogger.LOG.infoUISessionClosed(session.getId(), reason);
         connectedUIClients.removeSession(session);
     }
 }

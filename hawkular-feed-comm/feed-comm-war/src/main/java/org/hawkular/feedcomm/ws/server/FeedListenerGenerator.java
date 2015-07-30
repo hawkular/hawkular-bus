@@ -55,7 +55,6 @@ public class FeedListenerGenerator {
 
     @PostConstruct
     public void initialize() throws Exception {
-        // TODO I think we can remove this if-statement
         if (this.connectionFactory == null) {
             MsgLogger.LOG.warnf("Injection of ConnectionFactory is not working - looking it up explicitly");
             InitialContext ctx = new InitialContext();
@@ -91,7 +90,7 @@ public class FeedListenerGenerator {
         List<ConsumerConnectionContext> contextList = new ArrayList<ConsumerConnectionContext>();
         this.consumerContexts.put(feedId, contextList);
 
-        MsgLogger.LOG.infof("Adding listeners for feed [%s]", feedId);
+        MsgLogger.LOG.infoAddingListenersForFeed(feedId);
 
         MessageProcessor messageProcessor = new MessageProcessor();
         String messageSelector = String.format("%s = '%s'", Constants.HEADER_FEEDID, feedId);
@@ -119,17 +118,17 @@ public class FeedListenerGenerator {
                 try {
                     context.close();
                 } catch (Exception e) {
-                    MsgLogger.LOG.errorf(e, "Failed to close consumer context; will keep trying to close the rest");
+                    MsgLogger.LOG.errorFailedClosingConsumerContext(e);
                 }
             }
         }
 
         if (factory != null) {
             try {
-                MsgLogger.LOG.infof("Removing listeners for feed [%s]", feedId);
+                MsgLogger.LOG.infoRemovingListenersForFeed(feedId);
                 factory.close();
             } catch (Exception e) {
-                MsgLogger.LOG.errorf(e, "Failed to removing listeners for feed [%s]", feedId);
+                MsgLogger.LOG.errorFailedRemovingListenersForFeed(feedId, e);
             }
         }
     }

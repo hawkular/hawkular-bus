@@ -16,6 +16,8 @@
  */
 package org.hawkular.feedcomm.ws;
 
+import javax.websocket.CloseReason;
+
 import org.jboss.logging.BasicLogger;
 import org.jboss.logging.Logger;
 import org.jboss.logging.annotations.Cause;
@@ -61,5 +63,49 @@ public interface MsgLogger extends BasicLogger {
     @LogMessage(level = Logger.Level.WARN)
     @Message(id = 8, value = "Received the following error message and stack trace from remote endpoint: %s\n%s")
     void warnReceivedGenericErrorResponse(String errorMessage, String stackTrack);
+
+    @LogMessage(level = Logger.Level.INFO)
+    @Message(id = 9, value = "Feed [%s] session opened")
+    void infoFeedSessionOpened(String feedId);
+
+    @LogMessage(level = Logger.Level.ERROR)
+    @Message(id = 10, value = "Failed to add message listeners for feed [%s]. Closing session [%s]")
+    void errorFailedToAddMessageListenersForFeed(String feedId, String id, @Cause Throwable t);
+
+    @LogMessage(level = Logger.Level.INFO)
+    @Message(id = 11, value = "Received message from feed [%s]")
+    void infoReceivedMessageFromFeed(String feedId);
+
+    @LogMessage(level = Logger.Level.INFO)
+    @Message(id = 12, value = "Feed [%s] session closed. Reason=[%s]")
+    void infoFeedSessionClosed(String feedId, CloseReason reason);
+
+    @LogMessage(level = Logger.Level.INFO)
+    @Message(id = 13, value = "UI client session [%s] opened")
+    void infoUIClientSessionOpened(String id);
+
+    @LogMessage(level = Logger.Level.INFO)
+    @Message(id = 14, value = "Received message from UI client [%s]")
+    void infoReceivedMessageFromUI(String id);
+
+    @LogMessage(level = Logger.Level.INFO)
+    @Message(id = 15, value = "UI client session [%s] closed. Reason=[%s]")
+    void infoUISessionClosed(String id, CloseReason reason);
+
+    @LogMessage(level = Logger.Level.INFO)
+    @Message(id = 16, value = "Adding listeners for feed [%s]")
+    void infoAddingListenersForFeed(String feedId);
+
+    @LogMessage(level = Logger.Level.ERROR)
+    @Message(id = 17, value = "Failed to close consumer context; will keep trying to close the rest")
+    void errorFailedClosingConsumerContext(@Cause Throwable t);
+
+    @LogMessage(level = Logger.Level.INFO)
+    @Message(id = 18, value = "Removing listeners for feed [%s]")
+    void infoRemovingListenersForFeed(String feedId);
+
+    @LogMessage(level = Logger.Level.INFO)
+    @Message(id = 19, value = "Failed to removing listeners for feed [%s]")
+    void errorFailedRemovingListenersForFeed(String feedId, @Cause Throwable t);
 
 }

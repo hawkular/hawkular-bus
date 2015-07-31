@@ -16,6 +16,8 @@
  */
 package org.hawkular.bus.common;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
@@ -23,6 +25,9 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -62,8 +67,40 @@ public abstract class BasicMessage {
             final ObjectMapper mapper = (ObjectMapper) buildObjectMapperForDeserializationMethod.invoke(null);
             return mapper.readValue(json, clazz);
         } catch (Exception e) {
-            throw new IllegalStateException("JSON message cannot be converted to object.", e);
+            throw new IllegalStateException("JSON message cannot be converted to object of type [" + clazz + "]", e);
         }
+    }
+
+    /**
+     * Convenience static method that reads a JSON string from the given stream and converts the JSON
+     * string to a particular message object. The input stream will remain open so the caller can
+     * stream any extra data that might appear after it.
+     *
+     * Because of the way the JSON parser works, some extra data might have been read from the stream
+     * that wasn't part of the JSON message. In that case, a non-empty byte array containing the extra read
+     * data is returned in the map value.
+     *
+     * @param in input stream that has a JSON string at the head.
+     * @param clazz the class whose instance is represented by the JSON string
+     *
+     * @return a single-entry map whose key is the message object that was represented by the JSON string found
+     *         in the stream. The value of the map is a byte array containing extra data that was read from
+     *         the stream but not part of the JSON message.
+     */
+    public static <T extends BasicMessage> Map<T, byte[]> fromJSON(InputStream in, Class<T> clazz) {
+        final T obj;
+        final byte[] remainder;
+        try (JsonParser parser = new JsonFactory().configure(Feature.AUTO_CLOSE_SOURCE, false).createParser(in)) {
+            Method buildObjectMapperForDeserializationMethod = findBuildObjectMapperForDeserializationMethod(clazz);
+            final ObjectMapper mapper = (ObjectMapper) buildObjectMapperForDeserializationMethod.invoke(null);
+            obj = mapper.readValue(parser, clazz);
+            final ByteArrayOutputStream remainderStream = new ByteArrayOutputStream();
+            final int released = parser.releaseBuffered(remainderStream);
+            remainder = (released > 0) ? remainderStream.toByteArray() : new byte[0];
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Stream cannot be converted to JSON object of type [" + clazz + "]", e);
+        }
+        return Collections.singletonMap(obj, remainder);
     }
 
     private static Method findBuildObjectMapperForDeserializationMethod(Class<? extends BasicMessage> clazz) {

@@ -108,4 +108,11 @@ public interface MsgLogger extends BasicLogger {
     @Message(id = 19, value = "Failed to removing listeners for feed [%s]")
     void errorFailedRemovingListenersForFeed(String feedId, @Cause Throwable t);
 
+    @LogMessage(level = Logger.Level.INFO)
+    @Message(id = 20, value = "Received binary data from feed [%s]")
+    void infoReceivedBinaryDataFromFeed(String feedId);
+
+    @LogMessage(level = Logger.Level.INFO)
+    @Message(id = 21, value = "Received binary data from UI client [%s]")
+    void infoReceivedBinaryDataFromUI(String id);
 }

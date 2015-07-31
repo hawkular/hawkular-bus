@@ -16,6 +16,10 @@
  */
 package org.hawkular.feedcomm.ws.command;
 
+import java.io.UnsupportedEncodingException;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
+
 import org.hawkular.feedcomm.api.EchoRequest;
 import org.hawkular.feedcomm.api.EchoResponse;
 
@@ -23,12 +27,25 @@ public class EchoCommand implements Command<EchoRequest, EchoResponse> {
     public static final Class<EchoRequest> REQUEST_CLASS = EchoRequest.class;
 
     @Override
-    public EchoResponse execute(EchoRequest echoRequest, CommandContext context) {
-        String reply = String.format("ECHO [%s]", echoRequest.getEchoMessage());
+    public EchoResponse execute(EchoRequest echoRequest, BinaryData binaryData, CommandContext context) {
+        String echo = String.format("ECHO [%s]", echoRequest.getEchoMessage());
+        StringBuilder extra = new StringBuilder();
+
+        if (binaryData != null) {
+            try {
+                extra.append(new String(binaryData.getInMemoryData(), "UTF-8"));
+                try (Scanner scanner = new Scanner(binaryData.getStreamData(), "UTF-8").useDelimiter("\\A")) {
+                    extra.append(scanner.next());
+                } catch (NoSuchElementException nsee) {
+                }
+            } catch (UnsupportedEncodingException e) {
+                throw new IllegalStateException("Cannot echo", e); // should never happen, UTF-8 should always be there
+            }
+        }
 
         // return the response
         EchoResponse echoResponse = new EchoResponse();
-        echoResponse.setReply(reply);
+        echoResponse.setReply(echo + extra.toString());
         return echoResponse;
     }
 }

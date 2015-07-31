@@ -27,6 +27,7 @@ import org.hawkular.bus.common.producer.ProducerConnectionContext;
 import org.hawkular.feedcomm.api.ExecuteOperationRequest;
 import org.hawkular.feedcomm.api.GenericSuccessResponse;
 import org.hawkular.feedcomm.ws.Constants;
+import org.hawkular.feedcomm.ws.command.BinaryData;
 import org.hawkular.feedcomm.ws.command.Command;
 import org.hawkular.feedcomm.ws.command.CommandContext;
 
@@ -37,7 +38,8 @@ public class ExecuteOperationCommand implements Command<ExecuteOperationRequest,
     public static final Class<ExecuteOperationRequest> REQUEST_CLASS = ExecuteOperationRequest.class;
 
     @Override
-    public GenericSuccessResponse execute(ExecuteOperationRequest request, CommandContext context) throws Exception {
+    public GenericSuccessResponse execute(ExecuteOperationRequest request, BinaryData binaryData,
+            CommandContext context) throws Exception {
 
         // determine what feed needs to be sent the message
         String feedId;

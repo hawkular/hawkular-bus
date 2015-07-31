@@ -18,6 +18,7 @@
 package org.hawkular.feedcomm.ws.server;
 
 import java.io.InputStream;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -38,6 +39,7 @@ import org.hawkular.feedcomm.api.ApiDeserializer;
 import org.hawkular.feedcomm.api.GenericErrorResponseBuilder;
 import org.hawkular.feedcomm.ws.Constants;
 import org.hawkular.feedcomm.ws.MsgLogger;
+import org.hawkular.feedcomm.ws.command.BinaryData;
 import org.hawkular.feedcomm.ws.command.Command;
 import org.hawkular.feedcomm.ws.command.CommandContext;
 
@@ -105,11 +107,11 @@ public class UIClientCommWebSocket {
             } else {
                 CommandContext context = new CommandContext(connectedFeeds, connectedUIClients, connectionFactory);
                 Command command = commandClass.newInstance();
-                response = command.execute(request, context);
+                response = command.execute(request, null, context);
             }
         } catch (Throwable t) {
             MsgLogger.LOG.errorCommandExecutionFailureUIClient(requestClassName, session.getId(), t);
-            String errorMessage = "Command failed[" + requestClassName + "]";
+            String errorMessage = "Command failed [" + requestClassName + "]";
             response = new GenericErrorResponseBuilder()
                     .setThrowable(t)
                     .setErrorMessage(errorMessage)
@@ -121,9 +123,51 @@ public class UIClientCommWebSocket {
         return responseText;
     }
 
+    /**
+     * When a binary message is received from a UI client, this method will execute the command the client
+     * is asking for.
+     *
+     * @param binaryDataStream contains the JSON request and additional binary data
+     * @param session the client session making the request
+     * @return the results of the command invocation; this is sent back to the UI client
+     */
     @OnMessage
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public String uiClientBinaryData(InputStream binaryDataStream, Session session) {
-        return null;
+        MsgLogger.LOG.infoReceivedBinaryDataFromUI(session.getId());
+
+        String requestClassName = "?";
+        BasicMessage response;
+
+        try {
+            Map<BasicMessage, byte[]> requestMap = new ApiDeserializer().deserialize(binaryDataStream);
+            BasicMessage request = requestMap.keySet().iterator().next();
+            byte[] inMemoryData = requestMap.values().iterator().next();
+            BinaryData binaryData = new BinaryData(inMemoryData, binaryDataStream);
+            requestClassName = request.getClass().getName();
+
+            Class<? extends Command<?, ?>> commandClass = Constants.VALID_COMMANDS_FROM_UI.get(requestClassName);
+            if (commandClass == null) {
+                MsgLogger.LOG.errorInvalidCommandRequestUIClient(session.getId(), requestClassName);
+                String errorMessage = "Invalid command request: " + requestClassName;
+                response = new GenericErrorResponseBuilder().setErrorMessage(errorMessage).build();
+            } else {
+                CommandContext context = new CommandContext(connectedFeeds, connectedUIClients, connectionFactory);
+                Command command = commandClass.newInstance();
+                response = command.execute(request, binaryData, context);
+            }
+        } catch (Throwable t) {
+            MsgLogger.LOG.errorCommandExecutionFailureUIClient(requestClassName, session.getId(), t);
+            String errorMessage = "Command failed [" + requestClassName + "]";
+            response = new GenericErrorResponseBuilder()
+                    .setThrowable(t)
+                    .setErrorMessage(errorMessage)
+                    .build();
+
+        }
+
+        String responseText = (response == null) ? null : ApiDeserializer.toHawkularFormat(response);
+        return responseText;
     }
 
     @OnClose

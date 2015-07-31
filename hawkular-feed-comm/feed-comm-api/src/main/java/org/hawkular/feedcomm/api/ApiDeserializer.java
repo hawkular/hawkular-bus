@@ -16,6 +16,10 @@
  */
 package org.hawkular.feedcomm.api;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
+
 import org.hawkular.bus.common.BasicMessage;
 
 /**
@@ -51,6 +55,13 @@ public class ApiDeserializer {
     public ApiDeserializer() {
     }
 
+    /**
+     * Deserializes a JSON string in {@link #toHawkularFormat(BasicMessage) Hawkular format}.
+     * The JSON object is returned.
+     *
+     * @param nameAndJson the string to be deserialized
+     * @return the object represented by the JSON
+     */
     public <T extends BasicMessage> T deserialize(String nameAndJson) {
         String[] nameAndJsonArray = fromHawkularFormat(nameAndJson);
         String name = nameAndJsonArray[0];
@@ -67,6 +78,58 @@ public class ApiDeserializer {
             return BasicMessage.fromJSON(json, pojo);
         } catch (Exception e) {
             throw new RuntimeException("Cannot deserialize: [" + nameAndJson + "]", e);
+        }
+    }
+
+    /**
+     * Reads a JSON string in {@link #toHawkularFormat(BasicMessage) Hawkular format} that
+     * is found in the given input stream and converts the JSON string to a particular message object.
+     * The input stream will remain open so the caller can stream any extra data that might appear after it.
+     *
+     * Because of the way the JSON parser works, some extra data might have been read from the stream
+     * that wasn't part of the JSON message. In that case, a non-empty byte array containing the extra read
+     * data is returned in the map value.
+     *
+     * @param in input stream that has the Hawkular formatted JSON string at the head.
+     *
+     * @return a single-entry map whose key is the message object that was represented by the JSON string found
+     *         in the stream. The value of the map is a byte array containing extra data that was read from
+     *         the stream but not part of the JSON message.
+     */
+    public <T extends BasicMessage> Map<T, byte[]> deserialize(InputStream input) {
+        // We know the format is "name=json" with possible extra data after it.
+        // So first find the "name"
+        StringBuilder nameBuilder = new StringBuilder();
+        boolean foundSeparator = false;
+        while (!foundSeparator) {
+            int currentChar;
+            try {
+                currentChar = input.read();
+            } catch (IOException ioe) {
+                throw new RuntimeException("Cannot deserialize stream due to read error", ioe);
+            }
+            if (currentChar == -1) {
+                throw new RuntimeException("Cannot deserialize stream - doesn't look valid");
+            } else if (currentChar == '=') {
+                foundSeparator = true;
+            } else {
+                nameBuilder.append((char) currentChar);
+            }
+        }
+
+        // The name is the actual name of the POJO that is used to deserialize the JSON.
+        // If not fully qualified with a package then assume it is in our package.
+        String name = nameBuilder.toString();
+        if (name.indexOf(".") == -1) {
+            name = String.format("%s.%s", API_PKG, name);
+        }
+
+        // We now have the name and the input stream is pointing at the JSON
+        try {
+            Class<T> pojo = (Class<T>) Class.forName(name);
+            return BasicMessage.fromJSON(input, pojo);
+        } catch (Exception e) {
+            throw new RuntimeException("Cannot deserialize stream with object [" + name + "]", e);
         }
     }
 }

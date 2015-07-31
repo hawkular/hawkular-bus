@@ -131,6 +131,7 @@ public class BasicMessageTest {
         // make sure it didn't change and its still the same
         assertEquals("val1", msg.getDetails().get("key1"));
     }
+
     @Test
     public void testReadFromInputStream() throws IOException {
         // tests that this can extract the JSON even if more data follows in the stream

@@ -16,7 +16,10 @@
  */
 package org.hawkular.feedcomm.api;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.hawkular.bus.common.BasicMessage;
 import org.junit.Assert;
@@ -106,6 +109,60 @@ public class ApiDeserializerTest {
         Assert.assertEquals(pojo.getReply(), newpojo.getReply());
     }
 
+    @Test
+    public void testReadFromInputStreamWithExtraData() throws IOException {
+        // tests that this can extract the JSON even if more data follows in the stream
+        ApiDeserializer ad = new ApiDeserializer();
+
+        String nameAndJson = EchoRequest.class.getName() + "={\"echoMessage\":\"msg\"}";
+        String extra = "This is some extra data";
+        String nameAndJsonPlusExtra = nameAndJson + extra;
+
+        ByteArrayInputStream in = new UncloseableByteArrayInputStream(nameAndJsonPlusExtra.getBytes());
+
+        Map<BasicMessage, byte[]> map = ad.deserialize(in);
+        BasicMessage request = map.keySet().iterator().next();
+        Assert.assertTrue(request instanceof EchoRequest);
+        EchoRequest echoRequest = (EchoRequest) request;
+        Assert.assertEquals("msg", echoRequest.getEchoMessage());
+
+        // now make sure the stream still has our extra data that we can read now
+        byte[] leftoverFromJsonParser = map.values().iterator().next();
+        byte[] leftoverFromStream = new byte[in.available()];
+        in.read(leftoverFromStream);
+
+        String totalRemaining = new String(leftoverFromJsonParser, "UTF-8") + new String(leftoverFromStream, "UTF-8");
+        Assert.assertEquals(extra.length(), totalRemaining.length());
+        Assert.assertEquals(extra, totalRemaining);
+
+        // as a quick test, show that an exception results if we give bogus data in the input stream
+        in = new UncloseableByteArrayInputStream("this is not valid data".getBytes());
+        try {
+            ad.deserialize(in);
+            Assert.fail("Should have thrown an exception - the stream had invalid data");
+        } catch (Exception expected) {
+        }
+    }
+
+    @Test
+    public void testReadFromInputStreamWithNoExtraData() throws IOException {
+        ApiDeserializer ad = new ApiDeserializer();
+
+        String nameAndJson = EchoRequest.class.getName() + "={\"echoMessage\":\"msg\"}";
+        ByteArrayInputStream in = new UncloseableByteArrayInputStream(nameAndJson.getBytes());
+
+        Map<BasicMessage, byte[]> map = ad.deserialize(in);
+        BasicMessage request = map.keySet().iterator().next();
+        Assert.assertTrue(request instanceof EchoRequest);
+        EchoRequest echoRequest = (EchoRequest) request;
+        Assert.assertEquals("msg", echoRequest.getEchoMessage());
+
+        // now make sure the stream is empty
+        byte[] leftoverFromJsonParser = map.values().iterator().next();
+        Assert.assertEquals(0, leftoverFromJsonParser.length);
+        Assert.assertEquals(0, in.available());
+    }
+
     // takes a POJO, gets its JSON, then deserializes that JSON back into a POJO.
     private <T extends BasicMessage> T testSpecificPojo(T pojo) {
         String nameAndJson = String.format("%s=%s", pojo.getClass().getSimpleName(), pojo.toJSON());
@@ -114,5 +171,18 @@ public class ApiDeserializerTest {
         T results = ad.deserialize(nameAndJson);
         Assert.assertNotSame(pojo, results); // just sanity check
         return results;
+    }
+
+    // This is just to test that our JsonParser does NOT close the stream.
+    // If close is called, that is bad and should fail the test
+    class UncloseableByteArrayInputStream extends ByteArrayInputStream {
+        public UncloseableByteArrayInputStream(byte[] buf) {
+            super(buf);
+        }
+
+        @Override
+        public void close() throws IOException {
+            Assert.fail("The input stream should NOT have been closed");
+        }
     }
 }

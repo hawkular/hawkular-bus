@@ -51,7 +51,7 @@ public abstract class JsonUtil {
         final T obj;
         final byte[] remainder;
         try (JsonParser parser = new JsonFactory().configure(Feature.AUTO_CLOSE_SOURCE, false).createParser(in)) {
-            obj = OBJECT_MAPPER.readValues(parser, clazz).next();
+            obj = OBJECT_MAPPER.readValue(parser, clazz);
             ByteArrayOutputStream remainderStream = new ByteArrayOutputStream();
             int released = parser.releaseBuffered(remainderStream);
             remainder = (released > 0) ? remainderStream.toByteArray() : new byte[0];

@@ -17,17 +17,15 @@
 
 package org.hawkular.feedcomm.ws.server;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
-import javax.jms.ConnectionFactory;
-import javax.naming.InitialContext;
 import javax.websocket.CloseReason;
+import javax.websocket.CloseReason.CloseCodes;
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
@@ -57,26 +55,28 @@ public class UIClientCommWebSocket {
     @Inject
     private ConnectedUIClients connectedUIClients;
 
-    @Resource(mappedName = Constants.CONNECTION_FACTORY_JNDI)
-    private ConnectionFactory connectionFactory;
-
-    // I don't know why @Resource injection doesn't work, but this is a backup.
-    // We can get rid of this once we figure out what's broken and fix it.
-    @PostConstruct
-    public void lookupConnectionFactory() throws Exception {
-        if (this.connectionFactory == null) {
-            MsgLogger.LOG.warnf("Injection of ConnectionFactory is not working - looking it up explicitly");
-            InitialContext ctx = new InitialContext();
-            this.connectionFactory = (ConnectionFactory) ctx.lookup(Constants.CONNECTION_FACTORY_JNDI);
-        } else {
-            MsgLogger.LOG.warnf("Injection of ConnectionFactory works - you can remove the hack");
-        }
-    }
+    @Inject
+    private UIClientListenerGenerator uiClientListenerGenerator;
 
     @OnOpen
     public void uiClientSessionOpen(Session session) {
         MsgLogger.LOG.infoUIClientSessionOpened(session.getId());
         connectedUIClients.addSession(session);
+
+        // hook up the UI client to the message bus to receive messages from feeds that are on other servers
+        String uiClientID = getUIClientIDFromSession(session);
+        try {
+            uiClientListenerGenerator.addListeners(uiClientID);
+        } catch (Exception e) {
+            MsgLogger.LOG.errorFailedToAddMessageListenersForUIClient(uiClientID, session.getId(), e);
+            try {
+                session.close(new CloseReason(CloseCodes.UNEXPECTED_CONDITION, "Internal server error"));
+            } catch (IOException ioe) {
+                MsgLogger.LOG.errorf(ioe,
+                        "Failed to close UI client [%s] (session [%s]) after internal server error",
+                        uiClientID, session.getId());
+            }
+        }
     }
 
     /**
@@ -89,8 +89,8 @@ public class UIClientCommWebSocket {
     @OnMessage
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public String uiClientMessage(String nameAndJsonStr, Session session) {
-
-        MsgLogger.LOG.infoReceivedMessageFromUI(session.getId());
+        String uiClientId = getUIClientIDFromSession(session);
+        MsgLogger.LOG.infoReceivedMessageFromUIClient(uiClientId, session.getId());
 
         String requestClassName = "?";
         BasicMessage response;
@@ -101,16 +101,17 @@ public class UIClientCommWebSocket {
 
             Class<? extends Command<?, ?>> commandClass = Constants.VALID_COMMANDS_FROM_UI.get(requestClassName);
             if (commandClass == null) {
-                MsgLogger.LOG.errorInvalidCommandRequestUIClient(session.getId(), requestClassName);
+                MsgLogger.LOG.errorInvalidCommandRequestUIClient(uiClientId, session.getId(), requestClassName);
                 String errorMessage = "Invalid command request: " + requestClassName;
                 response = new GenericErrorResponseBuilder().setErrorMessage(errorMessage).build();
             } else {
-                CommandContext context = new CommandContext(connectedFeeds, connectedUIClients, connectionFactory);
+                CommandContext context = new CommandContext(connectedFeeds, connectedUIClients,
+                        uiClientListenerGenerator.getConnectionFactory(), session);
                 Command command = commandClass.newInstance();
                 response = command.execute(request, null, context);
             }
         } catch (Throwable t) {
-            MsgLogger.LOG.errorCommandExecutionFailureUIClient(requestClassName, session.getId(), t);
+            MsgLogger.LOG.errorCommandExecutionFailureUIClient(requestClassName, uiClientId, session.getId(), t);
             String errorMessage = "Command failed [" + requestClassName + "]";
             response = new GenericErrorResponseBuilder()
                     .setThrowable(t)
@@ -134,7 +135,8 @@ public class UIClientCommWebSocket {
     @OnMessage
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public String uiClientBinaryData(InputStream binaryDataStream, Session session) {
-        MsgLogger.LOG.infoReceivedBinaryDataFromUI(session.getId());
+        String uiClientId = getUIClientIDFromSession(session);
+        MsgLogger.LOG.infoReceivedBinaryDataFromUIClient(session.getId());
 
         String requestClassName = "?";
         BasicMessage response;
@@ -148,16 +150,17 @@ public class UIClientCommWebSocket {
 
             Class<? extends Command<?, ?>> commandClass = Constants.VALID_COMMANDS_FROM_UI.get(requestClassName);
             if (commandClass == null) {
-                MsgLogger.LOG.errorInvalidCommandRequestUIClient(session.getId(), requestClassName);
+                MsgLogger.LOG.errorInvalidCommandRequestUIClient(uiClientId, session.getId(), requestClassName);
                 String errorMessage = "Invalid command request: " + requestClassName;
                 response = new GenericErrorResponseBuilder().setErrorMessage(errorMessage).build();
             } else {
-                CommandContext context = new CommandContext(connectedFeeds, connectedUIClients, connectionFactory);
+                CommandContext context = new CommandContext(connectedFeeds, connectedUIClients,
+                        uiClientListenerGenerator.getConnectionFactory(), session);
                 Command command = commandClass.newInstance();
                 response = command.execute(request, binaryData, context);
             }
         } catch (Throwable t) {
-            MsgLogger.LOG.errorCommandExecutionFailureUIClient(requestClassName, session.getId(), t);
+            MsgLogger.LOG.errorCommandExecutionFailureUIClient(requestClassName, uiClientId, session.getId(), t);
             String errorMessage = "Command failed [" + requestClassName + "]";
             response = new GenericErrorResponseBuilder()
                     .setThrowable(t)
@@ -172,7 +175,13 @@ public class UIClientCommWebSocket {
 
     @OnClose
     public void uiClientSessionClose(Session session, CloseReason reason) {
-        MsgLogger.LOG.infoUISessionClosed(session.getId(), reason);
+        String uiClientId = getUIClientIDFromSession(session);
+        MsgLogger.LOG.infoUISessionClosed(uiClientId, session.getId(), reason);
         connectedUIClients.removeSession(session);
+        uiClientListenerGenerator.removeListeners(uiClientId);
+    }
+
+    private String getUIClientIDFromSession(Session session) {
+        return session.getId(); // for now, the UI client ID *is* the session ID
     }
 }

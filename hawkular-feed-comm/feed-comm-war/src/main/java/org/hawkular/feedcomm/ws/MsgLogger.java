@@ -49,16 +49,17 @@ public interface MsgLogger extends BasicLogger {
     void errorCannotCloseExtraFeedSession(String feedId, @Cause Throwable t);
 
     @LogMessage(level = Logger.Level.ERROR)
-    @Message(id = 5, value = "UI client session [%s] provided an invalid command request: [%s]")
-    void errorInvalidCommandRequestUIClient(String sessionId, String invalidCommandRequest);
+    @Message(id = 5, value = "UI client [%s] (session [%s]) provided an invalid command request: [%s]")
+    void errorInvalidCommandRequestUIClient(String uiClientId, String sessionId, String invalidCommandRequest);
 
     @LogMessage(level = Logger.Level.ERROR)
-    @Message(id = 6, value = "Failed to execute command [%s] for UI client session [%s]")
-    void errorCommandExecutionFailureUIClient(String commandRequest, String sessionId, @Cause Throwable t);
+    @Message(id = 6, value = "Failed to execute command [%s] for UI client [%s] (session [%s])")
+    void errorCommandExecutionFailureUIClient(String commandRequest, String uiClientId, String sessionId,
+            @Cause Throwable t);
 
     @LogMessage(level = Logger.Level.ERROR)
     @Message(id = 7, value = "Cannot process an execute-operation message")
-    void errorCannotProcessExecuteOperationMessage(@Cause Exception e);
+    void errorCannotProcessExecuteOperationMessage(@Cause Throwable t);
 
     @LogMessage(level = Logger.Level.WARN)
     @Message(id = 8, value = "Received the following error message and stack trace from remote endpoint: %s\n%s")
@@ -85,12 +86,12 @@ public interface MsgLogger extends BasicLogger {
     void infoUIClientSessionOpened(String id);
 
     @LogMessage(level = Logger.Level.INFO)
-    @Message(id = 14, value = "Received message from UI client [%s]")
-    void infoReceivedMessageFromUI(String id);
+    @Message(id = 14, value = "Received message from UI client [%s] (session [%s])")
+    void infoReceivedMessageFromUIClient(String uiClientId, String sessionId);
 
     @LogMessage(level = Logger.Level.INFO)
-    @Message(id = 15, value = "UI client session [%s] closed. Reason=[%s]")
-    void infoUISessionClosed(String id, CloseReason reason);
+    @Message(id = 15, value = "UI client [%s] (session [%s]) closed. Reason=[%s]")
+    void infoUISessionClosed(String uiClientId, String sessionId, CloseReason reason);
 
     @LogMessage(level = Logger.Level.INFO)
     @Message(id = 16, value = "Adding listeners for feed [%s]")
@@ -114,5 +115,25 @@ public interface MsgLogger extends BasicLogger {
 
     @LogMessage(level = Logger.Level.INFO)
     @Message(id = 21, value = "Received binary data from UI client [%s]")
-    void infoReceivedBinaryDataFromUI(String id);
+    void infoReceivedBinaryDataFromUIClient(String id);
+
+    @LogMessage(level = Logger.Level.INFO)
+    @Message(id = 22, value = "Adding listeners for UI client [%s]")
+    void infoAddingListenersForUIClient(String uiClientId);
+
+    @LogMessage(level = Logger.Level.INFO)
+    @Message(id = 23, value = "Removing listeners for UI client [%s]")
+    void infoRemovingListenersForUIClient(String uiClientId);
+
+    @LogMessage(level = Logger.Level.INFO)
+    @Message(id = 24, value = "Failed to removing listeners for UI client [%s]")
+    void errorFailedRemovingListenersForUIClient(String uiClientId, @Cause Throwable t);
+
+    @LogMessage(level = Logger.Level.ERROR)
+    @Message(id = 25, value = "Failed to add message listeners for UI client [%s]. Closing session [%s]")
+    void errorFailedToAddMessageListenersForUIClient(String uiClientId, String sessionId, @Cause Throwable t);
+
+    @LogMessage(level = Logger.Level.ERROR)
+    @Message(id = 26, value = "Cannot process an execute-operation-response message")
+    void errorCannotProcessExecuteOperationResponseMessage(@Cause Throwable t);
 }

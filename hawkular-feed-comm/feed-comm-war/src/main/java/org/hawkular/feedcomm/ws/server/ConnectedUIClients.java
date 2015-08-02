@@ -68,6 +68,11 @@ public class ConnectedUIClients {
         return new HashSet<String>(this.sessions.keySet());
     }
 
+    @Lock(LockType.READ)
+    public Session getSessionBySessionId(String sessionId) {
+        return this.sessions.get(sessionId);
+    }
+
     @Lock(LockType.WRITE)
     public void addSession(Session newSession) {
         this.sessions.put(newSession.getId(), newSession);

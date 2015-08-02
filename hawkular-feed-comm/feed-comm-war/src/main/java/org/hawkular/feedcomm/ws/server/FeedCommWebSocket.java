@@ -102,7 +102,7 @@ public class FeedCommWebSocket {
                 response = new GenericErrorResponseBuilder().setErrorMessage(errorMessage).build();
             } else {
                 CommandContext context = new CommandContext(connectedFeeds, connectedUIClients,
-                        feedListenerGenerator.getConnectionFactory());
+                        feedListenerGenerator.getConnectionFactory(), session);
                 Command command = commandClass.newInstance();
                 response = command.execute(request, null, context);
             }
@@ -151,7 +151,7 @@ public class FeedCommWebSocket {
                 response = new GenericErrorResponseBuilder().setErrorMessage(errorMessage).build();
             } else {
                 CommandContext context = new CommandContext(connectedFeeds, connectedUIClients,
-                        feedListenerGenerator.getConnectionFactory());
+                        feedListenerGenerator.getConnectionFactory(), session);
                 Command command = commandClass.newInstance();
                 response = command.execute(request, binaryData, context);
             }

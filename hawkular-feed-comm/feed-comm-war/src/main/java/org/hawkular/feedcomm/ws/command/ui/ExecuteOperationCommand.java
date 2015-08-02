@@ -50,7 +50,7 @@ public class ExecuteOperationCommand implements Command<ExecuteOperationRequest,
 
         GenericSuccessResponse response;
         try (ConnectionContextFactory ccf = new ConnectionContextFactory(context.getConnectionFactory())) {
-            Endpoint endpoint = new Endpoint(Endpoint.Type.QUEUE, Constants.DEST_FEED_EXECUTE_OP);
+            Endpoint endpoint = Constants.DEST_FEED_EXECUTE_OP;
             ProducerConnectionContext pcc = ccf.createProducerConnectionContext(endpoint);
             Map<String, String> feedIdHeader = Collections.singletonMap(Constants.HEADER_FEEDID, feedId);
             MessageId mid = new MessageProcessor().send(pcc, request, feedIdHeader);

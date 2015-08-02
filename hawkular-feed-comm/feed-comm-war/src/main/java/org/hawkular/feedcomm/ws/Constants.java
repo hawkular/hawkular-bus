@@ -16,6 +16,8 @@
  */
 package org.hawkular.feedcomm.ws;
 
+import org.hawkular.bus.common.Endpoint;
+import org.hawkular.bus.common.Endpoint.Type;
 import org.hawkular.feedcomm.ws.command.EchoCommand;
 import org.hawkular.feedcomm.ws.command.GenericErrorResponseCommand;
 import org.hawkular.feedcomm.ws.command.feed.ExecuteOperationResponseCommand;
@@ -30,6 +32,11 @@ public interface Constants {
      * A JMS message header that will identify the targeted feed.
      */
     String HEADER_FEEDID = "feedId";
+
+    /**
+     * A JMS message header that will identify the targeted UI client.
+     */
+    String HEADER_UICLIENTID = "uiClientId";
 
     /**
      * The JNDI name of the bus connection factory.
@@ -54,6 +61,7 @@ public interface Constants {
             .put(ExecuteOperationCommand.REQUEST_CLASS.getName(), ExecuteOperationCommand.class);
 
     // QUEUES AND TOPICS
-    String DEST_FEED_EXECUTE_OP = "FeedExecuteOperation";
+    Endpoint DEST_FEED_EXECUTE_OP = new Endpoint(Type.QUEUE, "FeedExecuteOperation");
+    Endpoint DEST_UICLIENT_EXECUTE_OP_RESPONSE = new Endpoint(Type.QUEUE, "UIClientExecuteOperationResponse");
 
 }

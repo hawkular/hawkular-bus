@@ -183,5 +183,6 @@ public class UIClientCommWebSocket {
 
     private String getUIClientIDFromSession(Session session) {
         return session.getId(); // for now, the UI client ID *is* the session ID
+        //return session.getRequestParameterMap().get("Hawkular-UI-Client-ID").get(0);
     }
 }

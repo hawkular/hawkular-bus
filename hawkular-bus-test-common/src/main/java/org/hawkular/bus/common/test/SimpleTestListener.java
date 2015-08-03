@@ -20,6 +20,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.hawkular.bus.common.BasicMessage;
+import org.hawkular.bus.common.BasicMessageWithExtraData;
 import org.hawkular.bus.common.consumer.BasicMessageListener;
 
 /**
@@ -55,8 +56,8 @@ public class SimpleTestListener<T extends BasicMessage> extends BasicMessageList
     }
 
     @Override
-    protected void onBasicMessage(T message) {
-        this.message = message;
+    protected void onBasicMessage(BasicMessageWithExtraData<T> message) {
+        this.message = message.getBasicMessage();
         latch.countDown();
     }
 }

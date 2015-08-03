@@ -18,10 +18,9 @@ package org.hawkular.feedcomm.api;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
 
 import org.hawkular.bus.common.BasicMessage;
-import org.hawkular.bus.common.BinaryData;
+import org.hawkular.bus.common.BasicMessageWithExtraData;
 
 /**
  * Given the special syntax of "apiName=JSON" this will deserialize the JSON into the appropriate API POJO.
@@ -97,7 +96,7 @@ public class ApiDeserializer {
      *         in the stream. The value of the map is the extra binary data that is part of the stream
      *         but not part of the JSON message.
      */
-    public <T extends BasicMessage> Map<T, BinaryData> deserialize(InputStream input) {
+    public <T extends BasicMessage> BasicMessageWithExtraData<T> deserialize(InputStream input) {
         // We know the format is "name=json" with possible extra data after it.
         // So first find the "name"
         StringBuilder nameBuilder = new StringBuilder();
@@ -128,7 +127,7 @@ public class ApiDeserializer {
         // We now have the name and the input stream is pointing at the JSON
         try {
             Class<T> pojo = (Class<T>) Class.forName(name);
-            Map<T, BinaryData> results = BasicMessage.fromJSON(input, pojo);
+            BasicMessageWithExtraData<T> results = BasicMessage.fromJSON(input, pojo);
             return results;
         } catch (Exception e) {
             throw new RuntimeException("Cannot deserialize stream with object [" + name + "]", e);

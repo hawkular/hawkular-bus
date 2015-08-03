@@ -16,6 +16,7 @@
  */
 package org.hawkular.bus.common.consumer;
 
+import java.io.InputStream;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -27,7 +28,9 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
+import org.apache.activemq.BlobMessage;
 import org.hawkular.bus.common.BasicMessage;
+import org.hawkular.bus.common.BasicMessageWithExtraData;
 import org.hawkular.bus.common.MessageId;
 import org.hawkular.bus.common.log.MsgLogger;
 import org.jboss.logging.Logger;
@@ -86,24 +89,34 @@ public abstract class AbstractBasicMessageListener<T extends BasicMessage> imple
     }
 
     /**
-     * Given the Message received over the wire, convert it to our T representation of the message.
+     * Given the Message received over the wire, convert it to our T representation of the message and
+     * keep any extra data that came with it.
      *
      * @param message the over-the-wire message
      *
      * @return the message as a object T, or null if we should not or cannot process the message
      */
-    protected T getBasicMessageFromMessage(Message message) {
-        T basicMessage;
+    protected BasicMessageWithExtraData<T> parseMessage(Message message) {
+        BasicMessageWithExtraData<T> retVal;
 
         try {
-            String receivedBody = ((TextMessage) message).getText();
-            basicMessage = BasicMessage.fromJSON(receivedBody, getBasicMessageClass());
+            if (message instanceof TextMessage) {
+                String receivedBody = ((TextMessage) message).getText();
+                T basicMessage = BasicMessage.fromJSON(receivedBody, getBasicMessageClass());
+                retVal = new BasicMessageWithExtraData<T>(basicMessage, null);
+
+            } else if (message instanceof BlobMessage) {
+                InputStream receivedBody = ((BlobMessage) message).getInputStream();
+                retVal = BasicMessage.fromJSON(receivedBody, getBasicMessageClass());
+            } else {
+                throw new Exception("Message is not a valid type: " + message.getClass());
+            }
 
             // grab some headers and put them in the message
-            basicMessage.setMessageId(new MessageId(message.getJMSMessageID()));
+            retVal.getBasicMessage().setMessageId(new MessageId(message.getJMSMessageID()));
             if (message.getJMSCorrelationID() != null) {
                 MessageId correlationId = new MessageId(message.getJMSCorrelationID());
-                basicMessage.setCorrelationId(correlationId);
+                retVal.getBasicMessage().setCorrelationId(correlationId);
             }
 
             HashMap<String, String> rawHeaders = new HashMap<String, String>();
@@ -112,19 +125,19 @@ public abstract class AbstractBasicMessageListener<T extends BasicMessage> imple
                 rawHeaders.put(propName, message.getStringProperty(propName));
             }
             if (!rawHeaders.isEmpty()) {
-                basicMessage.setHeaders(rawHeaders);
+                retVal.getBasicMessage().setHeaders(rawHeaders);
             }
 
-            getLog().tracef("Received basic message: %s", basicMessage);
+            getLog().tracef("Received basic message: %s", retVal.getBasicMessage());
         } catch (JMSException e) {
             msglog.errorNotValidTextMessage(e);
-            basicMessage = null;
+            retVal = null;
         } catch (Exception e) {
             msglog.errorNotValidJsonMessage(e);
-            basicMessage = null;
+            retVal = null;
         }
 
-        return basicMessage;
+        return retVal;
     }
 
     protected Class<T> getBasicMessageClass() {

@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.hawkular.bus.common.BasicMessage;
+import org.hawkular.bus.common.BasicMessageWithExtraData;
 import org.hawkular.bus.common.log.MsgLogger;
 import org.jboss.logging.Logger;
 
@@ -48,7 +49,7 @@ import com.google.common.util.concurrent.ListenableFuture;
  * @param <T> the type of message that is expected to be received
  */
 public class FutureBasicMessageListener<T extends BasicMessage> extends BasicMessageListener<T> implements
-        ListenableFuture<T> {
+        ListenableFuture<BasicMessageWithExtraData<T>> {
 
     private final MsgLogger msglog = MsgLogger.LOGGER;
 
@@ -57,8 +58,8 @@ public class FutureBasicMessageListener<T extends BasicMessage> extends BasicMes
     }
 
     // use array blocking queue because it has the same concurrent semantics as Future making things easy for us
-    private final BlockingQueue<T> responseQ = new ArrayBlockingQueue<T>(1);
-    private T responseMessage = null;
+    private final BlockingQueue<BasicMessageWithExtraData<T>> responseQ = new ArrayBlockingQueue<>(1);
+    private BasicMessageWithExtraData<T> responseMessage = null;
     private State state = State.WAITING;
 
     // The execution list to hold our executors.
@@ -106,7 +107,7 @@ public class FutureBasicMessageListener<T extends BasicMessage> extends BasicMes
     }
 
     @Override
-    public T get() throws InterruptedException, ExecutionException {
+    public BasicMessageWithExtraData<T> get() throws InterruptedException, ExecutionException {
         if (state == State.CANCELLED) {
             throw new CancellationException();
         }
@@ -121,7 +122,8 @@ public class FutureBasicMessageListener<T extends BasicMessage> extends BasicMes
     }
 
     @Override
-    public T get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+    public BasicMessageWithExtraData<T> get(long timeout, TimeUnit unit) throws InterruptedException,
+            ExecutionException, TimeoutException {
         if (state == State.CANCELLED) {
             throw new CancellationException();
         }
@@ -129,7 +131,7 @@ public class FutureBasicMessageListener<T extends BasicMessage> extends BasicMes
         // Since we only ever expect a single response, only take the first item ever in the blocking Q.
         // From there on out we never take from the blocking Q.
         if (responseMessage == null) {
-            final T item = responseQ.poll(timeout, unit);
+            final BasicMessageWithExtraData<T> item = responseQ.poll(timeout, unit);
             if (item == null) {
                 throw new TimeoutException();
             }
@@ -146,11 +148,11 @@ public class FutureBasicMessageListener<T extends BasicMessage> extends BasicMes
     }
 
     @Override
-    protected void onBasicMessage(T basicMessage) {
+    protected void onBasicMessage(BasicMessageWithExtraData<T> msgWithData) {
         // if we already got a message or were cancelled, ignore any additional messages we might receive
         if (!isDone()) {
             state = State.DONE;
-            if (responseQ.offer(basicMessage)) {
+            if (responseQ.offer(msgWithData)) {
                 executionList.execute();
             } else {
                 msglog.errorCannotStoreIncomingMessageFutureInvalid();

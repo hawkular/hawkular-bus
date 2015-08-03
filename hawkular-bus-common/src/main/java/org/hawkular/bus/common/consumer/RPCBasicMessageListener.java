@@ -23,6 +23,7 @@ import javax.jms.Message;
 import javax.jms.Session;
 
 import org.hawkular.bus.common.BasicMessage;
+import org.hawkular.bus.common.BasicMessageWithExtraData;
 import org.hawkular.bus.common.MessageProcessor;
 import org.hawkular.bus.common.log.MsgLogger;
 import org.hawkular.bus.common.producer.ProducerConnectionContext;
@@ -76,12 +77,12 @@ public abstract class RPCBasicMessageListener<T extends BasicMessage, U extends 
 
     @Override
     public void onMessage(Message message) {
-        T basicMessage = getBasicMessageFromMessage(message);
-        if (basicMessage == null) {
+        BasicMessageWithExtraData<T> msgWithExtraData = parseMessage(message);
+        if (msgWithExtraData == null) {
             return; // either we are not to process this message or some error occurred, so we skip it
         }
 
-        U responseBasicMessage = onBasicMessage(basicMessage);
+        U responseBasicMessage = onBasicMessage(msgWithExtraData);
 
         // send the response back to the sender of the request
         ConsumerConnectionContext consumerConnectionContext = null;
@@ -136,9 +137,8 @@ public abstract class RPCBasicMessageListener<T extends BasicMessage, U extends 
     /**
      * Subclasses implement this method to process the received message.
      *
-     * @param basicMessage the message to process
+     * @param msgWithExtraData the basic message received with any extra data that came with it
      * @return the response message - this will be forwarded to the sender of the request message
      */
-    protected abstract U onBasicMessage(T basicMessage);
-
+    protected abstract U onBasicMessage(BasicMessageWithExtraData<T> msgWithExtraData);
 }

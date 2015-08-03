@@ -29,6 +29,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.hawkular.bus.common.BasicMessageWithExtraData;
 import org.hawkular.bus.common.ConnectionContextFactory;
 import org.hawkular.bus.common.Endpoint;
 import org.hawkular.bus.common.Endpoint.Type;
@@ -74,11 +75,12 @@ public class RPCTest {
             producerFactory = new ConnectionContextFactory(brokerURL);
             ProducerConnectionContext producerContext = producerFactory.createProducerConnectionContext(endpoint);
             MessageProcessor clientSideProcessor = new MessageProcessor();
-            ListenableFuture<SpecificMessage> future = clientSideProcessor.sendRPC(producerContext, specificMessage,
+            ListenableFuture<BasicMessageWithExtraData<SpecificMessage>> future = clientSideProcessor.sendRPC(
+                    producerContext, specificMessage,
                     SpecificMessage.class);
 
             // wait for the message to flow
-            SpecificMessage receivedSpecificMessage = null;
+            BasicMessageWithExtraData<SpecificMessage> receivedSpecificMessage = null;
             try {
                 receivedSpecificMessage = future.get();
             } catch (Exception e) {
@@ -87,9 +89,12 @@ public class RPCTest {
 
             // make sure the message flowed properly
             assertNotNull("Didn't receive response", receivedSpecificMessage);
-            assertEquals("RESPONSE:" + specificMessage.getMessage(), receivedSpecificMessage.getMessage());
-            assertEquals(specificMessage.getDetails(), receivedSpecificMessage.getDetails());
-            assertEquals("RESPONSE:" + specificMessage.getSpecific(), receivedSpecificMessage.getSpecific());
+            assertNotNull("Didn't receive response", receivedSpecificMessage.getBasicMessage());
+            assertEquals("RESPONSE:" + specificMessage.getMessage(), receivedSpecificMessage.getBasicMessage()
+                    .getMessage());
+            assertEquals(specificMessage.getDetails(), receivedSpecificMessage.getBasicMessage().getDetails());
+            assertEquals("RESPONSE:" + specificMessage.getSpecific(), receivedSpecificMessage.getBasicMessage()
+                    .getSpecific());
             assertFalse(future.isCancelled());
             assertTrue("Future should have been done: " + future, future.isDone());
 
@@ -101,9 +106,12 @@ public class RPCTest {
             }
 
             assertNotNull("Didn't receive response", receivedSpecificMessage);
-            assertEquals("RESPONSE:" + specificMessage.getMessage(), receivedSpecificMessage.getMessage());
-            assertEquals(specificMessage.getDetails(), receivedSpecificMessage.getDetails());
-            assertEquals("RESPONSE:" + specificMessage.getSpecific(), receivedSpecificMessage.getSpecific());
+            assertNotNull("Didn't receive response", receivedSpecificMessage.getBasicMessage());
+            assertEquals("RESPONSE:" + specificMessage.getMessage(), receivedSpecificMessage.getBasicMessage()
+                    .getMessage());
+            assertEquals(specificMessage.getDetails(), receivedSpecificMessage.getBasicMessage().getDetails());
+            assertEquals("RESPONSE:" + specificMessage.getSpecific(), receivedSpecificMessage.getBasicMessage()
+                    .getSpecific());
 
         } finally {
             // close everything
@@ -141,13 +149,13 @@ public class RPCTest {
             producerFactory = new ConnectionContextFactory(brokerURL);
             ProducerConnectionContext producerContext = producerFactory.createProducerConnectionContext(endpoint);
             MessageProcessor clientSideProcessor = new MessageProcessor();
-            ListenableFuture<SpecificMessage> future = clientSideProcessor.sendRPC(producerContext, specificMessage,
-                    SpecificMessage.class);
+            ListenableFuture<BasicMessageWithExtraData<SpecificMessage>> future = clientSideProcessor.sendRPC(
+                    producerContext, specificMessage, SpecificMessage.class);
             TestFutureCallback futureCallback = new TestFutureCallback();
             Futures.addCallback(future, futureCallback);
 
             // wait for the message to flow
-            SpecificMessage receivedSpecificMessage = null;
+            BasicMessageWithExtraData<SpecificMessage> receivedSpecificMessage = null;
             try {
                 receivedSpecificMessage = futureCallback.getResult(30, TimeUnit.SECONDS);
             } catch (Throwable t) {
@@ -158,9 +166,11 @@ public class RPCTest {
             assertFalse(future.isCancelled());
             assertTrue("Future should have been done: " + future, future.isDone());
             assertNotNull("Didn't receive response", receivedSpecificMessage);
-            assertEquals("RESPONSE:" + specificMessage.getMessage(), receivedSpecificMessage.getMessage());
-            assertEquals(specificMessage.getDetails(), receivedSpecificMessage.getDetails());
-            assertEquals("RESPONSE:" + specificMessage.getSpecific(), receivedSpecificMessage.getSpecific());
+            assertEquals("RESPONSE:" + specificMessage.getMessage(), receivedSpecificMessage.getBasicMessage()
+                    .getMessage());
+            assertEquals(specificMessage.getDetails(), receivedSpecificMessage.getBasicMessage().getDetails());
+            assertEquals("RESPONSE:" + specificMessage.getSpecific(), receivedSpecificMessage.getBasicMessage()
+                    .getSpecific());
 
             // use the future.get(timeout) method and make sure it returns the same
             try {
@@ -170,9 +180,11 @@ public class RPCTest {
             }
 
             assertNotNull("Didn't receive response", receivedSpecificMessage);
-            assertEquals("RESPONSE:" + specificMessage.getMessage(), receivedSpecificMessage.getMessage());
-            assertEquals(specificMessage.getDetails(), receivedSpecificMessage.getDetails());
-            assertEquals("RESPONSE:" + specificMessage.getSpecific(), receivedSpecificMessage.getSpecific());
+            assertEquals("RESPONSE:" + specificMessage.getMessage(), receivedSpecificMessage.getBasicMessage()
+                    .getMessage());
+            assertEquals(specificMessage.getDetails(), receivedSpecificMessage.getBasicMessage().getDetails());
+            assertEquals("RESPONSE:" + specificMessage.getSpecific(), receivedSpecificMessage.getBasicMessage()
+                    .getSpecific());
 
         } finally {
             // close everything
@@ -267,11 +279,11 @@ public class RPCTest {
             producerFactory = new ConnectionContextFactory(brokerURL);
             ProducerConnectionContext producerContext = producerFactory.createProducerConnectionContext(endpoint);
             MessageProcessor clientSideProcessor = new MessageProcessor();
-            ListenableFuture<SpecificMessage> future = clientSideProcessor.sendRPC(producerContext, specificMessage,
-                    SpecificMessage.class);
+            ListenableFuture<BasicMessageWithExtraData<SpecificMessage>> future = clientSideProcessor.sendRPC(
+                    producerContext, specificMessage, SpecificMessage.class);
 
             // wait for the message to flow - notice we don't wait long enough - this should timeout
-            SpecificMessage receivedSpecificMessage = null;
+            BasicMessageWithExtraData<SpecificMessage> receivedSpecificMessage = null;
             try {
                 receivedSpecificMessage = future.get(1, TimeUnit.SECONDS);
                 assert false : "Future failed to timeout; should have not got a response: " + receivedSpecificMessage;
@@ -293,9 +305,12 @@ public class RPCTest {
 
             // make sure the message flowed properly
             assertNotNull("Didn't receive response", receivedSpecificMessage);
-            assertEquals("RESPONSE:" + specificMessage.getMessage(), receivedSpecificMessage.getMessage());
-            assertEquals(specificMessage.getDetails(), receivedSpecificMessage.getDetails());
-            assertEquals("RESPONSE:" + specificMessage.getSpecific(), receivedSpecificMessage.getSpecific());
+            assertNotNull("Didn't receive response", receivedSpecificMessage.getBasicMessage());
+            assertEquals("RESPONSE:" + specificMessage.getMessage(), receivedSpecificMessage.getBasicMessage()
+                    .getMessage());
+            assertEquals(specificMessage.getDetails(), receivedSpecificMessage.getBasicMessage().getDetails());
+            assertEquals("RESPONSE:" + specificMessage.getSpecific(), receivedSpecificMessage.getBasicMessage()
+                    .getSpecific());
             assertFalse(future.isCancelled());
             assertTrue("Future should have been done: " + future, future.isDone());
 
@@ -335,8 +350,8 @@ public class RPCTest {
             producerFactory = new ConnectionContextFactory(brokerURL);
             ProducerConnectionContext producerContext = producerFactory.createProducerConnectionContext(endpoint);
             MessageProcessor clientSideProcessor = new MessageProcessor();
-            ListenableFuture<SpecificMessage> future = clientSideProcessor.sendRPC(producerContext, specificMessage,
-                    SpecificMessage.class);
+            ListenableFuture<BasicMessageWithExtraData<SpecificMessage>> future = clientSideProcessor.sendRPC(
+                    producerContext, specificMessage, SpecificMessage.class);
             TestFutureCallback futureCallback = new TestFutureCallback();
             Futures.addCallback(future, futureCallback);
 
@@ -391,7 +406,7 @@ public class RPCTest {
         }
 
         @Override
-        protected SpecificMessage onBasicMessage(SpecificMessage requestMessage) {
+        protected SpecificMessage onBasicMessage(BasicMessageWithExtraData<SpecificMessage> requestMessageWithData) {
             if (this.sleep > 0L) {
                 try {
                     Thread.sleep(this.sleep);
@@ -400,20 +415,20 @@ public class RPCTest {
                 }
             }
 
-            SpecificMessage responseMessage = new SpecificMessage("RESPONSE:" + requestMessage.getMessage(),
-                    requestMessage.getDetails(), "RESPONSE:"
-                            + requestMessage.getSpecific());
+            SpecificMessage reqMsg = requestMessageWithData.getBasicMessage();
+            SpecificMessage responseMessage = new SpecificMessage("RESPONSE:" + reqMsg.getMessage(),
+                    reqMsg.getDetails(), "RESPONSE:" + reqMsg.getSpecific());
             return responseMessage;
         }
     }
 
-    private class TestFutureCallback implements FutureCallback<SpecificMessage> {
+    private class TestFutureCallback implements FutureCallback<BasicMessageWithExtraData<SpecificMessage>> {
         private final CountDownLatch latch = new CountDownLatch(1);
-        private SpecificMessage msg = null;
+        private BasicMessageWithExtraData<SpecificMessage> msg = null;
         private Throwable error = null;
 
         @Override
-        public void onSuccess(SpecificMessage result) {
+        public void onSuccess(BasicMessageWithExtraData<SpecificMessage> result) {
             msg = result;
             latch.countDown();
         }
@@ -424,7 +439,7 @@ public class RPCTest {
             latch.countDown();
         }
 
-        public SpecificMessage getResult(long waitTime, TimeUnit timeUnit) throws Throwable {
+        public BasicMessageWithExtraData<SpecificMessage> getResult(long waitTime, TimeUnit timeUnit) throws Throwable {
             try {
                 latch.await(waitTime, timeUnit);
             } catch (Exception e) {

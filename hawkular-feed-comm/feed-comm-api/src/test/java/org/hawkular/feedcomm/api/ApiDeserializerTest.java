@@ -19,9 +19,9 @@ package org.hawkular.feedcomm.api;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Map;
 
 import org.hawkular.bus.common.BasicMessage;
+import org.hawkular.bus.common.BasicMessageWithExtraData;
 import org.hawkular.bus.common.BinaryData;
 import org.junit.Assert;
 import org.junit.Test;
@@ -121,14 +121,14 @@ public class ApiDeserializerTest {
 
         ByteArrayInputStream in = new UncloseableByteArrayInputStream(nameAndJsonPlusExtra.getBytes());
 
-        Map<BasicMessage, BinaryData> map = ad.deserialize(in);
-        BasicMessage request = map.keySet().iterator().next();
+        BasicMessageWithExtraData<BasicMessage> map = ad.deserialize(in);
+        BasicMessage request = map.getBasicMessage();
         Assert.assertTrue(request instanceof EchoRequest);
         EchoRequest echoRequest = (EchoRequest) request;
         Assert.assertEquals("msg", echoRequest.getEchoMessage());
 
         // now make sure the stream still has our extra data that we can read now
-        BinaryData leftover = map.values().iterator().next();
+        BinaryData leftover = map.getBinaryData();
         byte[] leftoverByteArray = new byte[leftover.available()];
         leftover.read(leftoverByteArray);
 
@@ -152,14 +152,14 @@ public class ApiDeserializerTest {
         String nameAndJson = EchoRequest.class.getName() + "={\"echoMessage\":\"msg\"}";
         ByteArrayInputStream in = new UncloseableByteArrayInputStream(nameAndJson.getBytes());
 
-        Map<BasicMessage, BinaryData> map = ad.deserialize(in);
-        BasicMessage request = map.keySet().iterator().next();
+        BasicMessageWithExtraData<BasicMessage> map = ad.deserialize(in);
+        BasicMessage request = map.getBasicMessage();
         Assert.assertTrue(request instanceof EchoRequest);
         EchoRequest echoRequest = (EchoRequest) request;
         Assert.assertEquals("msg", echoRequest.getEchoMessage());
 
         // now make sure the stream is empty
-        BinaryData leftover = map.values().iterator().next();
+        BinaryData leftover = map.getBinaryData();
         Assert.assertEquals(0, leftover.available());
         Assert.assertEquals(0, in.available());
     }

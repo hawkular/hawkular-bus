@@ -67,12 +67,12 @@ public class SimpleMessageProcessor extends MessageProcessor {
         return super.sendAndListen(producerCtx, basicMessage, responseListener, headers);
     }
 
-    public <R extends BasicMessage> ListenableFuture<R> sendRPC(BasicMessage basicMessage,
+    public <R extends BasicMessage> ListenableFuture<BasicMessageWithExtraData<R>> sendRPC(BasicMessage basicMessage,
             Class<R> expectedResponseMessageClass) throws JMSException {
         return super.sendRPC(producerCtx, basicMessage, expectedResponseMessageClass);
     }
 
-    public <R extends BasicMessage> ListenableFuture<R> sendRPC(BasicMessage basicMessage,
+    public <R extends BasicMessage> ListenableFuture<BasicMessageWithExtraData<R>> sendRPC(BasicMessage basicMessage,
             Class<R> expectedResponseMessageClass, Map<String, String> headers)
             throws JMSException {
         return super.sendRPC(producerCtx, basicMessage, expectedResponseMessageClass, headers);

@@ -87,7 +87,7 @@ public abstract class BasicMessage {
      *         in the stream. The value of the map is a byte array containing extra data that was read from
      *         the stream but not part of the JSON message.
      */
-    public static <T extends BasicMessage> Map<T, BinaryData> fromJSON(InputStream in, Class<T> clazz) {
+    public static <T extends BasicMessage> BasicMessageWithExtraData<T> fromJSON(InputStream in, Class<T> clazz) {
         final T obj;
         final byte[] remainder;
         try (JsonParser parser = new JsonFactory().configure(Feature.AUTO_CLOSE_SOURCE, false).createParser(in)) {
@@ -100,7 +100,7 @@ public abstract class BasicMessage {
         } catch (Exception e) {
             throw new IllegalArgumentException("Stream cannot be converted to JSON object of type [" + clazz + "]", e);
         }
-        return Collections.singletonMap(obj, new BinaryData(remainder, in));
+        return new BasicMessageWithExtraData<T>(obj, new BinaryData(remainder, in));
     }
 
     private static Method findBuildObjectMapperForDeserializationMethod(Class<? extends BasicMessage> clazz) {

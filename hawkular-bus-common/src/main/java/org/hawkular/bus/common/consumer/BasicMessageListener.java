@@ -19,6 +19,7 @@ package org.hawkular.bus.common.consumer;
 import javax.jms.Message;
 
 import org.hawkular.bus.common.BasicMessage;
+import org.hawkular.bus.common.BasicMessageWithExtraData;
 
 /**
  * A message listener that expects to receive a JSON-encoded BasicMessage or one of its subclasses. Implementors need
@@ -42,19 +43,19 @@ public abstract class BasicMessageListener<T extends BasicMessage> extends Abstr
 
     @Override
     public void onMessage(Message message) {
-        T basicMessage = getBasicMessageFromMessage(message);
-        if (basicMessage == null) {
+        BasicMessageWithExtraData<T> msgWithExtraData = parseMessage(message);
+        if (msgWithExtraData == null) {
             return; // either we are not to process this message or some error occurred, so we skip it
         }
 
-        onBasicMessage(basicMessage);
+        onBasicMessage(msgWithExtraData);
         return;
     };
 
     /**
      * Subclasses implement this method to process the received message.
      *
-     * @param basicMessage the message to process
+     * @param msgWithExtraData the basic message received with any extra data that came with it
      */
-    protected abstract void onBasicMessage(T basicMessage);
+    protected abstract void onBasicMessage(BasicMessageWithExtraData<T> msgWithExtraData);
 }

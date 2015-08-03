@@ -16,6 +16,7 @@
  */
 package org.hawkular.bus.sample.client;
 
+import org.hawkular.bus.common.BasicMessageWithExtraData;
 import org.hawkular.bus.common.ConnectionContextFactory;
 import org.hawkular.bus.common.Endpoint;
 import org.hawkular.bus.common.MessageProcessor;
@@ -54,8 +55,8 @@ public class Main {
             ConsumerConnectionContext context = factory.createConsumerConnectionContext(ENDPOINT);
             BasicMessageListener<SimpleBasicMessage> listener = new BasicMessageListener<SimpleBasicMessage>() {
                 @Override
-                protected void onBasicMessage(SimpleBasicMessage msg) {
-                    System.out.println("Consumed message===>" + msg.getMessage());
+                protected void onBasicMessage(BasicMessageWithExtraData<SimpleBasicMessage> msg) {
+                    System.out.println("Consumed message===>" + msg.getBasicMessage().getMessage());
                 }
             };
             MessageProcessor processor = new MessageProcessor();

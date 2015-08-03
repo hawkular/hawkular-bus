@@ -18,6 +18,7 @@ package org.hawkular.feedcomm.ws.mdb;
 
 import javax.websocket.Session;
 
+import org.hawkular.bus.common.BasicMessageWithExtraData;
 import org.hawkular.bus.common.consumer.BasicMessageListener;
 import org.hawkular.feedcomm.api.ExecuteOperationResponse;
 import org.hawkular.feedcomm.ws.Constants;
@@ -33,8 +34,9 @@ public class ExecuteOperationResponseListener extends BasicMessageListener<Execu
         this.connectedUIClients = connectedUIClients;
     }
 
-    protected void onBasicMessage(ExecuteOperationResponse response) {
+    protected void onBasicMessage(BasicMessageWithExtraData<ExecuteOperationResponse> responseWithData) {
         try {
+            ExecuteOperationResponse response = responseWithData.getBasicMessage();
             String uiClientId = response.getHeaders().get(Constants.HEADER_UICLIENTID);
             if (uiClientId == null) {
                 // TODO: for now, just send it to all UI clients on our server (we don't really want this behavior)

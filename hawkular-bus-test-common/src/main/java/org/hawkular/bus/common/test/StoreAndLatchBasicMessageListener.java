@@ -22,6 +22,7 @@ import java.util.concurrent.CountDownLatch;
 import javax.jms.JMSException;
 
 import org.hawkular.bus.common.BasicMessage;
+import org.hawkular.bus.common.BasicMessageWithExtraData;
 import org.hawkular.bus.common.consumer.BasicMessageListener;
 
 /**
@@ -45,9 +46,9 @@ public class StoreAndLatchBasicMessageListener<T extends BasicMessage> extends B
     }
 
     @Override
-    public void onBasicMessage(T basicMessage) {
+    public void onBasicMessage(BasicMessageWithExtraData<T> msgWithData) {
         try {
-            storeMessage(basicMessage);
+            storeMessage(msgWithData.getBasicMessage());
         } catch (Exception ex) {
             storeError(ex);
         } finally {

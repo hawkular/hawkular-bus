@@ -143,9 +143,9 @@ public class BasicMessageTest {
 
         ByteArrayInputStream in = new UncloseableByteArrayInputStream(jsonPlusExtra.getBytes());
 
-        Map<SimpleBasicMessage, BinaryData> fromJsonMap = BasicMessage.fromJSON(in, SimpleBasicMessage.class);
-        SimpleBasicMessage msg2 = fromJsonMap.keySet().iterator().next();
-        BinaryData leftoverFromJsonParser = fromJsonMap.values().iterator().next();
+        BasicMessageWithExtraData<SimpleBasicMessage> fromJson = BasicMessage.fromJSON(in, SimpleBasicMessage.class);
+        SimpleBasicMessage msg2 = fromJson.getBasicMessage();
+        BinaryData leftoverFromJsonParser = fromJson.getBinaryData();
 
         Assert.assertEquals(msg.getMessage(), msg2.getMessage());
         Assert.assertEquals(msg.getDetails(), msg2.getDetails());

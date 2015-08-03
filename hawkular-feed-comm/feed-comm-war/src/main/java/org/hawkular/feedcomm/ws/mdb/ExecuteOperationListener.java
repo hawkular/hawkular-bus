@@ -18,6 +18,7 @@ package org.hawkular.feedcomm.ws.mdb;
 
 import javax.websocket.Session;
 
+import org.hawkular.bus.common.BasicMessageWithExtraData;
 import org.hawkular.bus.common.consumer.BasicMessageListener;
 import org.hawkular.feedcomm.api.ExecuteOperationRequest;
 import org.hawkular.feedcomm.ws.Constants;
@@ -33,9 +34,10 @@ public class ExecuteOperationListener extends BasicMessageListener<ExecuteOperat
         this.connectedFeeds = connectedFeeds;
     }
 
-    protected void onBasicMessage(ExecuteOperationRequest request) {
+    protected void onBasicMessage(BasicMessageWithExtraData<ExecuteOperationRequest> request) {
         try {
-            String feedId = request.getHeaders().get(Constants.HEADER_FEEDID);
+            ExecuteOperationRequest basicMessage = request.getBasicMessage();
+            String feedId = basicMessage.getHeaders().get(Constants.HEADER_FEEDID);
             if (feedId == null) {
                 throw new IllegalArgumentException("Missing header: " + Constants.HEADER_FEEDID);
             }
@@ -45,10 +47,10 @@ public class ExecuteOperationListener extends BasicMessageListener<ExecuteOperat
             }
 
             MsgLogger.LOG.infof("Asking feed [%s] to execute operation [%s] on resource ID [%s]",
-                    feedId, request.getOperationName(), request.getResourceId());
+                    feedId, basicMessage.getOperationName(), basicMessage.getResourceId());
 
             // send the request to the feed
-            new WebSocketHelper().sendBasicMessageAsync(session, request);
+            new WebSocketHelper().sendBasicMessageAsync(session, basicMessage);
             return;
 
         } catch (Exception e) {

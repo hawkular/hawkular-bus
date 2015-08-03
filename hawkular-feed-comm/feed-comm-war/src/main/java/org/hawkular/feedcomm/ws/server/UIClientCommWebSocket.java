@@ -19,7 +19,6 @@ package org.hawkular.feedcomm.ws.server;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
 
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -33,6 +32,7 @@ import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
 import org.hawkular.bus.common.BasicMessage;
+import org.hawkular.bus.common.BasicMessageWithExtraData;
 import org.hawkular.bus.common.BinaryData;
 import org.hawkular.feedcomm.api.ApiDeserializer;
 import org.hawkular.feedcomm.api.GenericErrorResponseBuilder;
@@ -142,9 +142,9 @@ public class UIClientCommWebSocket {
         BasicMessage response;
 
         try {
-            Map<BasicMessage, BinaryData> requestMap = new ApiDeserializer().deserialize(binaryDataStream);
-            BasicMessage request = requestMap.keySet().iterator().next();
-            BinaryData binaryData = requestMap.values().iterator().next();
+            BasicMessageWithExtraData<BasicMessage> reqWithData = new ApiDeserializer().deserialize(binaryDataStream);
+            BasicMessage request = reqWithData.getBasicMessage();
+            BinaryData binaryData = reqWithData.getBinaryData();
             requestClassName = request.getClass().getName();
 
             Class<? extends Command<?, ?>> commandClass = Constants.VALID_COMMANDS_FROM_UI.get(requestClassName);

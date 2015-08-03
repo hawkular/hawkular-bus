@@ -19,7 +19,7 @@ package org.hawkular.feedcomm.ws.command;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
-import org.hawkular.feedcomm.api.BinaryData;
+import org.hawkular.bus.common.BinaryData;
 import org.hawkular.feedcomm.api.EchoRequest;
 import org.hawkular.feedcomm.api.EchoResponse;
 

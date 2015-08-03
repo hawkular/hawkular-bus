@@ -17,7 +17,7 @@
 package org.hawkular.feedcomm.ws.command;
 
 import org.hawkular.bus.common.BasicMessage;
-import org.hawkular.feedcomm.api.BinaryData;
+import org.hawkular.bus.common.BinaryData;
 
 /**
  * An command that comes from a feed.

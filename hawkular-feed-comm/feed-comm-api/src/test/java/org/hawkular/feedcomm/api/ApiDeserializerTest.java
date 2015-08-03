@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.hawkular.bus.common.BasicMessage;
+import org.hawkular.bus.common.BinaryData;
 import org.junit.Assert;
 import org.junit.Test;
 

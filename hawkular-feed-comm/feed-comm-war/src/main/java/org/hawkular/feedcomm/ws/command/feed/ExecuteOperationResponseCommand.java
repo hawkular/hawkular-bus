@@ -20,11 +20,11 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.hawkular.bus.common.BasicMessage;
+import org.hawkular.bus.common.BinaryData;
 import org.hawkular.bus.common.ConnectionContextFactory;
 import org.hawkular.bus.common.Endpoint;
 import org.hawkular.bus.common.MessageProcessor;
 import org.hawkular.bus.common.producer.ProducerConnectionContext;
-import org.hawkular.feedcomm.api.BinaryData;
 import org.hawkular.feedcomm.api.ExecuteOperationResponse;
 import org.hawkular.feedcomm.ws.Constants;
 import org.hawkular.feedcomm.ws.MsgLogger;

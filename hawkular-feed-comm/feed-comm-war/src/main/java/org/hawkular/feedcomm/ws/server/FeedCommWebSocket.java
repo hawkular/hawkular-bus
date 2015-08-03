@@ -34,8 +34,8 @@ import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
 import org.hawkular.bus.common.BasicMessage;
+import org.hawkular.bus.common.BinaryData;
 import org.hawkular.feedcomm.api.ApiDeserializer;
-import org.hawkular.feedcomm.api.BinaryData;
 import org.hawkular.feedcomm.api.GenericErrorResponseBuilder;
 import org.hawkular.feedcomm.ws.Constants;
 import org.hawkular.feedcomm.ws.MsgLogger;

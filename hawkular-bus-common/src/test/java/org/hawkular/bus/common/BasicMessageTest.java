@@ -143,18 +143,18 @@ public class BasicMessageTest {
 
         ByteArrayInputStream in = new UncloseableByteArrayInputStream(jsonPlusExtra.getBytes());
 
-        Map<SimpleBasicMessage, byte[]> fromJsonMap = BasicMessage.fromJSON(in, SimpleBasicMessage.class);
+        Map<SimpleBasicMessage, BinaryData> fromJsonMap = BasicMessage.fromJSON(in, SimpleBasicMessage.class);
         SimpleBasicMessage msg2 = fromJsonMap.keySet().iterator().next();
-        byte[] leftoverFromJsonParser = fromJsonMap.values().iterator().next();
+        BinaryData leftoverFromJsonParser = fromJsonMap.values().iterator().next();
 
         Assert.assertEquals(msg.getMessage(), msg2.getMessage());
         Assert.assertEquals(msg.getDetails(), msg2.getDetails());
 
         // now make sure the stream still has our extra data that we can read now
-        byte[] leftoverFromStream = new byte[in.available()];
-        in.read(leftoverFromStream);
+        byte[] leftoverBytes = new byte[leftoverFromJsonParser.available()];
+        leftoverFromJsonParser.read(leftoverBytes);
 
-        String totalRemaining = new String(leftoverFromJsonParser, "UTF-8") + new String(leftoverFromStream, "UTF-8");
+        String totalRemaining = new String(leftoverBytes, "UTF-8");
         Assert.assertEquals(extra.length(), totalRemaining.length());
         Assert.assertEquals(extra, totalRemaining);
     }

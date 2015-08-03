@@ -19,12 +19,12 @@ package org.hawkular.feedcomm.ws.command.ui;
 import java.util.Collections;
 import java.util.Map;
 
+import org.hawkular.bus.common.BinaryData;
 import org.hawkular.bus.common.ConnectionContextFactory;
 import org.hawkular.bus.common.Endpoint;
 import org.hawkular.bus.common.MessageId;
 import org.hawkular.bus.common.MessageProcessor;
 import org.hawkular.bus.common.producer.ProducerConnectionContext;
-import org.hawkular.feedcomm.api.BinaryData;
 import org.hawkular.feedcomm.api.ExecuteOperationRequest;
 import org.hawkular.feedcomm.api.GenericSuccessResponse;
 import org.hawkular.feedcomm.ws.Constants;

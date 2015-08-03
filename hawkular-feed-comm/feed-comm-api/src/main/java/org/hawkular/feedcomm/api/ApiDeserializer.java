@@ -18,10 +18,10 @@ package org.hawkular.feedcomm.api;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
 import java.util.Map;
 
 import org.hawkular.bus.common.BasicMessage;
+import org.hawkular.bus.common.BinaryData;
 
 /**
  * Given the special syntax of "apiName=JSON" this will deserialize the JSON into the appropriate API POJO.
@@ -128,10 +128,8 @@ public class ApiDeserializer {
         // We now have the name and the input stream is pointing at the JSON
         try {
             Class<T> pojo = (Class<T>) Class.forName(name);
-            Map<T, byte[]> results = BasicMessage.fromJSON(input, pojo);
-            return Collections.singletonMap(
-                    results.keySet().iterator().next(),
-                    new BinaryData(results.values().iterator().next(), input));
+            Map<T, BinaryData> results = BasicMessage.fromJSON(input, pojo);
+            return results;
         } catch (Exception e) {
             throw new RuntimeException("Cannot deserialize stream with object [" + name + "]", e);
         }

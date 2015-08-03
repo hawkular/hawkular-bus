@@ -120,18 +120,18 @@ public class ApiDeserializerTest {
 
         ByteArrayInputStream in = new UncloseableByteArrayInputStream(nameAndJsonPlusExtra.getBytes());
 
-        Map<BasicMessage, byte[]> map = ad.deserialize(in);
+        Map<BasicMessage, BinaryData> map = ad.deserialize(in);
         BasicMessage request = map.keySet().iterator().next();
         Assert.assertTrue(request instanceof EchoRequest);
         EchoRequest echoRequest = (EchoRequest) request;
         Assert.assertEquals("msg", echoRequest.getEchoMessage());
 
         // now make sure the stream still has our extra data that we can read now
-        byte[] leftoverFromJsonParser = map.values().iterator().next();
-        byte[] leftoverFromStream = new byte[in.available()];
-        in.read(leftoverFromStream);
+        BinaryData leftover = map.values().iterator().next();
+        byte[] leftoverByteArray = new byte[leftover.available()];
+        leftover.read(leftoverByteArray);
 
-        String totalRemaining = new String(leftoverFromJsonParser, "UTF-8") + new String(leftoverFromStream, "UTF-8");
+        String totalRemaining = new String(leftoverByteArray, "UTF-8");
         Assert.assertEquals(extra.length(), totalRemaining.length());
         Assert.assertEquals(extra, totalRemaining);
 
@@ -151,15 +151,15 @@ public class ApiDeserializerTest {
         String nameAndJson = EchoRequest.class.getName() + "={\"echoMessage\":\"msg\"}";
         ByteArrayInputStream in = new UncloseableByteArrayInputStream(nameAndJson.getBytes());
 
-        Map<BasicMessage, byte[]> map = ad.deserialize(in);
+        Map<BasicMessage, BinaryData> map = ad.deserialize(in);
         BasicMessage request = map.keySet().iterator().next();
         Assert.assertTrue(request instanceof EchoRequest);
         EchoRequest echoRequest = (EchoRequest) request;
         Assert.assertEquals("msg", echoRequest.getEchoMessage());
 
         // now make sure the stream is empty
-        byte[] leftoverFromJsonParser = map.values().iterator().next();
-        Assert.assertEquals(0, leftoverFromJsonParser.length);
+        BinaryData leftover = map.values().iterator().next();
+        Assert.assertEquals(0, leftover.available());
         Assert.assertEquals(0, in.available());
     }
 

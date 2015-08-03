@@ -18,6 +18,7 @@ package org.hawkular.feedcomm.api;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.Map;
 
 import org.hawkular.bus.common.BasicMessage;
@@ -88,15 +89,15 @@ public class ApiDeserializer {
      *
      * Because of the way the JSON parser works, some extra data might have been read from the stream
      * that wasn't part of the JSON message. In that case, a non-empty byte array containing the extra read
-     * data is returned in the map value.
+     * data is returned in BinaryData along with the rest of the stream.
      *
      * @param in input stream that has the Hawkular formatted JSON string at the head.
      *
      * @return a single-entry map whose key is the message object that was represented by the JSON string found
-     *         in the stream. The value of the map is a byte array containing extra data that was read from
-     *         the stream but not part of the JSON message.
+     *         in the stream. The value of the map is the extra binary data that is part of the stream
+     *         but not part of the JSON message.
      */
-    public <T extends BasicMessage> Map<T, byte[]> deserialize(InputStream input) {
+    public <T extends BasicMessage> Map<T, BinaryData> deserialize(InputStream input) {
         // We know the format is "name=json" with possible extra data after it.
         // So first find the "name"
         StringBuilder nameBuilder = new StringBuilder();
@@ -127,7 +128,10 @@ public class ApiDeserializer {
         // We now have the name and the input stream is pointing at the JSON
         try {
             Class<T> pojo = (Class<T>) Class.forName(name);
-            return BasicMessage.fromJSON(input, pojo);
+            Map<T, byte[]> results = BasicMessage.fromJSON(input, pojo);
+            return Collections.singletonMap(
+                    results.keySet().iterator().next(),
+                    new BinaryData(results.values().iterator().next(), input));
         } catch (Exception e) {
             throw new RuntimeException("Cannot deserialize stream with object [" + name + "]", e);
         }

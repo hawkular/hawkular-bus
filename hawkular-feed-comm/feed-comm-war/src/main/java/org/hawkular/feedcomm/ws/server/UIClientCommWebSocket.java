@@ -34,10 +34,10 @@ import javax.websocket.server.ServerEndpoint;
 
 import org.hawkular.bus.common.BasicMessage;
 import org.hawkular.feedcomm.api.ApiDeserializer;
+import org.hawkular.feedcomm.api.BinaryData;
 import org.hawkular.feedcomm.api.GenericErrorResponseBuilder;
 import org.hawkular.feedcomm.ws.Constants;
 import org.hawkular.feedcomm.ws.MsgLogger;
-import org.hawkular.feedcomm.ws.command.BinaryData;
 import org.hawkular.feedcomm.ws.command.Command;
 import org.hawkular.feedcomm.ws.command.CommandContext;
 
@@ -142,10 +142,9 @@ public class UIClientCommWebSocket {
         BasicMessage response;
 
         try {
-            Map<BasicMessage, byte[]> requestMap = new ApiDeserializer().deserialize(binaryDataStream);
+            Map<BasicMessage, BinaryData> requestMap = new ApiDeserializer().deserialize(binaryDataStream);
             BasicMessage request = requestMap.keySet().iterator().next();
-            byte[] inMemoryData = requestMap.values().iterator().next();
-            BinaryData binaryData = new BinaryData(inMemoryData, binaryDataStream);
+            BinaryData binaryData = requestMap.values().iterator().next();
             requestClassName = request.getClass().getName();
 
             Class<? extends Command<?, ?>> commandClass = Constants.VALID_COMMANDS_FROM_UI.get(requestClassName);

@@ -96,7 +96,8 @@ public class LargeDataTest {
 
             // clean the storage location
             File doomedDir = new File(storageLocation);
-            for (File doomedFile : doomedDir.listFiles()) {
+            File[] doomedFiles = doomedDir.listFiles();
+            for (File doomedFile : (doomedFiles == null) ? new File[0] : doomedFiles) {
                 doomedFile.delete();
             }
             doomedDir.delete();

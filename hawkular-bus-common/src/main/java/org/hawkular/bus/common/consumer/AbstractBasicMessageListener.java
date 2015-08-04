@@ -28,7 +28,7 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
-import org.apache.activemq.BlobMessage;
+import org.apache.activemq.command.ActiveMQBlobMessage;
 import org.hawkular.bus.common.BasicMessage;
 import org.hawkular.bus.common.BasicMessageWithExtraData;
 import org.hawkular.bus.common.MessageId;
@@ -105,9 +105,14 @@ public abstract class AbstractBasicMessageListener<T extends BasicMessage> imple
                 T basicMessage = BasicMessage.fromJSON(receivedBody, getBasicMessageClass());
                 retVal = new BasicMessageWithExtraData<T>(basicMessage, null);
 
-            } else if (message instanceof BlobMessage) {
-                InputStream receivedBody = ((BlobMessage) message).getInputStream();
+            } else if (message instanceof ActiveMQBlobMessage) {
+                InputStream receivedBody = ((ActiveMQBlobMessage) message).getInputStream();
                 retVal = BasicMessage.fromJSON(receivedBody, getBasicMessageClass());
+                try {
+                    ((ActiveMQBlobMessage) message).deleteFile();
+                } catch (Exception e) {
+                    getLog().debugf("Received blob message, but failed to delete it. Manual cleanup required: " + e);
+                }
             } else {
                 throw new Exception("Message is not a valid type: " + message.getClass());
             }

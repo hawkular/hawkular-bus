@@ -56,8 +56,8 @@ public class LargeDataTest {
             // mimic server-side
             consumerFactory = new ConnectionContextFactory(brokerURL);
             ConsumerConnectionContext consumerContext = consumerFactory.createConsumerConnectionContext(endpoint);
-            MessageWithExtraDataTestListener<SpecificMessage> listener = new MessageWithExtraDataTestListener<SpecificMessage>(
-                    SpecificMessage.class);
+            MessageWithExtraDataTestListener<SpecificMessage> listener;
+            listener = new MessageWithExtraDataTestListener<SpecificMessage>(SpecificMessage.class);
             MessageProcessor serverSideProcessor = new MessageProcessor();
             serverSideProcessor.listen(consumerContext, listener);
 

@@ -31,6 +31,7 @@ import javax.jms.TextMessage;
 import org.apache.activemq.command.ActiveMQBlobMessage;
 import org.hawkular.bus.common.BasicMessage;
 import org.hawkular.bus.common.BasicMessageWithExtraData;
+import org.hawkular.bus.common.BinaryData;
 import org.hawkular.bus.common.MessageId;
 import org.hawkular.bus.common.log.MsgLogger;
 import org.jboss.logging.Logger;
@@ -96,7 +97,7 @@ public abstract class AbstractBasicMessageListener<T extends BasicMessage> imple
      *
      * @return the message as a object T, or null if we should not or cannot process the message
      */
-    protected BasicMessageWithExtraData<T> parseMessage(Message message) {
+    protected BasicMessageWithExtraData<T> parseMessage(final Message message) {
         BasicMessageWithExtraData<T> retVal;
 
         try {
@@ -108,6 +109,21 @@ public abstract class AbstractBasicMessageListener<T extends BasicMessage> imple
             } else if (message instanceof ActiveMQBlobMessage) {
                 InputStream receivedBody = ((ActiveMQBlobMessage) message).getInputStream();
                 retVal = BasicMessage.fromJSON(receivedBody, getBasicMessageClass());
+                BinaryData extraData = retVal.getBinaryData();
+                if (extraData != null) {
+                    extraData.setOnCloseAction(new Runnable() {
+                        @Override
+                        public void run() {
+                            ActiveMQBlobMessage blob = (ActiveMQBlobMessage) message;
+                            try {
+                                getLog().tracef("Deleting blob msg file [%s]", blob.getRemoteBlobUrl());
+                                blob.deleteFile();
+                            } catch (Exception e) {
+                                getLog().warnf(e, "Failed to delete blob msg file: [%s]", blob.getRemoteBlobUrl());
+                            }
+                        }
+                    });
+                }
             } else {
                 throw new Exception("Message is not a valid type: " + message.getClass());
             }

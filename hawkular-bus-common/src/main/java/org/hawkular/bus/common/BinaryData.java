@@ -40,10 +40,23 @@ public class BinaryData extends InputStream {
     private final InputStream streamData;
     private int inMemoryDataPointer;
 
+    private Runnable onCloseAction;
+
     public BinaryData(byte[] inMemoryData, InputStream streamData) {
         this.inMemoryData = (inMemoryData != null) ? inMemoryData : new byte[0];
         this.streamData = streamData;
         this.inMemoryDataPointer = 0;
+        this.onCloseAction = null;
+    }
+
+    /**
+     * Provides custom action to run after {@link #close()} finishes closing the stream.
+     * This allows you to tell this object how it can clean up resources backing the stream.
+     *
+     * @param action the action or null if nothing should be done
+     */
+    public void setOnCloseAction(Runnable action) {
+        onCloseAction = action;
     }
 
     public int read() throws IOException {
@@ -88,6 +101,11 @@ public class BinaryData extends InputStream {
         inMemoryData = new byte[0];
         inMemoryDataPointer = 0;
         streamData.close();
+
+        // if we were asked to do something after close is done, do it now
+        if (onCloseAction != null) {
+            onCloseAction.run();
+        }
     }
 
     public void mark(int readlimit) {

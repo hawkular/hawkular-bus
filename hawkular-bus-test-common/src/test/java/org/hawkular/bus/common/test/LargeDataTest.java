@@ -50,7 +50,7 @@ public class LargeDataTest {
 
         try {
             String brokerURL = broker.getBrokerURL();
-            brokerURL += "/?jms.blobTransferPolicy.uploadUrl=file:" + storageLocation;
+            brokerURL += "?jms.blobTransferPolicy.uploadUrl=file:" + storageLocation;
             Endpoint endpoint = new Endpoint(Type.QUEUE, "testq");
 
             // mimic server-side
@@ -85,6 +85,7 @@ public class LargeDataTest {
             Assert.assertEquals(outgoingExtraData, new String(incomingExtraData, "UTF-8"));
 
             // make sure the data has been removed from the uploadUrl storage location
+            binaryData.close(); // closing will force the backing file to be removed
             File[] blobsStillAround = new File(storageLocation).listFiles();
             Assert.assertEquals("Still have blobs: " + Arrays.asList(blobsStillAround), 0, blobsStillAround.length);
 

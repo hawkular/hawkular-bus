@@ -108,11 +108,6 @@ public abstract class AbstractBasicMessageListener<T extends BasicMessage> imple
             } else if (message instanceof ActiveMQBlobMessage) {
                 InputStream receivedBody = ((ActiveMQBlobMessage) message).getInputStream();
                 retVal = BasicMessage.fromJSON(receivedBody, getBasicMessageClass());
-                try {
-                    ((ActiveMQBlobMessage) message).deleteFile();
-                } catch (Exception e) {
-                    getLog().debugf("Received blob message, but failed to delete it. Manual cleanup required: " + e);
-                }
             } else {
                 throw new Exception("Message is not a valid type: " + message.getClass());
             }

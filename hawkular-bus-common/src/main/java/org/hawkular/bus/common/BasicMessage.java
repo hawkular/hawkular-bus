@@ -77,15 +77,17 @@ public abstract class BasicMessage {
      * stream any extra data that might appear after it.
      *
      * Because of the way the JSON parser works, some extra data might have been read from the stream
-     * that wasn't part of the JSON message. In that case, a non-empty byte array containing the extra read
-     * data is returned along with the input stream (that has presumably more binary data) in the returned map value.
+     * that wasn't part of the JSON message but was part of the extra data that came with it. Because of this,
+     * the caller should no longer use the given stream but instead read the extra data via the returned
+     * object (see {@link BasicMessageWithExtraData#getBinaryData()}) since it will handle this condition
+     * properly.
      *
      * @param in input stream that has a JSON string at the head.
      * @param clazz the class whose instance is represented by the JSON string
      *
-     * @return a single-entry map whose key is the message object that was represented by the JSON string found
-     *         in the stream. The value of the map is a byte array containing extra data that was read from
-     *         the stream but not part of the JSON message.
+     * @return a POJO that contains a message object that was represented by the JSON string found
+     *         in the stream. This returned POJO will also contain a {@link BinaryData} object that you
+     *         can use to stream any additional data that came in the given input stream.
      */
     public static <T extends BasicMessage> BasicMessageWithExtraData<T> fromJSON(InputStream in, Class<T> clazz) {
         final T obj;

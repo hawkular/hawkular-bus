@@ -21,6 +21,7 @@ import java.io.InputStream;
 
 import org.hawkular.bus.common.BasicMessage;
 import org.hawkular.bus.common.BasicMessageWithExtraData;
+import org.hawkular.bus.common.BinaryData;
 
 /**
  * Given the special syntax of "apiName=JSON" this will deserialize the JSON into the appropriate API POJO.
@@ -87,14 +88,16 @@ public class ApiDeserializer {
      * The input stream will remain open so the caller can stream any extra data that might appear after it.
      *
      * Because of the way the JSON parser works, some extra data might have been read from the stream
-     * that wasn't part of the JSON message. In that case, a non-empty byte array containing the extra read
-     * data is returned in BinaryData along with the rest of the stream.
+     * that wasn't part of the JSON message but was part of the extra data that came with it. Because of this,
+     * the caller should no longer use the given stream but instead read the extra data via the returned
+     * object (see {@link BasicMessageWithExtraData#getBinaryData()}) since it will handle this condition
+     * properly.
      *
      * @param in input stream that has the Hawkular formatted JSON string at the head.
      *
-     * @return a single-entry map whose key is the message object that was represented by the JSON string found
-     *         in the stream. The value of the map is the extra binary data that is part of the stream
-     *         but not part of the JSON message.
+     * @return a POJO that contains a message object that was represented by the JSON string found
+     *         in the stream. This returned POJO will also contain a {@link BinaryData} object that you
+     *         can use to stream any additional data that came in the given input stream.
      */
     public <T extends BasicMessage> BasicMessageWithExtraData<T> deserialize(InputStream input) {
         // We know the format is "name=json" with possible extra data after it.

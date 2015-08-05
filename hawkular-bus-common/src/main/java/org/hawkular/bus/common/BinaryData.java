@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * This is a "stream" that includes some in-memory data as well as another stream.  The in-memory data (or not null
+ * This is a "stream" that includes some in-memory data as well as another stream.  The in-memory data (if not null
  * or empty) will be read first. Once the in-memory data has been exhausted, any additional reads will read data
  * from the input stream.
  *
@@ -29,6 +29,10 @@ import java.io.InputStream;
  * In that case, the extra data the JSON parser read will be found in an in-memory byte array. That additional
  * in-memory data byte array combined with the input stream that may contain even more data will both be stored
  * in this object so both pieces of data can be accessed using the normal input stream API.
+ *
+ * This can also be used to prefix a binary blob (found in an input stream) with a byte array of in-memory data.
+ * In other words, this can be used to prepare a message that consists of a JSON-message followed by a large
+ * amount of data found in a stream.
  */
 public class BinaryData extends InputStream {
 

@@ -33,6 +33,7 @@ import org.jboss.logging.Logger;
 public class AppAMDB extends BasicMessageListener<SimpleBasicMessage> {
     private final Logger log = Logger.getLogger(AppAMDB.class);
 
+    @Override
     protected void onBasicMessage(BasicMessageWithExtraData<SimpleBasicMessage> msg) {
         log.infof("===> MDB {AppA} received message [%s]", msg);
     };

@@ -95,8 +95,7 @@ public class QueueSendServlet extends HttpServlet {
 
             SimpleBasicMessage msg = new SimpleBasicMessage(userMessage);
             ListenableFuture<BasicMessageWithExtraData<SimpleBasicMessage>> future = new MessageProcessor().sendRPC(
-                    pcc, msg,
-                    SimpleBasicMessage.class, RPC_HEADER);
+                    pcc, msg, SimpleBasicMessage.class, RPC_HEADER);
             Futures.addCallback(future, new SimpleFutureCallback());
 
             PrintWriter out = response.getWriter();

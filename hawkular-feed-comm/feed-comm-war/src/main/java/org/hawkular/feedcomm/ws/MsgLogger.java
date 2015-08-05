@@ -66,8 +66,8 @@ public interface MsgLogger extends BasicLogger {
     void warnReceivedGenericErrorResponse(String errorMessage, String stackTrack);
 
     @LogMessage(level = Logger.Level.INFO)
-    @Message(id = 9, value = "Feed [%s] session opened")
-    void infoFeedSessionOpened(String feedId);
+    @Message(id = 9, value = "Feed [%s] session opened [%s]")
+    void infoFeedSessionOpened(String feedId, String sessionId);
 
     @LogMessage(level = Logger.Level.ERROR)
     @Message(id = 10, value = "Failed to add message listeners for feed [%s]. Closing session [%s]")

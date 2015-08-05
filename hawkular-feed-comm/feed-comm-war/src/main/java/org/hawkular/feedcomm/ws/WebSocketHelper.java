@@ -17,9 +17,11 @@
 package org.hawkular.feedcomm.ws;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.concurrent.ExecutorService;
 
 import javax.websocket.RemoteEndpoint.Async;
 import javax.websocket.RemoteEndpoint.Basic;
@@ -136,60 +138,56 @@ public class WebSocketHelper {
     }
 
     /**
-     * Sends binary data to clients asynchronously.
+     * Sends binary data to a client asynchronously.
      *
-     * @param sessions the client sessions where the message will be sent
-     * @param binaryData the binary data to send
+     * @param session the client session where the message will be sent
+     * @param inputStream the binary data to send
+     * @param threadPool where the job will be submitted so it can execute asynchronously
      */
-    public void sendBinaryAsync(Collection<Session> sessions, ByteBuffer binaryData) {
-        if (sessions == null || sessions.isEmpty()) {
+    public void sendBinaryAsync(Session session, InputStream inputStream, ExecutorService threadPool) {
+        if (session == null) {
             return;
         }
 
-        if (binaryData == null) {
-            throw new IllegalArgumentException("binaryData must not be null");
+        if (inputStream == null) {
+            throw new IllegalArgumentException("inputStream must not be null");
         }
 
-        MsgLogger.LOG.infof("Attempting to send async binary data to [%d] clients", sessions.size());
+        MsgLogger.LOG.infof("Attempting to send async binary data to client [%s]", session.getId());
 
-        for (Session session : sessions) {
-            if (session.isOpen()) {
-                Async asyncRemote = session.getAsyncRemote();
-                if (this.asyncTimeout != null) {
-                    asyncRemote.setSendTimeout(this.asyncTimeout.longValue());
-                }
-                asyncRemote.sendBinary(binaryData);
+        if (session.isOpen()) {
+            if (this.asyncTimeout != null) {
+                // TODO: what to do with timeout?
             }
+
+            CopyStreamRunnable runnable = new CopyStreamRunnable(session, inputStream);
+            threadPool.execute(runnable);
         }
 
         return;
     }
 
     /**
-     * Sends binary data to clients synchronously. If you send to multiple sessions, but an error occurred
-     * trying to deliver to one of the sessions, this method aborts, throws an exception, and the rest
-     * of the sessions will not get the message.
+     * Sends binary data to a client synchronously.
      *
-     * @param sessions the client sessions where the message will be sent
-     * @param binaryData the binary data to send
+     * @param session the client where the message will be sent
+     * @param inputStream the binary data to send
      * @throws IOException if a problem occurred during delivery of the data to a session.
      */
-    public void sendBinarySync(Collection<Session> sessions, ByteBuffer binaryData) throws IOException {
-        if (sessions == null || sessions.isEmpty()) {
+    public void sendBinarySync(Session session, InputStream inputStream) throws IOException {
+        if (session == null) {
             return;
         }
 
-        if (binaryData == null) {
-            throw new IllegalArgumentException("binaryData must not be null");
+        if (inputStream == null) {
+            throw new IllegalArgumentException("inputStream must not be null");
         }
 
-        MsgLogger.LOG.infof("Attempting to send message to [%d] clients: [%s]", sessions.size(), binaryData);
+        MsgLogger.LOG.infof("Attempting to send binary data to client [%s]", session.getId());
 
-        for (Session session : sessions) {
-            if (session.isOpen()) {
-                Basic basicRemote = session.getBasicRemote();
-                basicRemote.sendBinary(binaryData);
-            }
+        if (session.isOpen()) {
+            long size = new CopyStreamRunnable(session, inputStream).copyInputToOutput();
+            MsgLogger.LOG.infof("Finished sending binary data to client [%s]: size=[%s]", session.getId(), size);
         }
 
         return;
@@ -211,11 +209,50 @@ public class WebSocketHelper {
         sendTextSync(Collections.singletonList(session), text);
     }
 
-    public void sendBinaryAsync(Session session, ByteBuffer binaryData) {
-        sendBinaryAsync(Collections.singletonList(session), binaryData);
-    }
+    private class CopyStreamRunnable implements Runnable {
+        private final Session session;
+        private final InputStream inputStream;
 
-    public void sendBinarySync(Session session, ByteBuffer binaryData) throws IOException {
-        sendBinarySync(Collections.singletonList(session), binaryData);
+        public CopyStreamRunnable(Session session, InputStream inputStream) {
+            this.session = session;
+            this.inputStream = inputStream;
+        }
+
+        @Override
+        public void run() {
+            try {
+                long size = copyInputToOutput();
+                MsgLogger.LOG.infof("Finished sending async binary data to client [%s]: size=[%s]", session.getId(),
+                        size);
+            } catch (Exception e) {
+                MsgLogger.LOG.errorf(e, "Failed sending async binary data to client [%s].", session.getId());
+            }
+        }
+
+        public long copyInputToOutput() throws IOException {
+            Basic basicRemote = session.getBasicRemote();
+            OutputStream outputStream = basicRemote.getSendStream();
+
+            try {
+                // slurp the input stream data and send directly to the output stream
+                byte[] buf = new byte[4096];
+                long totalBytesCopied = 0L;
+                while (true) {
+                    int numRead = inputStream.read(buf);
+                    if (numRead == -1) {
+                        break;
+                    }
+                    outputStream.write(buf, 0, numRead);
+                    totalBytesCopied += numRead;
+                }
+                return totalBytesCopied;
+            } finally {
+                try {
+                    outputStream.close();
+                } finally {
+                    inputStream.close();
+                }
+            }
+        }
     }
 }

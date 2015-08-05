@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.util.Map;
 
 import javax.jms.JMSException;
@@ -444,7 +445,9 @@ public class MessageProcessor {
         BinaryData messagePlusBinaryData = new BinaryData(basicMessage.toJSON().getBytes(), inputStream);
 
         // we are using a ActiveMQ-specific feature that allows us to stream blobs
-        Message msg = ((ActiveMQSession) session).createBlobMessage(messagePlusBinaryData);
+        // for some unknown reason, ActiveMQ doesn't allow RA-obtained sessions to create BlobMessages.
+        // Need to play games to get the real ActiveMQ session so we can create BlobMessage.
+        Message msg = getActiveMQSession(session).createBlobMessage(messagePlusBinaryData);
 
         // if the basicMessage has headers, use those first
         Map<String, String> basicMessageHeaders = basicMessage.getHeaders();
@@ -463,5 +466,21 @@ public class MessageProcessor {
         }
 
         return msg;
+    }
+
+    protected ActiveMQSession getActiveMQSession(Session session) {
+        if (session instanceof ActiveMQSession) {
+            return (ActiveMQSession) session;
+        }
+
+        // This is probably a session obtained from the resource adapter, which is really a proxy.
+        // It has a non-public method called "getSession" that gets the session we want, so use reflection to get it.
+        try {
+            Method m = session.getClass().getDeclaredMethod("getSession");
+            m.setAccessible(true);
+            return (ActiveMQSession) m.invoke(session);
+        } catch (Exception e) {
+            throw new IllegalStateException("Not running with ActiveMQ", e);
+        }
     }
 }

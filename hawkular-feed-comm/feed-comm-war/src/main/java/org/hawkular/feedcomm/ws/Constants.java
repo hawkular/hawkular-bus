@@ -22,6 +22,7 @@ import org.hawkular.feedcomm.ws.command.EchoCommand;
 import org.hawkular.feedcomm.ws.command.GenericErrorResponseCommand;
 import org.hawkular.feedcomm.ws.command.feed.ExecuteOperationResponseCommand;
 import org.hawkular.feedcomm.ws.command.ui.ExecuteOperationCommand;
+import org.hawkular.feedcomm.ws.command.ui.FileUploadCommand;
 import org.hawkular.feedcomm.ws.server.ValidCommandsMap;
 
 /**
@@ -58,10 +59,13 @@ public interface Constants {
     ValidCommandsMap VALID_COMMANDS_FROM_UI = new ValidCommandsMap()
             .put(EchoCommand.REQUEST_CLASS.getName(), EchoCommand.class)
             .put(GenericErrorResponseCommand.REQUEST_CLASS.getName(), GenericErrorResponseCommand.class)
+            .put(FileUploadCommand.REQUEST_CLASS.getName(), FileUploadCommand.class)
             .put(ExecuteOperationCommand.REQUEST_CLASS.getName(), ExecuteOperationCommand.class);
 
     // QUEUES AND TOPICS
     Endpoint DEST_FEED_EXECUTE_OP = new Endpoint(Type.QUEUE, "FeedExecuteOperation");
+    Endpoint DEST_FEED_FILE_UPLOAD = new Endpoint(Type.QUEUE, "FeedFileUpload");
+
     Endpoint DEST_UICLIENT_EXECUTE_OP_RESPONSE = new Endpoint(Type.QUEUE, "UIClientExecuteOperationResponse");
 
 }

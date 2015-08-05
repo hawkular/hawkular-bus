@@ -28,6 +28,7 @@ import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.jms.ConnectionFactory;
 import javax.naming.InitialContext;
 import javax.persistence.PostRemove;
@@ -39,6 +40,7 @@ import org.hawkular.bus.common.consumer.ConsumerConnectionContext;
 import org.hawkular.feedcomm.ws.Constants;
 import org.hawkular.feedcomm.ws.MsgLogger;
 import org.hawkular.feedcomm.ws.mdb.ExecuteOperationListener;
+import org.hawkular.feedcomm.ws.mdb.FileUploadListener;
 
 @Startup
 @Singleton
@@ -52,6 +54,9 @@ public class FeedListenerGenerator {
 
     private Map<String, ConnectionContextFactory> connContextFactories;
     private Map<String, List<ConsumerConnectionContext>> consumerContexts;
+
+    @Resource
+    private ManagedExecutorService threadPoolService;
 
     @PostConstruct
     public void initialize() throws Exception {
@@ -101,6 +106,11 @@ public class FeedListenerGenerator {
         Endpoint endpoint = Constants.DEST_FEED_EXECUTE_OP;
         ConsumerConnectionContext ccc = ccf.createConsumerConnectionContext(endpoint, messageSelector);
         messageProcessor.listen(ccc, new ExecuteOperationListener(connectedFeeds));
+        contextList.add(ccc);
+
+        endpoint = Constants.DEST_FEED_FILE_UPLOAD;
+        ccc = ccf.createConsumerConnectionContext(endpoint, messageSelector);
+        messageProcessor.listen(ccc, new FileUploadListener(connectedFeeds, threadPoolService));
         contextList.add(ccc);
 
         return;

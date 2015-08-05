@@ -5,15 +5,16 @@
   <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
 </head>
 <body>
-<div id="send">
-  URL Context (a feed/{feedID} or 'ui/ws')<input type="text" id="urlcontext" size="25"/><br>
-  Message (Hawkular JSON):<input type="text" id="data" size="100"/><br>
-  Extra Data:<input type="text" id="extradata" size="100"/><br>
-  <input type="button" id="sendtext" value="send text"/>
-</div>
-<div id="output"></div>
+  <div id="send">
+    URL Context (a feed/{feedID} or 'ui/ws')<input type="text" id="urlcontext" size="25"/><br>
+    Message (Hawkular JSON):<input type="text" id="data" size="100"/><br>
+    Extra Data:<input type="text" id="extradata" size="100"/><br>
+    <input type="button" id="sendtext" value="send text"/>
+  </div>
+  <div id="output"></div>
 </body>
 </html>
+
 <script>
 
 jQuery(function($){
@@ -25,14 +26,11 @@ jQuery(function($){
   }
 
   function setup(){
-
-    // Note: You have to change the host var
-    // if your client runs on a different machine than the websocket server
-
     var $urlcontext = $("#urlcontext");
     var host = "ws://localhost:8080/hawkular/feed-comm/" + $urlcontext.val();
+
     var socket = new WebSocket(host);
-    //console.log("socket status: " + socket.readyState);
+    socket.binaryType = 'arraybuffer';
 
     var $txt = $("#data");
     var $extratxt = $("#extradata");
@@ -53,8 +51,6 @@ jQuery(function($){
         var binaryblob = new Blob([text + extratxt]);
         socket.send(binaryblob);
       }
-      //$txt.val("");
-      //$extratxt.val("");
     });
 
     $txt.keypress(function(evt){
@@ -67,11 +63,15 @@ jQuery(function($){
     if(socket){
 
       socket.onopen = function(){
-        //alert("connection opened....");
+        showServerResponse("The connection has been opened.");
       }
 
       socket.onmessage = function(msg){
-        showServerResponse(msg.data);
+        if (msg.data instanceof ArrayBuffer) {
+          showServerResponse(String.fromCharCode.apply(null, new Uint8Array(msg.data)));
+        } else {
+          showServerResponse(msg.data);
+        }
       }
 
       socket.onclose = function(){

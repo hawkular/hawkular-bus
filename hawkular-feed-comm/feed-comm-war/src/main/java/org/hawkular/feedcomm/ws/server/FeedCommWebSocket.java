@@ -57,7 +57,7 @@ public class FeedCommWebSocket {
 
     @OnOpen
     public void feedSessionOpen(Session session, @PathParam("feedId") String feedId) {
-        MsgLogger.LOG.infoFeedSessionOpened(feedId);
+        MsgLogger.LOG.infoFeedSessionOpened(feedId, session.getId());
         boolean successfullyAddedSession = connectedFeeds.addSession(feedId, session);
         if (successfullyAddedSession) {
             try {

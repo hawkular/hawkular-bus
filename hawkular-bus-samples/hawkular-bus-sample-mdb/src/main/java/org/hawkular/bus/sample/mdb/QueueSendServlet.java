@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.hawkular.bus.common.BasicMessageWithExtraData;
 import org.hawkular.bus.common.ConnectionContextFactory;
 import org.hawkular.bus.common.Endpoint;
 import org.hawkular.bus.common.MessageId;
@@ -93,8 +94,8 @@ public class QueueSendServlet extends HttpServlet {
                     QUEUE_NAME));
 
             SimpleBasicMessage msg = new SimpleBasicMessage(userMessage);
-            ListenableFuture<SimpleBasicMessage> future = new MessageProcessor().sendRPC(pcc, msg,
-                    SimpleBasicMessage.class, RPC_HEADER);
+            ListenableFuture<BasicMessageWithExtraData<SimpleBasicMessage>> future = new MessageProcessor().sendRPC(
+                    pcc, msg, SimpleBasicMessage.class, RPC_HEADER);
             Futures.addCallback(future, new SimpleFutureCallback());
 
             PrintWriter out = response.getWriter();
@@ -114,9 +115,9 @@ public class QueueSendServlet extends HttpServlet {
         return map;
     }
 
-    private class SimpleFutureCallback implements FutureCallback<SimpleBasicMessage> {
+    private class SimpleFutureCallback implements FutureCallback<BasicMessageWithExtraData<SimpleBasicMessage>> {
         @Override
-        public void onSuccess(SimpleBasicMessage result) {
+        public void onSuccess(BasicMessageWithExtraData<SimpleBasicMessage> result) {
             log("SUCCESS! Got response from MDB: " + result);
         }
 

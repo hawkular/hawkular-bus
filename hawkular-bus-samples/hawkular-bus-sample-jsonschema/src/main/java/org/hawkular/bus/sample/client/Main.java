@@ -18,6 +18,7 @@ package org.hawkular.bus.sample.client;
 
 import java.util.HashMap;
 
+import org.hawkular.bus.common.BasicMessageWithExtraData;
 import org.hawkular.bus.common.ConnectionContextFactory;
 import org.hawkular.bus.common.Endpoint;
 import org.hawkular.bus.common.MessageProcessor;
@@ -55,7 +56,8 @@ public class Main {
             ConsumerConnectionContext context = factory.createConsumerConnectionContext(ENDPOINT);
             BasicMessageListener<Person> listener = new BasicMessageListener<Person>() {
                 @Override
-                protected void onBasicMessage(Person person) {
+                protected void onBasicMessage(BasicMessageWithExtraData<Person> personWithExtraData) {
+                    Person person = personWithExtraData.getBasicMessage();
                     System.out.println("\n========== RECEIVED MESSAGE START ==========");
                     System.out.println("Consumed Person:");
                     System.out.printf(

@@ -22,9 +22,13 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 public class BasicMessageTest {
@@ -126,5 +130,45 @@ public class BasicMessageTest {
 
         // make sure it didn't change and its still the same
         assertEquals("val1", msg.getDetails().get("key1"));
+    }
+
+    @Test
+    public void testReadFromInputStream() throws IOException {
+        // tests that this can extract the JSON even if more data follows in the stream
+        SimpleBasicMessage msg = new SimpleBasicMessage("test-msg", Collections.singletonMap("one", "111"));
+
+        String json = msg.toJSON();
+        String extra = "This is some extra data";
+        String jsonPlusExtra = json + extra;
+
+        ByteArrayInputStream in = new UncloseableByteArrayInputStream(jsonPlusExtra.getBytes());
+
+        BasicMessageWithExtraData<SimpleBasicMessage> fromJson = BasicMessage.fromJSON(in, SimpleBasicMessage.class);
+        SimpleBasicMessage msg2 = fromJson.getBasicMessage();
+        BinaryData leftoverFromJsonParser = fromJson.getBinaryData();
+
+        Assert.assertEquals(msg.getMessage(), msg2.getMessage());
+        Assert.assertEquals(msg.getDetails(), msg2.getDetails());
+
+        // now make sure the stream still has our extra data that we can read now
+        byte[] leftoverBytes = new byte[leftoverFromJsonParser.available()];
+        leftoverFromJsonParser.read(leftoverBytes);
+
+        String totalRemaining = new String(leftoverBytes, "UTF-8");
+        Assert.assertEquals(extra.length(), totalRemaining.length());
+        Assert.assertEquals(extra, totalRemaining);
+    }
+
+    // This is just to test that our JsonParser does NOT close the stream.
+    // If close is called, that is bad and should fail the test
+    class UncloseableByteArrayInputStream extends ByteArrayInputStream {
+        public UncloseableByteArrayInputStream(byte[] buf) {
+            super(buf);
+        }
+
+        @Override
+        public void close() throws IOException {
+            Assert.fail("The input stream should NOT have been closed");
+        }
     }
 }

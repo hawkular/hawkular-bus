@@ -20,6 +20,7 @@ import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.jms.MessageListener;
 
+import org.hawkular.bus.common.BasicMessageWithExtraData;
 import org.hawkular.bus.common.SimpleBasicMessage;
 import org.hawkular.bus.common.consumer.BasicMessageListener;
 import org.jboss.logging.Logger;
@@ -32,7 +33,8 @@ import org.jboss.logging.Logger;
 public class AppAMDB extends BasicMessageListener<SimpleBasicMessage> {
     private final Logger log = Logger.getLogger(AppAMDB.class);
 
-    protected void onBasicMessage(SimpleBasicMessage msg) {
+    @Override
+    protected void onBasicMessage(BasicMessageWithExtraData<SimpleBasicMessage> msg) {
         log.infof("===> MDB {AppA} received message [%s]", msg);
     };
 }

@@ -16,6 +16,7 @@
  */
 package org.hawkular.bus.common.log;
 
+import org.jboss.logging.BasicLogger;
 import org.jboss.logging.Logger;
 import org.jboss.logging.Logger.Level;
 import org.jboss.logging.annotations.Cause;
@@ -29,7 +30,7 @@ import org.jboss.logging.annotations.ValidIdRange;
  */
 @MessageLogger(projectCode = "HAWKBUS")
 @ValidIdRange(min = 100000, max = 109999)
-public interface MsgLogger {
+public interface MsgLogger extends BasicLogger {
     MsgLogger LOGGER = Logger.getMessageLogger(MsgLogger.class, MsgLogger.class.getPackage().getName());
 
     @LogMessage(level = Level.ERROR)

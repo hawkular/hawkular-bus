@@ -17,6 +17,7 @@
 package org.hawkular.feedcomm.ws.command;
 
 import javax.jms.ConnectionFactory;
+import javax.websocket.Session;
 
 import org.hawkular.feedcomm.ws.server.ConnectedFeeds;
 import org.hawkular.feedcomm.ws.server.ConnectedUIClients;
@@ -25,11 +26,13 @@ public class CommandContext {
     private final ConnectedFeeds connectedFeeds;
     private final ConnectedUIClients connectedUIClients;
     private final ConnectionFactory connectionFactory;
+    private final Session session;
 
-    public CommandContext(ConnectedFeeds f, ConnectedUIClients ui, ConnectionFactory cf) {
+    public CommandContext(ConnectedFeeds f, ConnectedUIClients ui, ConnectionFactory cf, Session session) {
         this.connectedFeeds = f;
         this.connectedUIClients = ui;
         this.connectionFactory = cf;
+        this.session = session;
     }
 
     public ConnectedFeeds getConnectedFeeds() {
@@ -42,5 +45,9 @@ public class CommandContext {
 
     public ConnectionFactory getConnectionFactory() {
         return connectionFactory;
+    }
+
+    public Session getSession() {
+        return session;
     }
 }

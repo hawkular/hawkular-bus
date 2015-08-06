@@ -23,12 +23,16 @@ import javax.jms.Message;
 import javax.jms.Session;
 
 import org.hawkular.bus.common.BasicMessage;
+import org.hawkular.bus.common.BasicMessageWithExtraData;
 import org.hawkular.bus.common.MessageProcessor;
 import org.hawkular.bus.common.log.MsgLogger;
 import org.hawkular.bus.common.producer.ProducerConnectionContext;
 
 /**
  * A listener that processes an incoming request that will require a response sent back to the sender of the request.
+ *
+ * Subclasses must override one and only one of the {@link #onBasicMessage(BasicMessageWithExtraData)} or
+ * {@link #onBasicMessage(BasicMessage)} methods.
  *
  * @author John Mazzitelli
  *
@@ -76,12 +80,12 @@ public abstract class RPCBasicMessageListener<T extends BasicMessage, U extends 
 
     @Override
     public void onMessage(Message message) {
-        T basicMessage = getBasicMessageFromMessage(message);
-        if (basicMessage == null) {
+        BasicMessageWithExtraData<T> msgWithExtraData = parseMessage(message);
+        if (msgWithExtraData == null) {
             return; // either we are not to process this message or some error occurred, so we skip it
         }
 
-        U responseBasicMessage = onBasicMessage(basicMessage);
+        U responseBasicMessage = onBasicMessage(msgWithExtraData);
 
         // send the response back to the sender of the request
         ConsumerConnectionContext consumerConnectionContext = null;
@@ -136,9 +140,30 @@ public abstract class RPCBasicMessageListener<T extends BasicMessage, U extends 
     /**
      * Subclasses implement this method to process the received message.
      *
-     * @param basicMessage the message to process
+     * If subclasses would rather just receive the {@link BasicMessage}, it can do so by
+     * overriding the onBasicMessage method that just takes the message type as a parameter
+     * and leaving this method as-is (that is, do NOT override this method).
+     *
+     * @param msgWithExtraData the basic message received with any extra data that came with it
      * @return the response message - this will be forwarded to the sender of the request message
      */
-    protected abstract U onBasicMessage(T basicMessage);
+    protected U onBasicMessage(BasicMessageWithExtraData<T> msgWithExtraData) {
+        return onBasicMessage(msgWithExtraData.getBasicMessage());
+    }
 
+    /**
+     * Subclasses can implement this method rather than {@link #onBasicMessage(BasicMessageWithExtraData)}
+     * if they only expect to receive a {@link BasicMessage} with no additional data.
+     *
+     * If this method is overridden by subclasses, then the {@link #onBasicMessage(BasicMessageWithExtraData)}
+     * should not be.
+     *
+     * This base implementation is a no-op.
+     *
+     * @param basicMessage the basic message received
+     * @return the response message - this will be forwarded to the sender of the request message
+     */
+    protected U onBasicMessage(T basicMessage) {
+        return null; // no op
+    }
 }

@@ -25,38 +25,32 @@ import org.hawkular.bus.common.Endpoint;
 import org.hawkular.bus.common.MessageId;
 import org.hawkular.bus.common.MessageProcessor;
 import org.hawkular.bus.common.producer.ProducerConnectionContext;
-import org.hawkular.feedcomm.api.ExecuteOperationRequest;
+import org.hawkular.feedcomm.api.FileUploadRequest;
 import org.hawkular.feedcomm.api.GenericSuccessResponse;
 import org.hawkular.feedcomm.ws.Constants;
+import org.hawkular.feedcomm.ws.MsgLogger;
 import org.hawkular.feedcomm.ws.command.Command;
 import org.hawkular.feedcomm.ws.command.CommandContext;
 
 /**
- * UI client requesting to execute an operation on a resource managed by a feed.
+ * UI client requesting to send a file to a remote feed.
  */
-public class ExecuteOperationCommand implements Command<ExecuteOperationRequest, GenericSuccessResponse> {
-    public static final Class<ExecuteOperationRequest> REQUEST_CLASS = ExecuteOperationRequest.class;
+public class FileUploadCommand implements Command<FileUploadRequest, GenericSuccessResponse> {
+    public static final Class<FileUploadRequest> REQUEST_CLASS = FileUploadRequest.class;
 
     @Override
-    public GenericSuccessResponse execute(ExecuteOperationRequest request, BinaryData binaryData,
-            CommandContext context) throws Exception {
+    public GenericSuccessResponse execute(FileUploadRequest request, BinaryData binaryData, CommandContext context)
+            throws Exception {
 
-        // determine what feed needs to be sent the message
-        String feedId;
-
-        // TODO: this is only useful for wildfly agent IDs - because we know its got the feed in it.
-        //       we need a "real" way to do this - need to ask inventory what the feed ID is
-        feedId = request.getResourceId().split("~", 3)[0]; // the feedID is the first one in the array
-
-        GenericSuccessResponse response;
         try (ConnectionContextFactory ccf = new ConnectionContextFactory(context.getConnectionFactory())) {
-            Endpoint endpoint = Constants.DEST_FEED_EXECUTE_OP;
+            String feedId = request.getFeedId();
+            Endpoint endpoint = Constants.DEST_FEED_FILE_UPLOAD;
             ProducerConnectionContext pcc = ccf.createProducerConnectionContext(endpoint);
             Map<String, String> feedIdHeader = Collections.singletonMap(Constants.HEADER_FEEDID, feedId);
-            MessageId mid = new MessageProcessor().send(pcc, request, feedIdHeader);
-            response = new GenericSuccessResponse();
-            response.setMessage("The execution request has been forwarded to feed [" + feedId + "] (id=" + mid + ")");
+            MessageId mid = new MessageProcessor().sendWithBinaryData(pcc, request, binaryData, feedIdHeader);
+            MsgLogger.LOG.debugf("File upload request placed on bus. mid=[%s], request=[%s]", mid, request);
         }
-        return response;
+
+        return null;
     }
 }

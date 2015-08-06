@@ -20,6 +20,7 @@ import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.jms.MessageListener;
 
+import org.hawkular.bus.common.BasicMessageWithExtraData;
 import org.hawkular.bus.common.SimpleBasicMessage;
 import org.hawkular.bus.common.consumer.BasicMessageListener;
 import org.jboss.logging.Logger;
@@ -31,7 +32,8 @@ import org.jboss.logging.Logger;
 public class MyMDB extends BasicMessageListener<SimpleBasicMessage> {
     private final Logger log = Logger.getLogger(MyMDB.class);
 
-    protected void onBasicMessage(SimpleBasicMessage msg) {
-        log.infof("===> MDB received message [%s]", msg);
-    };
+    @Override
+    protected void onBasicMessage(BasicMessageWithExtraData<SimpleBasicMessage> msgWithData) {
+        log.infof("===> MDB received message [%s]", msgWithData.getBasicMessage());
+    }
 }

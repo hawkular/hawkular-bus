@@ -19,10 +19,14 @@ package org.hawkular.bus.common.consumer;
 import javax.jms.Message;
 
 import org.hawkular.bus.common.BasicMessage;
+import org.hawkular.bus.common.BasicMessageWithExtraData;
 
 /**
  * A message listener that expects to receive a JSON-encoded BasicMessage or one of its subclasses. Implementors need
- * only implement the method that takes an BasicRecord or one of its subclasses; the JSON decoding is handled for you.
+ * not worry about the JSON decoding as it is handled for you
+ *
+ * Subclasses must override one and only one of the {@link #onBasicMessage(BasicMessageWithExtraData)} or
+ * {@link #onBasicMessage(BasicMessage)} methods.
  *
  * This processes fire-and-forget requests - that is, the request message is processed with no response being sent back
  * to the sender.
@@ -42,19 +46,40 @@ public abstract class BasicMessageListener<T extends BasicMessage> extends Abstr
 
     @Override
     public void onMessage(Message message) {
-        T basicMessage = getBasicMessageFromMessage(message);
-        if (basicMessage == null) {
+        BasicMessageWithExtraData<T> msgWithExtraData = parseMessage(message);
+        if (msgWithExtraData == null) {
             return; // either we are not to process this message or some error occurred, so we skip it
         }
 
-        onBasicMessage(basicMessage);
+        onBasicMessage(msgWithExtraData);
         return;
     };
 
     /**
      * Subclasses implement this method to process the received message.
      *
-     * @param basicMessage the message to process
+     * If subclasses would rather just receive the {@link BasicMessage}, it can do so by
+     * overriding {@link #onBasicMessage(BasicMessage)} and leaving this method as-is (that is,
+     * do NOT override this method).
+     *
+     * @param msgWithExtraData the basic message received with any extra data that came with it
      */
-    protected abstract void onBasicMessage(T basicMessage);
+    protected void onBasicMessage(BasicMessageWithExtraData<T> msgWithExtraData) {
+        onBasicMessage(msgWithExtraData.getBasicMessage()); // delegate
+    }
+
+    /**
+     * Subclasses can implement this method rather than {@link #onBasicMessage(BasicMessageWithExtraData)}
+     * if they only expect to receive a {@link BasicMessage} with no additional data.
+     *
+     * If this method is overridden by subclasses, then the {@link #onBasicMessage(BasicMessageWithExtraData)}
+     * should not be.
+     *
+     * This base implementation is a no-op.
+     *
+     * @param basicMessage the basic message received
+     */
+    protected void onBasicMessage(T basicMessage) {
+        // no op
+    }
 }

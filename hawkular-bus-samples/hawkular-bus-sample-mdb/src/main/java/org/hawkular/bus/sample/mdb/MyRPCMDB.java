@@ -22,6 +22,7 @@ import javax.ejb.MessageDriven;
 import javax.jms.ConnectionFactory;
 import javax.jms.MessageListener;
 
+import org.hawkular.bus.common.BasicMessageWithExtraData;
 import org.hawkular.bus.common.SimpleBasicMessage;
 import org.hawkular.bus.mdb.RPCBasicMessageDrivenBean;
 import org.jboss.logging.Logger;
@@ -41,10 +42,12 @@ public class MyRPCMDB extends RPCBasicMessageDrivenBean<SimpleBasicMessage, Simp
         return this.connectionFactory;
     }
 
-    protected SimpleBasicMessage onBasicMessage(SimpleBasicMessage msg) {
+    @Override
+    protected SimpleBasicMessage onBasicMessage(BasicMessageWithExtraData<SimpleBasicMessage> msgWithExtraData) {
+        SimpleBasicMessage msg = msgWithExtraData.getBasicMessage();
         log.infof("===> MDB received incoming RPC message [%s]", msg);
         SimpleBasicMessage response = new SimpleBasicMessage("ECHO! " + msg.getMessage());
         log.infof("===> MDB sending response RPC message [%s]", response);
         return response;
-    };
+    }
 }

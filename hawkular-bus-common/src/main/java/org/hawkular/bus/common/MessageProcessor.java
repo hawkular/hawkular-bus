@@ -16,6 +16,11 @@
  */
 package org.hawkular.bus.common;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.util.Map;
 
 import javax.jms.JMSException;
@@ -25,6 +30,7 @@ import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.TemporaryQueue;
 
+import org.apache.activemq.ActiveMQSession;
 import org.hawkular.bus.common.consumer.AbstractBasicMessageListener;
 import org.hawkular.bus.common.consumer.BasicMessageListener;
 import org.hawkular.bus.common.consumer.ConsumerConnectionContext;
@@ -104,6 +110,91 @@ public class MessageProcessor {
 
         // create the JMS message to be sent
         Message msg = createMessage(context, basicMessage, headers);
+
+        // if the message is correlated with another, put the correlation ID in the Message to be sent
+        if (basicMessage.getCorrelationId() != null) {
+            msg.setJMSCorrelationID(basicMessage.getCorrelationId().toString());
+        }
+
+        if (basicMessage.getMessageId() != null) {
+            log.debugf("Non-null message ID [%s] will be ignored and a new one generated", basicMessage.getMessageId());
+            basicMessage.setMessageId(null);
+        }
+
+        // now send the message to the broker
+        MessageProducer producer = context.getMessageProducer();
+        if (producer == null) {
+            throw new IllegalStateException("context had a null producer");
+        }
+
+        producer.send(msg);
+
+        // put message ID into the message in case the caller wants to correlate it with another record
+        MessageId messageId = new MessageId(msg.getJMSMessageID());
+        basicMessage.setMessageId(messageId);
+
+        return messageId;
+    }
+
+    /**
+     * Same as {@link #sendWithBinaryData(ProducerConnectionContext, BasicMessage, InputStream, Map)}
+     * with <code>null</code> headers.
+     */
+    public MessageId sendWithBinaryData(ProducerConnectionContext context, BasicMessage basicMessage,
+            InputStream inputStream) throws JMSException {
+        return sendWithBinaryData(context, basicMessage, inputStream, null);
+    }
+
+    /**
+     * Same as {@link #sendWithBinaryData(ProducerConnectionContext, BasicMessage, File, Map)}
+     * with <code>null</code> headers.
+     * @throws FileNotFoundException if the file does not exist
+     */
+    public MessageId sendWithBinaryData(ProducerConnectionContext context, BasicMessage basicMessage, File file)
+            throws JMSException, FileNotFoundException {
+        return sendWithBinaryData(context, basicMessage, new FileInputStream(file), null);
+    }
+
+    /**
+     * Same as {@link #sendWithBinaryData(ProducerConnectionContext, BasicMessage, InputStream, Map)}
+     * with the input stream being a stream to read the file.
+     * @throws FileNotFoundException if the file does not exist
+     */
+    public MessageId sendWithBinaryData(ProducerConnectionContext context, BasicMessage basicMessage,
+            File file, Map<String, String> headers) throws JMSException, FileNotFoundException {
+        return sendWithBinaryData(context, basicMessage, new FileInputStream(file), headers);
+    }
+
+    /**
+     * Send the given message along with the stream of binary data to its destinations across the message bus.
+     * Once sent, the message will get assigned a generated message ID.
+     * That message ID will also be returned by this method.
+     *
+     * Since this is fire-and-forget - no response is expected of the remote endpoint.
+     *
+     * @param context information that determines where the message is sent
+     * @param basicMessage the message to send with optional headers included
+     * @param inputStream binary data that will be sent with the message
+     * @param headers headers for the JMS transport that will override same-named headers in the basic message
+     * @return the message ID
+     * @throws JMSException any error
+     *
+     * @see ConnectionContextFactory#createProducerConnectionContext(Endpoint)
+     */
+    public MessageId sendWithBinaryData(ProducerConnectionContext context, BasicMessage basicMessage,
+            InputStream inputStream, Map<String, String> headers) throws JMSException {
+        if (context == null) {
+            throw new IllegalArgumentException("context must not be null");
+        }
+        if (basicMessage == null) {
+            throw new IllegalArgumentException("message must not be null");
+        }
+        if (inputStream == null) {
+            throw new IllegalArgumentException("binary data must not be null");
+        }
+
+        // create the JMS message to be sent
+        Message msg = createMessageWithBinaryData(context, basicMessage, inputStream, headers);
 
         // if the message is correlated with another, put the correlation ID in the Message to be sent
         if (basicMessage.getCorrelationId() != null) {
@@ -227,8 +318,9 @@ public class MessageProcessor {
     /**
      * Same as {@link #sendRPC(ProducerConnectionContext, BasicMessage, Class, Map)} with <code>null</code> headers.
      */
-    public <R extends BasicMessage> ListenableFuture<R> sendRPC(ProducerConnectionContext context,
-            BasicMessage basicMessage, Class<R> expectedResponseMessageClass) throws JMSException {
+    public <R extends BasicMessage> ListenableFuture<BasicMessageWithExtraData<R>> sendRPC(
+            ProducerConnectionContext context, BasicMessage basicMessage, Class<R> expectedResponseMessageClass)
+            throws JMSException {
         return sendRPC(context, basicMessage, expectedResponseMessageClass, null);
     }
 
@@ -250,9 +342,9 @@ public class MessageProcessor {
      *
      * @see org.hawkular.bus.common.ConnectionContextFactory#createProducerConnectionContext(Endpoint)
      */
-    public <R extends BasicMessage> ListenableFuture<R> sendRPC(ProducerConnectionContext context,
-            BasicMessage basicMessage, Class<R> expectedResponseMessageClass, Map<String, String> headers)
-            throws JMSException {
+    public <R extends BasicMessage> ListenableFuture<BasicMessageWithExtraData<R>> sendRPC(
+            ProducerConnectionContext context, BasicMessage basicMessage, Class<R> expectedResponseMessageClass,
+            Map<String, String> headers) throws JMSException {
 
         FutureBasicMessageListener<R> futureListener = new FutureBasicMessageListener<R>(expectedResponseMessageClass);
         sendAndListen(context, basicMessage, futureListener, headers);
@@ -282,6 +374,10 @@ public class MessageProcessor {
         if (context == null) {
             throw new IllegalArgumentException("The context is null");
         }
+        if (basicMessage == null) {
+            throw new IllegalArgumentException("The message is null");
+        }
+
         Session session = context.getSession();
         if (session == null) {
             throw new IllegalArgumentException("The context had a null session");
@@ -305,5 +401,86 @@ public class MessageProcessor {
         }
 
         return msg;
+    }
+
+    /**
+     * Same as {@link #createMessage(ConnectionContext, BasicMessage, Map)} with <code>null</code> headers.
+     */
+    protected Message createMessageWithBinaryData(ConnectionContext context, BasicMessage basicMessage,
+            InputStream inputStream) throws JMSException {
+        return createMessageWithBinaryData(context, basicMessage, inputStream, null);
+    }
+
+    /**
+     * Creates a blob message that can be send via a producer that contains the given BasicMessage's JSON encoded data
+     * along with binary data.
+     *
+     * @param context the context whose session is used to create the message
+     * @param basicMessage contains the data that will be JSON-encoded and encapsulated in the created message, with
+     *                     optional headers included
+     * @param inputStream binary data that will be sent with the message
+     * @param headers headers for the Message that will override same-named headers in the basic message
+     * @return the message that can be produced
+     * @throws JMSException any error
+     * @throws NullPointerException if the context is null or the context's session is null
+     */
+    protected Message createMessageWithBinaryData(ConnectionContext context, BasicMessage basicMessage,
+            InputStream inputStream, Map<String, String> headers) throws JMSException {
+        if (context == null) {
+            throw new IllegalArgumentException("The context is null");
+        }
+        if (basicMessage == null) {
+            throw new IllegalArgumentException("The message is null");
+        }
+        if (inputStream == null) {
+            throw new IllegalArgumentException("The binary data is null");
+        }
+
+        Session session = context.getSession();
+        if (session == null) {
+            throw new IllegalArgumentException("The context had a null session");
+        }
+
+        // we are going to use BinaryData which allows us to prefix the binary data with the JSON message
+        BinaryData messagePlusBinaryData = new BinaryData(basicMessage.toJSON().getBytes(), inputStream);
+
+        // we are using a ActiveMQ-specific feature that allows us to stream blobs
+        // for some unknown reason, ActiveMQ doesn't allow RA-obtained sessions to create BlobMessages.
+        // Need to play games to get the real ActiveMQ session so we can create BlobMessage.
+        Message msg = getActiveMQSession(session).createBlobMessage(messagePlusBinaryData);
+
+        // if the basicMessage has headers, use those first
+        Map<String, String> basicMessageHeaders = basicMessage.getHeaders();
+        if (basicMessageHeaders != null) {
+            for (Map.Entry<String, String> entry : basicMessageHeaders.entrySet()) {
+                msg.setStringProperty(entry.getKey(), entry.getValue());
+            }
+        }
+
+        // If we were given headers separately, add those now.
+        // Notice these will override same-named headers that were found in the basic message itself.
+        if (headers != null) {
+            for (Map.Entry<String, String> entry : headers.entrySet()) {
+                msg.setStringProperty(entry.getKey(), entry.getValue());
+            }
+        }
+
+        return msg;
+    }
+
+    protected ActiveMQSession getActiveMQSession(Session session) {
+        if (session instanceof ActiveMQSession) {
+            return (ActiveMQSession) session;
+        }
+
+        // This is probably a session obtained from the resource adapter, which is really a proxy.
+        // It has a non-public method called "getSession" that gets the session we want, so use reflection to get it.
+        try {
+            Method m = session.getClass().getDeclaredMethod("getSession");
+            m.setAccessible(true);
+            return (ActiveMQSession) m.invoke(session);
+        } catch (Exception e) {
+            throw new IllegalStateException("Not running with ActiveMQ", e);
+        }
     }
 }

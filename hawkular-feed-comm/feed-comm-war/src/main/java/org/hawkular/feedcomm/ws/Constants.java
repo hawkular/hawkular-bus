@@ -16,7 +16,14 @@
  */
 package org.hawkular.feedcomm.ws;
 
-
+import org.hawkular.bus.common.Endpoint;
+import org.hawkular.bus.common.Endpoint.Type;
+import org.hawkular.feedcomm.ws.command.EchoCommand;
+import org.hawkular.feedcomm.ws.command.GenericErrorResponseCommand;
+import org.hawkular.feedcomm.ws.command.feed.ExecuteOperationResponseCommand;
+import org.hawkular.feedcomm.ws.command.ui.ExecuteOperationCommand;
+import org.hawkular.feedcomm.ws.command.ui.FileUploadCommand;
+import org.hawkular.feedcomm.ws.server.ValidCommandsMap;
 
 /**
  * Global constants.
@@ -28,10 +35,37 @@ public interface Constants {
     String HEADER_FEEDID = "feedId";
 
     /**
+     * A JMS message header that will identify the targeted UI client.
+     */
+    String HEADER_UICLIENTID = "uiClientId";
+
+    /**
      * The JNDI name of the bus connection factory.
      */
     String CONNECTION_FACTORY_JNDI = "java:/HawkularBusConnectionFactory";
 
+
+    /**
+     * These are the only valid commands that can come from feeds.
+     */
+    ValidCommandsMap VALID_COMMANDS_FROM_FEED = new ValidCommandsMap()
+            .put(EchoCommand.REQUEST_CLASS.getName(), EchoCommand.class)
+            .put(GenericErrorResponseCommand.REQUEST_CLASS.getName(), GenericErrorResponseCommand.class)
+            .put(ExecuteOperationResponseCommand.REQUEST_CLASS.getName(), ExecuteOperationResponseCommand.class);
+
+    /**
+     * These are the only valid commands that can come from UI clients.
+     */
+    ValidCommandsMap VALID_COMMANDS_FROM_UI = new ValidCommandsMap()
+            .put(EchoCommand.REQUEST_CLASS.getName(), EchoCommand.class)
+            .put(GenericErrorResponseCommand.REQUEST_CLASS.getName(), GenericErrorResponseCommand.class)
+            .put(FileUploadCommand.REQUEST_CLASS.getName(), FileUploadCommand.class)
+            .put(ExecuteOperationCommand.REQUEST_CLASS.getName(), ExecuteOperationCommand.class);
+
     // QUEUES AND TOPICS
-    String DEST_FEED_EXECUTE_OP = "FeedExecuteOperation";
+    Endpoint DEST_FEED_EXECUTE_OP = new Endpoint(Type.QUEUE, "FeedExecuteOperation");
+    Endpoint DEST_FEED_FILE_UPLOAD = new Endpoint(Type.QUEUE, "FeedFileUpload");
+
+    Endpoint DEST_UICLIENT_EXECUTE_OP_RESPONSE = new Endpoint(Type.QUEUE, "UIClientExecuteOperationResponse");
+
 }

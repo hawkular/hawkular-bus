@@ -24,19 +24,20 @@ import org.hawkular.bus.common.BasicMessageWithExtraData;
 import org.hawkular.bus.common.consumer.BasicMessageListener;
 
 /**
- * Simple test listener that allows you to wait for a message and when it comes in you can retrieve it. See
- * {@link #waitForMessage(long)} and {@link #getReceivedMessage()}. This can retrieve multiple messages serially,
- * but if you don't retrieve a message before a new one comes in, the first message is lost.
+ * Simple test listener that allows you to wait for a message and its extra data.
+ * When they come in you can retrieve it. See {@link #waitForMessage(long)} and {@link #getReceivedMessage()}.
+ * This can retrieve multiple messages serially, but if you don't retrieve a message before a new one comes in,
+ * the first message is lost.
  *
  * This class is not thread safe. Its purpose is just to fascilitate unit tests.
  *
  * @param <T> the expected message type
  */
-public class SimpleTestListener<T extends BasicMessage> extends BasicMessageListener<T> {
+public class MessageWithExtraDataTestListener<T extends BasicMessage> extends BasicMessageListener<T> {
     private CountDownLatch latch = new CountDownLatch(1);
-    public T message;
+    public BasicMessageWithExtraData<T> message;
 
-    public SimpleTestListener(Class<T> clazz) {
+    public MessageWithExtraDataTestListener(Class<T> clazz) {
         super(clazz);
     }
 
@@ -44,8 +45,8 @@ public class SimpleTestListener<T extends BasicMessage> extends BasicMessageList
         return latch.await(secs, TimeUnit.SECONDS);
     }
 
-    public T getReceivedMessage() {
-        T result = null;
+    public BasicMessageWithExtraData<T> getReceivedMessageWithExtraData() {
+        BasicMessageWithExtraData<T> result = null;
         if (message != null) {
             result = message;
             // reset the listener to get ready for the next message
@@ -57,7 +58,7 @@ public class SimpleTestListener<T extends BasicMessage> extends BasicMessageList
 
     @Override
     protected void onBasicMessage(BasicMessageWithExtraData<T> message) {
-        this.message = message.getBasicMessage();
+        this.message = message;
         latch.countDown();
     }
 }

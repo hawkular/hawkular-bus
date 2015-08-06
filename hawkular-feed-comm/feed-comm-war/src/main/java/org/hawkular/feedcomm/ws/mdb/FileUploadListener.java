@@ -16,27 +16,32 @@
  */
 package org.hawkular.feedcomm.ws.mdb;
 
+import java.util.concurrent.ExecutorService;
+
 import javax.websocket.Session;
 
 import org.hawkular.bus.common.BasicMessageWithExtraData;
+import org.hawkular.bus.common.BinaryData;
 import org.hawkular.bus.common.consumer.BasicMessageListener;
-import org.hawkular.feedcomm.api.ExecuteOperationRequest;
+import org.hawkular.feedcomm.api.FileUploadRequest;
 import org.hawkular.feedcomm.ws.Constants;
 import org.hawkular.feedcomm.ws.MsgLogger;
 import org.hawkular.feedcomm.ws.WebSocketHelper;
 import org.hawkular.feedcomm.ws.server.ConnectedFeeds;
 
-public class ExecuteOperationListener extends BasicMessageListener<ExecuteOperationRequest> {
+public class FileUploadListener extends BasicMessageListener<FileUploadRequest> {
 
-    private ConnectedFeeds connectedFeeds;
+    private final ConnectedFeeds connectedFeeds;
+    private final ExecutorService threadPool;
 
-    public ExecuteOperationListener(ConnectedFeeds connectedFeeds) {
+    public FileUploadListener(ConnectedFeeds connectedFeeds, ExecutorService threadPool) {
         this.connectedFeeds = connectedFeeds;
+        this.threadPool = threadPool;
     }
 
-    protected void onBasicMessage(BasicMessageWithExtraData<ExecuteOperationRequest> request) {
+    protected void onBasicMessage(BasicMessageWithExtraData<FileUploadRequest> request) {
         try {
-            ExecuteOperationRequest basicMessage = request.getBasicMessage();
+            FileUploadRequest basicMessage = request.getBasicMessage();
             String feedId = basicMessage.getHeaders().get(Constants.HEADER_FEEDID);
             if (feedId == null) {
                 throw new IllegalArgumentException("Missing header: " + Constants.HEADER_FEEDID);
@@ -46,11 +51,11 @@ public class ExecuteOperationListener extends BasicMessageListener<ExecuteOperat
                 return; // we don't have the feed, this message isn't for us
             }
 
-            MsgLogger.LOG.infof("Asking feed [%s] to execute operation [%s] on resource ID [%s]",
-                    feedId, basicMessage.getOperationName(), basicMessage.getResourceId());
+            MsgLogger.LOG.infof("Sending feed [%s] a file named [%s]", feedId, basicMessage.getDestinationFileName());
 
             // send the request to the feed
-            new WebSocketHelper().sendBasicMessageAsync(session, basicMessage);
+            BinaryData dataToSend = new BinaryData(basicMessage.toJSON().getBytes(), request.getBinaryData());
+            new WebSocketHelper().sendBinaryAsync(session, dataToSend, threadPool);
             return;
 
         } catch (Exception e) {

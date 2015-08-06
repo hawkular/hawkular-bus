@@ -28,7 +28,6 @@ import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.jms.ConnectionFactory;
 import javax.naming.InitialContext;
 import javax.persistence.PostRemove;
@@ -39,24 +38,20 @@ import org.hawkular.bus.common.MessageProcessor;
 import org.hawkular.bus.common.consumer.ConsumerConnectionContext;
 import org.hawkular.feedcomm.ws.Constants;
 import org.hawkular.feedcomm.ws.MsgLogger;
-import org.hawkular.feedcomm.ws.mdb.ExecuteOperationListener;
-import org.hawkular.feedcomm.ws.mdb.FileUploadListener;
+import org.hawkular.feedcomm.ws.mdb.ExecuteOperationResponseListener;
 
 @Startup
 @Singleton
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-public class FeedListenerGenerator {
+public class UIClientListenerGenerator {
     @EJB
-    private ConnectedFeeds connectedFeeds;
+    private ConnectedUIClients connectedUIClients;
 
     @Resource(mappedName = Constants.CONNECTION_FACTORY_JNDI)
     private ConnectionFactory connectionFactory;
 
     private Map<String, ConnectionContextFactory> connContextFactories;
     private Map<String, List<ConsumerConnectionContext>> consumerContexts;
-
-    @Resource
-    private ManagedExecutorService threadPoolService;
 
     @PostConstruct
     public void initialize() throws Exception {
@@ -75,8 +70,8 @@ public class FeedListenerGenerator {
     @PostRemove
     public void shutdown() throws Exception {
         if (connContextFactories != null) {
-            for (String feedId : this.connContextFactories.keySet()) {
-                removeListeners(feedId);
+            for (String uiClientId : this.connContextFactories.keySet()) {
+                removeListeners(uiClientId);
             }
         }
     }
@@ -88,42 +83,46 @@ public class FeedListenerGenerator {
         return this.connectionFactory;
     }
 
-    public void addListeners(String feedId) throws Exception {
-        removeListeners(feedId); // make sure any old ones aren't still hanging around
+    public void addListeners(String uiClientId) throws Exception {
+        removeListeners(uiClientId); // make sure any old ones aren't still hanging around
         ConnectionContextFactory ccf = new ConnectionContextFactory(true, connectionFactory);
-        this.connContextFactories.put(feedId, ccf);
+        this.connContextFactories.put(uiClientId, ccf);
         List<ConsumerConnectionContext> contextList = new ArrayList<ConsumerConnectionContext>();
-        this.consumerContexts.put(feedId, contextList);
+        this.consumerContexts.put(uiClientId, contextList);
 
-        MsgLogger.LOG.infoAddingListenersForFeed(feedId);
+        MsgLogger.LOG.infoAddingListenersForUIClient(uiClientId);
 
         MessageProcessor messageProcessor = new MessageProcessor();
-        String messageSelector = String.format("%s = '%s'", Constants.HEADER_FEEDID, feedId);
+        String messageSelector = String.format("%s = '%s'", Constants.HEADER_UICLIENTID, uiClientId);
 
-        // add additional listeners for feeds - the listeners only get messages destined for their feed ID.
+        // add additional listeners for UI clients - the listeners only get messages destined for their UI client ID.
         // As we introduce new messages the UI can receive, add them here.
 
-        Endpoint endpoint = Constants.DEST_FEED_EXECUTE_OP;
-        ConsumerConnectionContext ccc = ccf.createConsumerConnectionContext(endpoint, messageSelector);
-        messageProcessor.listen(ccc, new ExecuteOperationListener(connectedFeeds));
-        contextList.add(ccc);
+        // TODO TEMP HACK - RIGHT NOW, WE AREN'T PASSING THE HEADER SO USE null SELECTOR
+        //                  When we start putting the client ID in the message header, remove this if-true statement
+        if (true) {
+            Endpoint endpoint = Constants.DEST_UICLIENT_EXECUTE_OP_RESPONSE;
+            ConsumerConnectionContext ccc = ccf.createConsumerConnectionContext(endpoint, null);
+            messageProcessor.listen(ccc, new ExecuteOperationResponseListener(connectedUIClients));
+            contextList.add(ccc);
+        }
 
-        endpoint = Constants.DEST_FEED_FILE_UPLOAD;
-        ccc = ccf.createConsumerConnectionContext(endpoint, messageSelector);
-        messageProcessor.listen(ccc, new FileUploadListener(connectedFeeds, threadPoolService));
+        Endpoint endpoint = Constants.DEST_UICLIENT_EXECUTE_OP_RESPONSE;
+        ConsumerConnectionContext ccc = ccf.createConsumerConnectionContext(endpoint, messageSelector);
+        messageProcessor.listen(ccc, new ExecuteOperationResponseListener(connectedUIClients));
         contextList.add(ccc);
 
         return;
     }
 
-    public void removeListeners(String feedId) {
+    public void removeListeners(String uiClientId) {
         // When we created the factory, we had it reuse its one connection for all contexts.
         // When closing the factory, it then closes that connection which (should) close all
         // consumers the factory created. But this doesn't seem to work, so I'm closing all contexts first
         // then the factory.
 
-        List<ConsumerConnectionContext> contextList = this.consumerContexts.remove(feedId);
-        ConnectionContextFactory factory = this.connContextFactories.remove(feedId);
+        List<ConsumerConnectionContext> contextList = this.consumerContexts.remove(uiClientId);
+        ConnectionContextFactory factory = this.connContextFactories.remove(uiClientId);
 
         if (contextList != null) {
             for (ConsumerConnectionContext context : contextList) {
@@ -137,10 +136,10 @@ public class FeedListenerGenerator {
 
         if (factory != null) {
             try {
-                MsgLogger.LOG.infoRemovingListenersForFeed(feedId);
+                MsgLogger.LOG.infoRemovingListenersForUIClient(uiClientId);
                 factory.close();
             } catch (Exception e) {
-                MsgLogger.LOG.errorFailedRemovingListenersForFeed(feedId, e);
+                MsgLogger.LOG.errorFailedRemovingListenersForUIClient(uiClientId, e);
             }
         }
     }

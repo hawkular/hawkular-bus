@@ -16,6 +16,10 @@
  */
 package org.hawkular.feedcomm.ws.command;
 
+import java.util.NoSuchElementException;
+import java.util.Scanner;
+
+import org.hawkular.bus.common.BinaryData;
 import org.hawkular.feedcomm.api.EchoRequest;
 import org.hawkular.feedcomm.api.EchoResponse;
 
@@ -23,12 +27,21 @@ public class EchoCommand implements Command<EchoRequest, EchoResponse> {
     public static final Class<EchoRequest> REQUEST_CLASS = EchoRequest.class;
 
     @Override
-    public EchoResponse execute(EchoRequest echoRequest, CommandContext context) {
-        String reply = String.format("ECHO [%s]", echoRequest.getEchoMessage());
+    public EchoResponse execute(EchoRequest echoRequest, BinaryData binaryData, CommandContext context) {
+        String echo = String.format("ECHO [%s]", echoRequest.getEchoMessage());
+        StringBuilder extra = new StringBuilder();
+
+        if (binaryData != null) {
+            try (Scanner scanner = new Scanner(binaryData, "UTF-8")) {
+                scanner.useDelimiter("\\A");
+                extra.append(scanner.next());
+            } catch (NoSuchElementException nsee) {
+            }
+        }
 
         // return the response
         EchoResponse echoResponse = new EchoResponse();
-        echoResponse.setReply(reply);
+        echoResponse.setReply(echo + extra.toString());
         return echoResponse;
     }
 }

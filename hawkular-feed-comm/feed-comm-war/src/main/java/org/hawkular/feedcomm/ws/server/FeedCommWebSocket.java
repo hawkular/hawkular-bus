@@ -18,8 +18,7 @@
 package org.hawkular.feedcomm.ws.server;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.InputStream;
 
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -34,28 +33,18 @@ import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
 import org.hawkular.bus.common.BasicMessage;
+import org.hawkular.bus.common.BasicMessageWithExtraData;
+import org.hawkular.bus.common.BinaryData;
 import org.hawkular.feedcomm.api.ApiDeserializer;
 import org.hawkular.feedcomm.api.GenericErrorResponseBuilder;
+import org.hawkular.feedcomm.ws.Constants;
 import org.hawkular.feedcomm.ws.MsgLogger;
 import org.hawkular.feedcomm.ws.command.Command;
 import org.hawkular.feedcomm.ws.command.CommandContext;
-import org.hawkular.feedcomm.ws.command.EchoCommand;
-import org.hawkular.feedcomm.ws.command.GenericErrorResponseCommand;
-import org.hawkular.feedcomm.ws.command.feed.ExecuteOperationResponseCommand;
 
 @ServerEndpoint("/feed/{feedId}")
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class FeedCommWebSocket {
-
-    private static final Map<String, Class<? extends Command<?, ?>>> VALID_COMMANDS;
-
-    static {
-        VALID_COMMANDS = new HashMap<>();
-        VALID_COMMANDS.put(EchoCommand.REQUEST_CLASS.getName(), EchoCommand.class);
-        VALID_COMMANDS.put(GenericErrorResponseCommand.REQUEST_CLASS.getName(), GenericErrorResponseCommand.class);
-        VALID_COMMANDS.put(ExecuteOperationResponseCommand.REQUEST_CLASS.getName(),
-                ExecuteOperationResponseCommand.class);
-    }
 
     @Inject
     private ConnectedFeeds connectedFeeds;
@@ -68,14 +57,13 @@ public class FeedCommWebSocket {
 
     @OnOpen
     public void feedSessionOpen(Session session, @PathParam("feedId") String feedId) {
-        MsgLogger.LOG.infof("Feed [%s] session opened", feedId);
+        MsgLogger.LOG.infoFeedSessionOpened(feedId, session.getId());
         boolean successfullyAddedSession = connectedFeeds.addSession(feedId, session);
         if (successfullyAddedSession) {
             try {
                 feedListenerGenerator.addListeners(feedId);
             } catch (Exception e) {
-                MsgLogger.LOG.errorf(e, "Failed to add message listeners for feed [%s]. Closing session [%s]", feedId,
-                        session.getId());
+                MsgLogger.LOG.errorFailedToAddMessageListenersForFeed(feedId, session.getId(), e);
                 try {
                     session.close(new CloseReason(CloseCodes.UNEXPECTED_CONDITION, "Internal server error"));
                 } catch (IOException ioe) {
@@ -98,8 +86,7 @@ public class FeedCommWebSocket {
     @OnMessage
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public String feedMessage(String nameAndJsonStr, Session session, @PathParam("feedId") String feedId) {
-
-        MsgLogger.LOG.infof("Received message from feed [%s]", feedId);
+        MsgLogger.LOG.infoReceivedMessageFromFeed(feedId);
 
         String requestClassName = "?";
         BasicMessage response;
@@ -108,20 +95,68 @@ public class FeedCommWebSocket {
             BasicMessage request = new ApiDeserializer().deserialize(nameAndJsonStr);
             requestClassName = request.getClass().getName();
 
-            Class<? extends Command<?, ?>> commandClass = VALID_COMMANDS.get(requestClassName);
+            Class<? extends Command<?, ?>> commandClass = Constants.VALID_COMMANDS_FROM_FEED.get(requestClassName);
             if (commandClass == null) {
                 MsgLogger.LOG.errorInvalidCommandRequestFeed(feedId, requestClassName);
                 String errorMessage = "Invalid command request: " + requestClassName;
                 response = new GenericErrorResponseBuilder().setErrorMessage(errorMessage).build();
             } else {
                 CommandContext context = new CommandContext(connectedFeeds, connectedUIClients,
-                        feedListenerGenerator.getConnectionFactory());
+                        feedListenerGenerator.getConnectionFactory(), session);
                 Command command = commandClass.newInstance();
-                response = command.execute(request, context);
+                response = command.execute(request, null, context);
             }
         } catch (Throwable t) {
             MsgLogger.LOG.errorCommandExecutionFailureFeed(requestClassName, feedId, t);
-            String errorMessage = "Command failed[" + requestClassName + "]";
+            String errorMessage = "Command failed [" + requestClassName + "]";
+            response = new GenericErrorResponseBuilder()
+                    .setThrowable(t)
+                    .setErrorMessage(errorMessage)
+                    .build();
+
+        }
+
+        String responseText = (response == null) ? null : ApiDeserializer.toHawkularFormat(response);
+        return responseText;
+    }
+
+    /**
+     * When a binary message is received from a feed, this method will execute the command the client
+     * is asking for.
+     *
+     * @param binaryDataStream contains the JSON request and additional binary data
+     * @param session the client session making the request
+     * @param feedId identifies the feed that has connected
+     * @return the results of the command invocation; this is sent back to the feed
+     */
+    @OnMessage
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public String feedBinaryData(InputStream binaryDataStream, Session session, @PathParam("feedId") String feedId) {
+        MsgLogger.LOG.infoReceivedBinaryDataFromFeed(feedId);
+
+        String requestClassName = "?";
+        BasicMessage response;
+
+        try {
+            BasicMessageWithExtraData<BasicMessage> reqWithData = new ApiDeserializer().deserialize(binaryDataStream);
+            BasicMessage request = reqWithData.getBasicMessage();
+            BinaryData binaryData = reqWithData.getBinaryData();
+            requestClassName = request.getClass().getName();
+
+            Class<? extends Command<?, ?>> commandClass = Constants.VALID_COMMANDS_FROM_FEED.get(requestClassName);
+            if (commandClass == null) {
+                MsgLogger.LOG.errorInvalidCommandRequestFeed(feedId, requestClassName);
+                String errorMessage = "Invalid command request: " + requestClassName;
+                response = new GenericErrorResponseBuilder().setErrorMessage(errorMessage).build();
+            } else {
+                CommandContext context = new CommandContext(connectedFeeds, connectedUIClients,
+                        feedListenerGenerator.getConnectionFactory(), session);
+                Command command = commandClass.newInstance();
+                response = command.execute(request, binaryData, context);
+            }
+        } catch (Throwable t) {
+            MsgLogger.LOG.errorCommandExecutionFailureFeed(requestClassName, feedId, t);
+            String errorMessage = "Command failed [" + requestClassName + "]";
             response = new GenericErrorResponseBuilder()
                     .setThrowable(t)
                     .setErrorMessage(errorMessage)
@@ -135,7 +170,7 @@ public class FeedCommWebSocket {
 
     @OnClose
     public void feedSessionClose(Session session, CloseReason reason, @PathParam("feedId") String feedId) {
-        MsgLogger.LOG.infof("Feed [%s] session closed. Reason=[%s]", feedId, reason);
+        MsgLogger.LOG.infoFeedSessionClosed(feedId, reason);
         boolean removed = connectedFeeds.removeSession(feedId, session) != null;
         if (removed) {
             feedListenerGenerator.removeListeners(feedId);

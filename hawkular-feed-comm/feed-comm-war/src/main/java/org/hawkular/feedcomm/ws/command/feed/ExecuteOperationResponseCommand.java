@@ -16,10 +16,18 @@
  */
 package org.hawkular.feedcomm.ws.command.feed;
 
+import java.util.Collections;
+import java.util.Map;
+
 import org.hawkular.bus.common.BasicMessage;
+import org.hawkular.bus.common.BinaryData;
+import org.hawkular.bus.common.ConnectionContextFactory;
+import org.hawkular.bus.common.Endpoint;
+import org.hawkular.bus.common.MessageProcessor;
+import org.hawkular.bus.common.producer.ProducerConnectionContext;
 import org.hawkular.feedcomm.api.ExecuteOperationResponse;
+import org.hawkular.feedcomm.ws.Constants;
 import org.hawkular.feedcomm.ws.MsgLogger;
-import org.hawkular.feedcomm.ws.WebSocketHelper;
 import org.hawkular.feedcomm.ws.command.Command;
 import org.hawkular.feedcomm.ws.command.CommandContext;
 
@@ -30,7 +38,8 @@ public class ExecuteOperationResponseCommand implements Command<ExecuteOperation
     public static final Class<ExecuteOperationResponse> REQUEST_CLASS = ExecuteOperationResponse.class;
 
     @Override
-    public BasicMessage execute(ExecuteOperationResponse response, CommandContext context) throws Exception {
+    public BasicMessage execute(ExecuteOperationResponse response, BinaryData binaryData, CommandContext context)
+            throws Exception {
 
         String resId = response.getResourceId();
         String opName = response.getOperationName();
@@ -39,9 +48,32 @@ public class ExecuteOperationResponseCommand implements Command<ExecuteOperation
         MsgLogger.LOG.infof("Operation execution completed. Resource=[%s], Operation=[%s], Status=[%s], Message=[%s]",
                 resId, opName, status, msg);
 
-        // TODO: today we don't know which UI sent the original request, so for now, tell all UIs what the response was
-        new WebSocketHelper().sendBasicMessageSync(context.getConnectedUIClients().getAllSessions(), response);
+        // determine what UI client needs to be sent the message
+        String uiClientId;
 
+        // TODO: how do we get this?
+        uiClientId = null;
+
+        if (uiClientId == null) {
+            // TODO: we need to know the ui client - but that hook isn't in yet so for now
+            // the first UI that picks the message off the queue will get it
+            // When we remove this, remove the HACK in UIClientListenerGenerator.addListeners(String) too
+            try (ConnectionContextFactory ccf = new ConnectionContextFactory(context.getConnectionFactory())) {
+                Endpoint endpoint = Constants.DEST_UICLIENT_EXECUTE_OP_RESPONSE;
+                ProducerConnectionContext pcc = ccf.createProducerConnectionContext(endpoint);
+                new MessageProcessor().send(pcc, response);
+            }
+        } else {
+            try (ConnectionContextFactory ccf = new ConnectionContextFactory(context.getConnectionFactory())) {
+                Endpoint endpoint = Constants.DEST_UICLIENT_EXECUTE_OP_RESPONSE;
+                ProducerConnectionContext pcc = ccf.createProducerConnectionContext(endpoint);
+                Map<String, String> uiClientIdHeader = Collections.singletonMap(Constants.HEADER_UICLIENTID,
+                        uiClientId);
+                new MessageProcessor().send(pcc, response, uiClientIdHeader);
+            }
+        }
+
+        // nothing needs to be sent back to the feed
         return null;
     }
 }

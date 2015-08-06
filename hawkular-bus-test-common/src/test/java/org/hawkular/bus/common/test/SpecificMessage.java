@@ -16,9 +16,11 @@
  */
 package org.hawkular.bus.common.test;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.Map;
+
 import org.hawkular.bus.common.SimpleBasicMessage;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * Test subclass of BasicMessage.

@@ -16,9 +16,6 @@
  */
 package org.hawkular.bus.broker;
 
-import gnu.getopt.Getopt;
-import gnu.getopt.LongOpt;
-
 import java.net.URI;
 import java.util.Arrays;
 
@@ -26,6 +23,9 @@ import org.apache.activemq.broker.BrokerFactory;
 import org.apache.activemq.broker.BrokerService;
 import org.hawkular.bus.broker.log.MsgLogger;
 import org.jboss.logging.Logger;
+
+import gnu.getopt.Getopt;
+import gnu.getopt.LongOpt;
 
 /**
  * Provides a slim wrapper around the message broker. You can simply provide a config file (either a ActiveMQ

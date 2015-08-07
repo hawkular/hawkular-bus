@@ -48,15 +48,14 @@ public class ExecuteOperationCommand implements Command<ExecuteOperationRequest,
         //       we need a "real" way to do this - need to ask inventory what the feed ID is
         feedId = request.getResourceId().split("~", 3)[0]; // the feedID is the first one in the array
 
-        GenericSuccessResponse response;
         try (ConnectionContextFactory ccf = new ConnectionContextFactory(context.getConnectionFactory())) {
             Endpoint endpoint = Constants.DEST_FEED_EXECUTE_OP;
             ProducerConnectionContext pcc = ccf.createProducerConnectionContext(endpoint);
             Map<String, String> feedIdHeader = Collections.singletonMap(Constants.HEADER_FEEDID, feedId);
             MessageId mid = new MessageProcessor().send(pcc, request, feedIdHeader);
-            response = new GenericSuccessResponse();
+            GenericSuccessResponse response = new GenericSuccessResponse();
             response.setMessage("The execution request has been forwarded to feed [" + feedId + "] (id=" + mid + ")");
+            return response;
         }
-        return response;
     }
 }

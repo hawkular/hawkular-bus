@@ -23,25 +23,26 @@ import javax.websocket.Session;
 import org.hawkular.bus.common.BasicMessageWithExtraData;
 import org.hawkular.bus.common.BinaryData;
 import org.hawkular.bus.common.consumer.BasicMessageListener;
-import org.hawkular.feedcomm.api.FileUploadRequest;
+import org.hawkular.feedcomm.api.ApiDeserializer;
+import org.hawkular.feedcomm.api.DeployApplicationRequest;
 import org.hawkular.feedcomm.ws.Constants;
 import org.hawkular.feedcomm.ws.MsgLogger;
 import org.hawkular.feedcomm.ws.WebSocketHelper;
 import org.hawkular.feedcomm.ws.server.ConnectedFeeds;
 
-public class FileUploadListener extends BasicMessageListener<FileUploadRequest> {
+public class DeployApplicationListener extends BasicMessageListener<DeployApplicationRequest> {
 
     private final ConnectedFeeds connectedFeeds;
     private final ExecutorService threadPool;
 
-    public FileUploadListener(ConnectedFeeds connectedFeeds, ExecutorService threadPool) {
+    public DeployApplicationListener(ConnectedFeeds connectedFeeds, ExecutorService threadPool) {
         this.connectedFeeds = connectedFeeds;
         this.threadPool = threadPool;
     }
 
-    protected void onBasicMessage(BasicMessageWithExtraData<FileUploadRequest> request) {
+    protected void onBasicMessage(BasicMessageWithExtraData<DeployApplicationRequest> request) {
         try {
-            FileUploadRequest basicMessage = request.getBasicMessage();
+            DeployApplicationRequest basicMessage = request.getBasicMessage();
             String feedId = basicMessage.getHeaders().get(Constants.HEADER_FEEDID);
             if (feedId == null) {
                 throw new IllegalArgumentException("Missing header: " + Constants.HEADER_FEEDID);
@@ -51,16 +52,17 @@ public class FileUploadListener extends BasicMessageListener<FileUploadRequest> 
                 return; // we don't have the feed, this message isn't for us
             }
 
-            MsgLogger.LOG.infof("Sending feed [%s] a file named [%s]", feedId, basicMessage.getDestinationFileName());
+            MsgLogger.LOG.infof("Sending feed [%s] an application [%s] to deploy on resource [%s]", feedId,
+                    basicMessage.getDestinationFileName(), basicMessage.getResourceId());
 
             // send the request to the feed
-            BinaryData dataToSend = new BinaryData(basicMessage.toJSON().getBytes(), request.getBinaryData());
+            BinaryData dataToSend = ApiDeserializer.toHawkularFormat(basicMessage, request.getBinaryData());
             new WebSocketHelper().sendBinaryAsync(session, dataToSend, threadPool);
             return;
 
         } catch (Exception e) {
             // catch all exceptions and just log the error to let us auto-ack the message anyway
-            MsgLogger.LOG.errorCannotProcessExecuteOperationMessage(e);
+            MsgLogger.LOG.errorf(e, "Cannot process deploy application request");
         }
     }
 }

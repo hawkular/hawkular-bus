@@ -45,6 +45,22 @@ public class ApiDeserializer {
         return String.format("%s=%s", msg.getClass().getSimpleName(), msg.toJSON());
     }
 
+    /**
+     * Returns a BinaryData object (which is a stream) that encodes the given message
+     * just like {@link #toHawkularFormat(BasicMessage)} does but also packages the given
+     * input stream as extra data with the JSON message.
+     *
+     * The returned object can be used to deserialize the msg and extra data via {@link #deserialize(InputStream)}.
+     *
+     * @param msg the message object that will be serialized into JSON
+     * @param extraData the extra data to be packages with the given message
+     * @return an object that can be used by other Hawkular endpoints to deserialize the message.
+     */
+    public static BinaryData toHawkularFormat(BasicMessage msg, InputStream extraData) {
+        String msgJson = toHawkularFormat(msg);
+        return new BinaryData(msgJson.getBytes(), extraData);
+    }
+
     private static String[] fromHawkularFormat(String msg) {
         String[] nameAndJsonArray = msg.split("=", 2);
         if (nameAndJsonArray.length != 2) {

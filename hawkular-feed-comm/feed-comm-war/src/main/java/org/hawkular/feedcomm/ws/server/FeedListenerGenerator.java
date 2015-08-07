@@ -39,8 +39,8 @@ import org.hawkular.bus.common.MessageProcessor;
 import org.hawkular.bus.common.consumer.ConsumerConnectionContext;
 import org.hawkular.feedcomm.ws.Constants;
 import org.hawkular.feedcomm.ws.MsgLogger;
+import org.hawkular.feedcomm.ws.mdb.DeployApplicationListener;
 import org.hawkular.feedcomm.ws.mdb.ExecuteOperationListener;
-import org.hawkular.feedcomm.ws.mdb.FileUploadListener;
 
 @Startup
 @Singleton
@@ -108,9 +108,9 @@ public class FeedListenerGenerator {
         messageProcessor.listen(ccc, new ExecuteOperationListener(connectedFeeds));
         contextList.add(ccc);
 
-        endpoint = Constants.DEST_FEED_FILE_UPLOAD;
+        endpoint = Constants.DEST_FEED_DEPLOY_APPLICATION;
         ccc = ccf.createConsumerConnectionContext(endpoint, messageSelector);
-        messageProcessor.listen(ccc, new FileUploadListener(connectedFeeds, threadPoolService));
+        messageProcessor.listen(ccc, new DeployApplicationListener(connectedFeeds, threadPoolService));
         contextList.add(ccc);
 
         return;

@@ -20,9 +20,10 @@ import org.hawkular.bus.common.Endpoint;
 import org.hawkular.bus.common.Endpoint.Type;
 import org.hawkular.feedcomm.ws.command.EchoCommand;
 import org.hawkular.feedcomm.ws.command.GenericErrorResponseCommand;
+import org.hawkular.feedcomm.ws.command.feed.DeployApplicationResponseCommand;
 import org.hawkular.feedcomm.ws.command.feed.ExecuteOperationResponseCommand;
+import org.hawkular.feedcomm.ws.command.ui.DeployApplicationCommand;
 import org.hawkular.feedcomm.ws.command.ui.ExecuteOperationCommand;
-import org.hawkular.feedcomm.ws.command.ui.FileUploadCommand;
 import org.hawkular.feedcomm.ws.server.ValidCommandsMap;
 
 /**
@@ -50,22 +51,24 @@ public interface Constants {
      */
     ValidCommandsMap VALID_COMMANDS_FROM_FEED = new ValidCommandsMap()
             .put(EchoCommand.REQUEST_CLASS.getName(), EchoCommand.class)
-            .put(GenericErrorResponseCommand.REQUEST_CLASS.getName(), GenericErrorResponseCommand.class)
-            .put(ExecuteOperationResponseCommand.REQUEST_CLASS.getName(), ExecuteOperationResponseCommand.class);
+            .put(ExecuteOperationResponseCommand.REQUEST_CLASS.getName(), ExecuteOperationResponseCommand.class)
+            .put(DeployApplicationResponseCommand.REQUEST_CLASS.getName(), DeployApplicationResponseCommand.class)
+            .put(GenericErrorResponseCommand.REQUEST_CLASS.getName(), GenericErrorResponseCommand.class);
 
     /**
      * These are the only valid commands that can come from UI clients.
      */
     ValidCommandsMap VALID_COMMANDS_FROM_UI = new ValidCommandsMap()
             .put(EchoCommand.REQUEST_CLASS.getName(), EchoCommand.class)
-            .put(GenericErrorResponseCommand.REQUEST_CLASS.getName(), GenericErrorResponseCommand.class)
-            .put(FileUploadCommand.REQUEST_CLASS.getName(), FileUploadCommand.class)
-            .put(ExecuteOperationCommand.REQUEST_CLASS.getName(), ExecuteOperationCommand.class);
+            .put(DeployApplicationCommand.REQUEST_CLASS.getName(), DeployApplicationCommand.class)
+            .put(ExecuteOperationCommand.REQUEST_CLASS.getName(), ExecuteOperationCommand.class)
+            .put(GenericErrorResponseCommand.REQUEST_CLASS.getName(), GenericErrorResponseCommand.class);
 
     // QUEUES AND TOPICS
     Endpoint DEST_FEED_EXECUTE_OP = new Endpoint(Type.QUEUE, "FeedExecuteOperation");
-    Endpoint DEST_FEED_FILE_UPLOAD = new Endpoint(Type.QUEUE, "FeedFileUpload");
+    Endpoint DEST_FEED_DEPLOY_APPLICATION = new Endpoint(Type.QUEUE, "FeedDeployApplication");
 
     Endpoint DEST_UICLIENT_EXECUTE_OP_RESPONSE = new Endpoint(Type.QUEUE, "UIClientExecuteOperationResponse");
+    Endpoint DEST_UICLIENT_DEPLOY_APPLICATION_RESPONSE = new Endpoint(Type.QUEUE, "UIDeployApplicationResponse");
 
 }

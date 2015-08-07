@@ -19,6 +19,7 @@ package org.hawkular.feedcomm.api;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Scanner;
 
 import org.hawkular.bus.common.BasicMessage;
 import org.hawkular.bus.common.BasicMessageWithExtraData;
@@ -108,6 +109,30 @@ public class ApiDeserializerTest {
 
         newpojo = testSpecificPojo(pojo);
         Assert.assertEquals(pojo.getReply(), newpojo.getReply());
+    }
+
+    @Test
+    public void testMessageWithExtraData() {
+        // serialize a message and some extra data
+        final String testMessage = "this is the message";
+        final String testExtraData = "this is extra data";
+
+        GenericSuccessResponse msg = new GenericSuccessResponse();
+        msg.setMessage(testMessage);
+        ByteArrayInputStream extraData = new ByteArrayInputStream(testExtraData.getBytes());
+        BinaryData fullData = ApiDeserializer.toHawkularFormat(msg, extraData);
+
+        // now deserialize the data
+        ApiDeserializer ad = new ApiDeserializer();
+        BasicMessageWithExtraData<GenericSuccessResponse> deserializedFullData = ad.deserialize(fullData);
+        GenericSuccessResponse deserializedMessage = deserializedFullData.getBasicMessage();
+        BinaryData deserializedExtraData = deserializedFullData.getBinaryData();
+        String deserializedExtraDataString = new Scanner(deserializedExtraData, "UTF-8").useDelimiter("\\A").next();
+
+        // make sure the deserialized data matches what we serialized
+        Assert.assertEquals(testMessage, deserializedMessage.getMessage());
+        Assert.assertEquals(testExtraData, deserializedExtraDataString);
+
     }
 
     @Test

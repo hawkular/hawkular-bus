@@ -76,7 +76,7 @@ jQuery(function($){
           socket.send(text);
         } else {
           /* the message plus the uploaded file content needs to be sent */
-          var binaryblob = new Blob([text, fileBinaryContent]);
+          var binaryblob = new Blob([text, fileBinaryContent], {type: 'application/octet-stream'});
           socket.send(binaryblob);
         }
       } else {
@@ -108,7 +108,6 @@ jQuery(function($){
       }
 
       socket.onclose = function(){
-        /* alert("connection closed...."); */
         showServerResponse("The connection has been closed.");
       }
 

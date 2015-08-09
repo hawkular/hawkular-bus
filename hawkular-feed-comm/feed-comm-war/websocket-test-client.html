@@ -41,10 +41,10 @@ jQuery(function($){
     var reader = new FileReader();
     reader.onloadend = function(readEvent) {
       if (readEvent.target.readyState == FileReader.DONE) {
-        fileBinaryContent = readEvent.target.result;
+        fileBinaryContent = new Uint8Array(readEvent.target.result);
       }
     }
-    reader.readAsBinaryString(theFile);
+    reader.readAsArrayBuffer(theFile);
   }
 
   function setup(){

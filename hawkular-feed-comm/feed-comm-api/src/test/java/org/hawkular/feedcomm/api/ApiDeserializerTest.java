@@ -136,6 +136,37 @@ public class ApiDeserializerTest {
     }
 
     @Test
+    public void testMessageWithLargeExtraData() throws Exception {
+        // serialize a message and some extra data
+        final String testMessage = "this is the message";
+        final String testExtraData;
+
+        // stream [0, 1, 2, ..., 255], repeat that 10 times
+        byte[] bytes = new byte[0xff * 10];
+        for (int i = 0; i < bytes.length; i++) {
+            bytes[i] = (byte) (i % 256);
+        }
+        testExtraData = new String(bytes, "UTF-8");
+
+        GenericSuccessResponse msg = new GenericSuccessResponse();
+        msg.setMessage(testMessage);
+        ByteArrayInputStream extraData = new ByteArrayInputStream(testExtraData.getBytes());
+        BinaryData fullData = ApiDeserializer.toHawkularFormat(msg, extraData);
+
+        // now deserialize the data
+        ApiDeserializer ad = new ApiDeserializer();
+        BasicMessageWithExtraData<GenericSuccessResponse> deserializedFullData = ad.deserialize(fullData);
+        GenericSuccessResponse deserializedMessage = deserializedFullData.getBasicMessage();
+        BinaryData deserializedExtraData = deserializedFullData.getBinaryData();
+        String deserializedExtraDataString = new Scanner(deserializedExtraData, "UTF-8").useDelimiter("\\A").next();
+
+        // make sure the deserialized data matches what we serialized
+        Assert.assertEquals(testMessage, deserializedMessage.getMessage());
+        Assert.assertEquals(testExtraData, deserializedExtraDataString);
+
+    }
+
+    @Test
     public void testReadFromInputStreamWithExtraData() throws IOException {
         // tests that this can extract the JSON even if more data follows in the stream
         ApiDeserializer ad = new ApiDeserializer();

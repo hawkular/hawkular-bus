@@ -44,7 +44,7 @@ public class DeployApplicationResponseListener extends BasicMessageListener<Depl
                 //throw new IllegalArgumentException("Missing header: " + Constants.HEADER_UICLIENTID);
                 MsgLogger.LOG.warnf(
                         "HACK: Telling ALL UI that app [%s] deploy on resource ID [%s] resulted in [%s][%s]",
-                        response.getDestinationFileName(), response.getResourceId(), response.getStatus(),
+                        response.getDestinationFileName(), response.getResourcePath(), response.getStatus(),
                         response.getMessage());
                 new WebSocketHelper().sendBasicMessageAsync(connectedUIClients.getAllSessions(), response);
                 return;
@@ -58,7 +58,7 @@ public class DeployApplicationResponseListener extends BasicMessageListener<Depl
 
             MsgLogger.LOG.infof(
                     "Telling UI client [%s] that app [%s] deployment on resource ID [%s] resulted in [%s][%s]",
-                    uiClientId, response.getDestinationFileName(), response.getResourceId(), response.getStatus(),
+                    uiClientId, response.getDestinationFileName(), response.getResourcePath(), response.getStatus(),
                     response.getMessage());
 
             // send the request to the UI client

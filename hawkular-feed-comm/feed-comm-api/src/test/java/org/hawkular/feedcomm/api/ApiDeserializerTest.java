@@ -57,7 +57,7 @@ public class ApiDeserializerTest {
         ExecuteOperationRequest newpojo;
         ExecuteOperationRequest pojo = new ExecuteOperationRequest();
         pojo.setOperationName("opname");
-        pojo.setResourceId("resid");
+        pojo.setResourcePath("respath");
         pojo.setParameters(new HashMap<String, String>());
         pojo.getParameters().put("one", "1");
         pojo.getParameters().put("two", "22");
@@ -65,7 +65,7 @@ public class ApiDeserializerTest {
 
         newpojo = testSpecificPojo(pojo);
         Assert.assertEquals(pojo.getOperationName(), newpojo.getOperationName());
-        Assert.assertEquals(pojo.getResourceId(), newpojo.getResourceId());
+        Assert.assertEquals(pojo.getResourcePath(), newpojo.getResourcePath());
         Assert.assertEquals(pojo.getParameters(), newpojo.getParameters());
     }
 

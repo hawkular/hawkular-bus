@@ -41,12 +41,12 @@ public class ExecuteOperationResponseCommand implements Command<ExecuteOperation
     public BasicMessage execute(ExecuteOperationResponse response, BinaryData binaryData, CommandContext context)
             throws Exception {
 
-        String resId = response.getResourceId();
+        String resPath = response.getResourcePath();
         String opName = response.getOperationName();
         String status = response.getStatus();
         String msg = response.getMessage();
         MsgLogger.LOG.infof("Operation execution completed. Resource=[%s], Operation=[%s], Status=[%s], Message=[%s]",
-                resId, opName, status, msg);
+                resPath, opName, status, msg);
 
         // determine what UI client needs to be sent the message
         String uiClientId;

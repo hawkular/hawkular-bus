@@ -54,6 +54,7 @@
   </modules>
 
   <properties>
+    <version.org.hawkular.inventory>0.2.0.Final</version.org.hawkular.inventory>
   </properties>
 
   <dependencyManagement>
@@ -90,6 +91,12 @@
         <artifactId>activemq-rar</artifactId>
         <version>${version.org.apache.activemq}</version>
         <type>rar</type>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hawkular.inventory</groupId>
+        <artifactId>hawkular-inventory-json-helper</artifactId>
+        <version>${version.org.hawkular.inventory}</version>
       </dependency>
 
       <dependency>

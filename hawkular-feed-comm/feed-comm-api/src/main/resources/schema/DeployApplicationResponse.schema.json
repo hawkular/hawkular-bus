@@ -8,7 +8,8 @@
   "description": "Results of an application deployment request.",
   "additionalProperties": false,
   "properties": {
-    "resourceId": {
+    "resourcePath": {
+      "description" : "The inventory path to the resource that deployed the application",
       "type": "string"
     },
     "destinationFileName": {
@@ -23,5 +24,5 @@
       "description": "A message that further describes the results of the deployment."
     }
   },
-  "required": ["resourceId", "destinationFileName", "status"]
+  "required": ["resourcePath", "destinationFileName", "status"]
 }

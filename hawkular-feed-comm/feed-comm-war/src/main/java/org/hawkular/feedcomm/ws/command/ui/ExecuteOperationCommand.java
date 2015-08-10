@@ -30,6 +30,7 @@ import org.hawkular.feedcomm.api.GenericSuccessResponse;
 import org.hawkular.feedcomm.ws.Constants;
 import org.hawkular.feedcomm.ws.command.Command;
 import org.hawkular.feedcomm.ws.command.CommandContext;
+import org.hawkular.inventory.api.model.CanonicalPath;
 
 /**
  * UI client requesting to execute an operation on a resource managed by a feed.
@@ -42,11 +43,8 @@ public class ExecuteOperationCommand implements Command<ExecuteOperationRequest,
             CommandContext context) throws Exception {
 
         // determine what feed needs to be sent the message
-        String feedId;
-
-        // TODO: this is only useful for wildfly agent IDs - because we know its got the feed in it.
-        //       we need a "real" way to do this - need to ask inventory what the feed ID is
-        feedId = request.getResourceId().split("~", 3)[0]; // the feedID is the first one in the array
+        CanonicalPath resourcePath = CanonicalPath.fromString(request.getResourcePath());
+        String feedId = resourcePath.ids().getFeedId();
 
         try (ConnectionContextFactory ccf = new ConnectionContextFactory(context.getConnectionFactory())) {
             Endpoint endpoint = Constants.DEST_FEED_EXECUTE_OP;

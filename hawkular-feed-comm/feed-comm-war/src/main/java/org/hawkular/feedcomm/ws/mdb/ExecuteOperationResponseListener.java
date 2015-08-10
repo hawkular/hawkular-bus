@@ -42,8 +42,8 @@ public class ExecuteOperationResponseListener extends BasicMessageListener<Execu
                 // TODO: for now, just send it to all UI clients on our server (we don't really want this behavior)
                 //       we really want to those this exception since in the future the header must be there
                 //throw new IllegalArgumentException("Missing header: " + Constants.HEADER_UICLIENTID);
-                MsgLogger.LOG.warnf("HACK: Telling ALL UI that operation [%s] on resource ID [%s] resulted in [%s]",
-                        response.getOperationName(), response.getResourceId(), response.getStatus());
+                MsgLogger.LOG.warnf("HACK: Telling ALL UI that operation [%s] on resource [%s] resulted in [%s]",
+                        response.getOperationName(), response.getResourcePath(), response.getStatus());
                 new WebSocketHelper().sendBasicMessageAsync(connectedUIClients.getAllSessions(), response);
                 return;
             }
@@ -54,8 +54,8 @@ public class ExecuteOperationResponseListener extends BasicMessageListener<Execu
                 return; // we don't have the UI client, this message isn't for us
             }
 
-            MsgLogger.LOG.infof("Telling UI client [%s] that operation [%s] on resource ID [%s] resulted in [%s]",
-                    uiClientId, response.getOperationName(), response.getResourceId(), response.getStatus());
+            MsgLogger.LOG.infof("Telling UI client [%s] that operation [%s] on resource [%s] resulted in [%s]",
+                    uiClientId, response.getOperationName(), response.getResourcePath(), response.getStatus());
 
             // send the request to the UI client
             new WebSocketHelper().sendBasicMessageAsync(session, response);

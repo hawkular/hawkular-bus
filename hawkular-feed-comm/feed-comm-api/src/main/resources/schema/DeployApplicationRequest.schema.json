@@ -8,12 +8,13 @@
   "description": "Deploys an application to a resource. The actual deployment file content must be appended to this JSON message.",
   "additionalProperties": false,
   "properties": {
-    "resourceId": {
+    "resourcePath": {
+      "description" : "The inventory path to the resource that is to deploy the application",
       "type": "string"
     },
     "destinationFileName": {
       "type": "string"
     }
   },
-  "required": ["resourceId", "destinationFileName"]
+  "required": ["resourcePath", "destinationFileName"]
 }

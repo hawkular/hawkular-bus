@@ -22,10 +22,6 @@
   <deployment>
     <dependencies>
       <module name="org.hawkular.nest" />
-      <!-- REMOVE THESE JACKSON DEPS WHEN THE NEW NEST IS DEPLOYED - IT PROVIDES THESE FOR US -->
-      <module name="com.fasterxml.jackson.core.jackson-core" />
-      <module name="com.fasterxml.jackson.core.jackson-annotations" />
-      <module name="com.fasterxml.jackson.core.jackson-databind" />
     </dependencies>
   </deployment>
 

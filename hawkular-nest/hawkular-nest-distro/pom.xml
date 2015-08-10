@@ -228,7 +228,6 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>xml-maven-plugin</artifactId>
-        <version>1.0</version> <!-- TODO delete once we point to latest hawkular parent -->
         <executions>
           <execution>
             <id>transform-standalone-xml</id>

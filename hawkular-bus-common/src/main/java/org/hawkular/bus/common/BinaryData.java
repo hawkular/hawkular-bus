@@ -61,7 +61,7 @@ public class BinaryData extends InputStream {
 
     public int read() throws IOException {
         if (unreadInMemoryDataExists()) {
-            return (int) inMemoryData[inMemoryDataPointer++];
+            return (inMemoryData[inMemoryDataPointer++] & 0xff);
         } else {
             return streamData.read();
         }

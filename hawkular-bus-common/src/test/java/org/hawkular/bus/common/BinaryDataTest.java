@@ -17,6 +17,7 @@
 package org.hawkular.bus.common;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -26,6 +27,46 @@ import org.junit.Test;
 
 @SuppressWarnings("resource")
 public class BinaryDataTest {
+
+    @Test
+    public void testBinaryWithNegativeOneValues() throws Exception {
+        ByteArrayOutputStream boas = new ByteArrayOutputStream();
+        boas.write(-1);
+        boas.write('a');
+        boas.write('b');
+        boas.write('c');
+        boas.write(-1);
+        boas.write(-1);
+        boas.write(-1);
+        boas.write('x');
+        boas.write('y');
+        boas.write('z');
+        boas.write(-1);
+        boas.close();
+
+        final int totalDataSize = 11; // the number of bytes we wrote into our test string
+
+        ByteArrayInputStream emptyIn = new ByteArrayInputStream(new byte[0]);
+        BinaryData bd = new BinaryData(boas.toByteArray(), emptyIn);
+        Assert.assertEquals(totalDataSize, bd.available());
+
+        byte[] readArray = new byte[totalDataSize];
+        Assert.assertEquals(totalDataSize, bd.read(readArray));
+        int i = 0;
+        Assert.assertEquals(-1, readArray[i++]);
+        Assert.assertEquals('a', readArray[i++]);
+        Assert.assertEquals('b', readArray[i++]);
+        Assert.assertEquals('c', readArray[i++]);
+        Assert.assertEquals(-1, readArray[i++]);
+        Assert.assertEquals(-1, readArray[i++]);
+        Assert.assertEquals(-1, readArray[i++]);
+        Assert.assertEquals('x', readArray[i++]);
+        Assert.assertEquals('y', readArray[i++]);
+        Assert.assertEquals('z', readArray[i++]);
+        Assert.assertEquals(-1, readArray[i++]);
+
+        return;
+    }
 
     @Test
     public void testEmptyBinaryData() throws Exception {

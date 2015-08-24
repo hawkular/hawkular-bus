@@ -54,7 +54,7 @@
   </modules>
 
   <properties>
-    <version.org.hawkular.inventory>0.2.0.Final</version.org.hawkular.inventory>
+    <version.org.hawkular.inventory>0.3.0</version.org.hawkular.inventory>
   </properties>
 
   <dependencyManagement>

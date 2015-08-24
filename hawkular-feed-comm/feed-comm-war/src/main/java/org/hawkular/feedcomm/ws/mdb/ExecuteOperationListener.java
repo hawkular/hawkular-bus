@@ -46,8 +46,8 @@ public class ExecuteOperationListener extends BasicMessageListener<ExecuteOperat
                 return; // we don't have the feed, this message isn't for us
             }
 
-            MsgLogger.LOG.infof("Asking feed [%s] to execute operation [%s] on resource ID [%s]",
-                    feedId, basicMessage.getOperationName(), basicMessage.getResourceId());
+            MsgLogger.LOG.infof("Asking feed [%s] to execute operation [%s] on resource [%s]",
+                    feedId, basicMessage.getOperationName(), basicMessage.getResourcePath());
 
             // send the request to the feed
             new WebSocketHelper().sendBasicMessageAsync(session, basicMessage);

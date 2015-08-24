@@ -41,12 +41,12 @@ public class DeployApplicationResponseCommand implements Command<DeployApplicati
     public BasicMessage execute(DeployApplicationResponse response, BinaryData binaryData, CommandContext context)
             throws Exception {
 
-        String resId = response.getResourceId();
+        String resPath = response.getResourcePath();
         String fileName = response.getDestinationFileName();
         String status = response.getStatus();
         String msg = response.getMessage();
         MsgLogger.LOG.infof("Deploy app request completed. Resource=[%s], FileName=[%s], Status=[%s], Message=[%s]",
-                resId, fileName, status, msg);
+                resPath, fileName, status, msg);
 
         // determine what UI client needs to be sent the message
         String uiClientId;

@@ -53,7 +53,7 @@ public class DeployApplicationListener extends BasicMessageListener<DeployApplic
             }
 
             MsgLogger.LOG.infof("Sending feed [%s] an application [%s] to deploy on resource [%s]", feedId,
-                    basicMessage.getDestinationFileName(), basicMessage.getResourceId());
+                    basicMessage.getDestinationFileName(), basicMessage.getResourcePath());
 
             // send the request to the feed
             BinaryData dataToSend = ApiDeserializer.toHawkularFormat(basicMessage, request.getBinaryData());

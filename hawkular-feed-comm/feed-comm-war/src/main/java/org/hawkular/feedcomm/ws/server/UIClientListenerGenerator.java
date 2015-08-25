@@ -38,6 +38,7 @@ import org.hawkular.bus.common.MessageProcessor;
 import org.hawkular.bus.common.consumer.ConsumerConnectionContext;
 import org.hawkular.feedcomm.ws.Constants;
 import org.hawkular.feedcomm.ws.MsgLogger;
+import org.hawkular.feedcomm.ws.mdb.AddJdbcDriverResponseListener;
 import org.hawkular.feedcomm.ws.mdb.DeployApplicationResponseListener;
 import org.hawkular.feedcomm.ws.mdb.ExecuteOperationResponseListener;
 
@@ -111,16 +112,16 @@ public class UIClientListenerGenerator {
             ccc = ccf.createConsumerConnectionContext(endpoint, null);
             messageProcessor.listen(ccc, new DeployApplicationResponseListener(connectedUIClients));
             contextList.add(ccc);
+
+            endpoint = Constants.DEST_UICLIENT_ADD_JDBC_DRIVER_RESPONSE;
+            ccc = ccf.createConsumerConnectionContext(endpoint, null);
+            messageProcessor.listen(ccc, new AddJdbcDriverResponseListener(connectedUIClients));
+            contextList.add(ccc);
         }
 
         Endpoint endpoint = Constants.DEST_UICLIENT_EXECUTE_OP_RESPONSE;
         ConsumerConnectionContext ccc = ccf.createConsumerConnectionContext(endpoint, messageSelector);
         messageProcessor.listen(ccc, new ExecuteOperationResponseListener(connectedUIClients));
-        contextList.add(ccc);
-
-        endpoint = Constants.DEST_UICLIENT_DEPLOY_APPLICATION_RESPONSE;
-        ccc = ccf.createConsumerConnectionContext(endpoint, null);
-        messageProcessor.listen(ccc, new DeployApplicationResponseListener(connectedUIClients));
         contextList.add(ccc);
 
         return;

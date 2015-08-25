@@ -1,0 +1,28 @@
+{
+  "type": "object",
+  "extends": {
+    "type": "object",
+    "javaType": "org.hawkular.feedcomm.api.AuthMessage"
+  },
+  "javaType": "org.hawkular.feedcomm.api.AddJdbcDriverRequest",
+  "description": "Adds a JDBC Driver to a resource. The driver module is created only if driverJarName is set (in such a case, the jar file content must be appended to this JSON message). Otherwise, the existence of the module given by moduleName and default slot \"main\" will be assumed.",
+  "additionalProperties": false,
+  "properties": {
+    "resourcePath": {
+      "description" : "The inventory path to the resource that is to deploy the application",
+      "type": "string"
+    },
+    "driverName": {
+      "type": "string"
+    },
+    "moduleName": {
+      "description": "The name of the JBoss Module to create or use, such as \"org.example.jdbc.driver\"",
+      "type": "string"
+    },
+    "driverJarName": {
+      "description": "The name of the jar file that should be used when storing the binary data to in the module directory on the server. If this field is set the jar bits must be appended to this JSON message. If this field is set, the module will be created, otherwise the existence of the module given by moduleName and default slot \"main\" will be assumed.",
+      "type": "string"
+    }
+  },
+  "required": ["resourcePath", "driverName", "moduleName"]
+}

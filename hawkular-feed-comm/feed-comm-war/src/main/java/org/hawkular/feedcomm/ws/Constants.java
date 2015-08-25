@@ -22,6 +22,7 @@ import org.hawkular.feedcomm.ws.command.EchoCommand;
 import org.hawkular.feedcomm.ws.command.GenericErrorResponseCommand;
 import org.hawkular.feedcomm.ws.command.feed.DeployApplicationResponseCommand;
 import org.hawkular.feedcomm.ws.command.feed.ExecuteOperationResponseCommand;
+import org.hawkular.feedcomm.ws.command.ui.AddJdbcDriverCommand;
 import org.hawkular.feedcomm.ws.command.ui.DeployApplicationCommand;
 import org.hawkular.feedcomm.ws.command.ui.ExecuteOperationCommand;
 import org.hawkular.feedcomm.ws.server.ValidCommandsMap;
@@ -61,14 +62,17 @@ public interface Constants {
     ValidCommandsMap VALID_COMMANDS_FROM_UI = new ValidCommandsMap()
             .put(EchoCommand.REQUEST_CLASS.getName(), EchoCommand.class)
             .put(DeployApplicationCommand.REQUEST_CLASS.getName(), DeployApplicationCommand.class)
+            .put(AddJdbcDriverCommand.REQUEST_CLASS.getName(), AddJdbcDriverCommand.class)
             .put(ExecuteOperationCommand.REQUEST_CLASS.getName(), ExecuteOperationCommand.class)
             .put(GenericErrorResponseCommand.REQUEST_CLASS.getName(), GenericErrorResponseCommand.class);
 
     // QUEUES AND TOPICS
     Endpoint DEST_FEED_EXECUTE_OP = new Endpoint(Type.QUEUE, "FeedExecuteOperation");
     Endpoint DEST_FEED_DEPLOY_APPLICATION = new Endpoint(Type.QUEUE, "FeedDeployApplication");
+    Endpoint DEST_FEED_ADD_JDBC_DRIVER = new Endpoint(Type.QUEUE, "FeedAddJdbcDriver");
 
     Endpoint DEST_UICLIENT_EXECUTE_OP_RESPONSE = new Endpoint(Type.QUEUE, "UIClientExecuteOperationResponse");
     Endpoint DEST_UICLIENT_DEPLOY_APPLICATION_RESPONSE = new Endpoint(Type.QUEUE, "UIDeployApplicationResponse");
+    Endpoint DEST_UICLIENT_ADD_JDBC_DRIVER_RESPONSE = new Endpoint(Type.QUEUE, "UIAddJdbcDriverResponse");
 
 }

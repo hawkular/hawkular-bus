@@ -30,7 +30,7 @@
   <name>Hawkular Bus: Feed Communications JSON API</name>
 
   <properties>
-    <plugin.version.org.jsonschema2pojo>0.4.7</plugin.version.org.jsonschema2pojo>
+    <plugin.version.org.jsonschema2pojo>0.4.14</plugin.version.org.jsonschema2pojo>
   </properties>
 
   <dependencies>

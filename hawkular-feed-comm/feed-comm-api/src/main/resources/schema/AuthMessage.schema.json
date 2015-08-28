@@ -1,4 +1,15 @@
 {
+  "definitions": {
+    "authentication": {
+      "type": "object",
+      "properties": {
+        "username": { "type": "string" },
+        "password": { "type": "string" },
+        "token":    { "type": "string" }
+      }
+    }
+  },
+
   "type": "object",
   "extends": {
     "type": "object",
@@ -8,11 +19,8 @@
   "description": "Message properties that are needed for authentication.",
   "additionalProperties": false,
   "properties": {
-    "username": {
-      "type": "string"
-    },
-    "password": {
-      "type": "string"
+    "authentication": {
+      "$ref": "#/definitions/authentication"
     }
   }
 }

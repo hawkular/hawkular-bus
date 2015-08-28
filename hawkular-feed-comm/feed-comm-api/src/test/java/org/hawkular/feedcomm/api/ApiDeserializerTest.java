@@ -34,13 +34,26 @@ public class ApiDeserializerTest {
         ApiDeserializer ad = new ApiDeserializer();
 
         String nameAndJson = EchoRequest.class.getName()
-                + "={\"echoMessage\":\"msg\", \"username\":\"foo\", \"password\":\"bar\"}";
+                + "={\"echoMessage\":\"msg\", \"authentication\":{\"username\":\"foo\", \"password\":\"bar\"}}";
         BasicMessage request = ad.deserialize(nameAndJson);
         Assert.assertTrue(request instanceof EchoRequest);
         EchoRequest echoRequest = (EchoRequest) request;
         Assert.assertEquals("msg", echoRequest.getEchoMessage());
-        Assert.assertEquals("foo", echoRequest.getUsername());
-        Assert.assertEquals("bar", echoRequest.getPassword());
+        Assert.assertNotNull(echoRequest.getAuthentication());
+        Assert.assertEquals("foo", echoRequest.getAuthentication().getUsername());
+        Assert.assertEquals("bar", echoRequest.getAuthentication().getPassword());
+        Assert.assertNull(echoRequest.getAuthentication().getToken());
+
+        nameAndJson = EchoRequest.class.getName()
+                + "={\"echoMessage\":\"msg\", \"authentication\":{\"token\":\"tok\"}}";
+        request = ad.deserialize(nameAndJson);
+        Assert.assertTrue(request instanceof EchoRequest);
+        echoRequest = (EchoRequest) request;
+        Assert.assertEquals("msg", echoRequest.getEchoMessage());
+        Assert.assertNotNull(echoRequest.getAuthentication());
+        Assert.assertNull(echoRequest.getAuthentication().getUsername());
+        Assert.assertNull(echoRequest.getAuthentication().getPassword());
+        Assert.assertEquals("tok", echoRequest.getAuthentication().getToken());
     }
 
     @Test

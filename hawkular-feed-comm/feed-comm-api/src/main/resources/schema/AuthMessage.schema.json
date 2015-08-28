@@ -2,6 +2,8 @@
   "definitions": {
     "authentication": {
       "type": "object",
+      "description": "Provides user credentials or security token.",
+      "additionalProperties": false,
       "properties": {
         "username": { "type": "string" },
         "password": { "type": "string" },

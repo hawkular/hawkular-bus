@@ -30,6 +30,20 @@ import org.junit.Test;
 public class ApiDeserializerTest {
 
     @Test
+    public void testAuthMessage() {
+        ApiDeserializer ad = new ApiDeserializer();
+
+        String nameAndJson = EchoRequest.class.getName()
+                + "={\"echoMessage\":\"msg\", \"username\":\"foo\", \"password\":\"bar\"}";
+        BasicMessage request = ad.deserialize(nameAndJson);
+        Assert.assertTrue(request instanceof EchoRequest);
+        EchoRequest echoRequest = (EchoRequest) request;
+        Assert.assertEquals("msg", echoRequest.getEchoMessage());
+        Assert.assertEquals("foo", echoRequest.getUsername());
+        Assert.assertEquals("bar", echoRequest.getPassword());
+    }
+
+    @Test
     public void testApiDeserializer() {
         ApiDeserializer ad = new ApiDeserializer();
 

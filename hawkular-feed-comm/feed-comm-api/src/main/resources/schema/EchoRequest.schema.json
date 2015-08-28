@@ -1,7 +1,8 @@
 {
   "type": "object",
   "extends": {
-    "$ref": "AuthMessage.schema.json"
+    "type": "object",
+    "javaType": "org.hawkular.feedcomm.api.AuthMessage"
   },
   "javaType": "org.hawkular.feedcomm.api.EchoRequest",
   "description": "A simple request to echo a string back used for testing connectivity.",

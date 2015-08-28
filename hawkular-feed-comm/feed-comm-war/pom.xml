@@ -54,6 +54,11 @@
     </dependency>
 
     <dependency>
+      <groupId>org.hawkular.accounts</groupId>
+      <artifactId>hawkular-accounts-websocket-api</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.hawkular.bus</groupId>
       <artifactId>hawkular-feed-comm-api</artifactId>
       <version>${project.version}</version>

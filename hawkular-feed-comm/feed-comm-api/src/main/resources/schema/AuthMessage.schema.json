@@ -7,7 +7,8 @@
       "properties": {
         "username": { "type": "string" },
         "password": { "type": "string" },
-        "token":    { "type": "string" }
+        "token":    { "type": "string" },
+        "persona":  { "type": "string" }
       }
     }
   },

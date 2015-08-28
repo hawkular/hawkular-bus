@@ -31,10 +31,14 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
+import org.hawkular.accounts.websocket.Authenticator;
+import org.hawkular.accounts.websocket.WebsocketAuthenticationException;
 import org.hawkular.bus.common.BasicMessage;
 import org.hawkular.bus.common.BasicMessageWithExtraData;
 import org.hawkular.bus.common.BinaryData;
 import org.hawkular.feedcomm.api.ApiDeserializer;
+import org.hawkular.feedcomm.api.AuthMessage;
+import org.hawkular.feedcomm.api.Authentication;
 import org.hawkular.feedcomm.api.GenericErrorResponseBuilder;
 import org.hawkular.feedcomm.ws.Constants;
 import org.hawkular.feedcomm.ws.MsgLogger;
@@ -57,6 +61,9 @@ public class UIClientCommWebSocket {
 
     @Inject
     private UIClientListenerGenerator uiClientListenerGenerator;
+
+    @Inject
+    private Authenticator authenticator;
 
     @OnOpen
     public void uiClientSessionOpen(Session session) {
@@ -96,9 +103,14 @@ public class UIClientCommWebSocket {
         BasicMessage response;
 
         try {
+            // parse the JSON and get its message POJO
             BasicMessage request = new ApiDeserializer().deserialize(nameAndJsonStr);
             requestClassName = request.getClass().getName();
 
+            // make sure the user is authenticated
+            authenticate(request, session);
+
+            // determine what command this JSON request needs to execute, and execute it
             Class<? extends Command<?, ?>> commandClass = Constants.VALID_COMMANDS_FROM_UI.get(requestClassName);
             if (commandClass == null) {
                 MsgLogger.LOG.errorInvalidCommandRequestUIClient(uiClientId, session.getId(), requestClassName);
@@ -109,6 +121,15 @@ public class UIClientCommWebSocket {
                         uiClientListenerGenerator.getConnectionFactory(), session);
                 Command command = commandClass.newInstance();
                 response = command.execute(request, null, context);
+            }
+        } catch (WebsocketAuthenticationException wae) {
+            response = null;
+            try {
+                session.close(new CloseReason(CloseCodes.VIOLATED_POLICY, wae.getLocalizedMessage()));
+            } catch (IOException ioe) {
+                MsgLogger.LOG.errorf(ioe,
+                        "Failed to close UI client [%s] (session [%s]) after authentication failure (request=[%s])",
+                        uiClientId, session.getId(), requestClassName);
             }
         } catch (Throwable t) {
             MsgLogger.LOG.errorCommandExecutionFailureUIClient(requestClassName, uiClientId, session.getId(), t);
@@ -142,11 +163,16 @@ public class UIClientCommWebSocket {
         BasicMessage response;
 
         try {
+            // parse the JSON and get its message POJO, including any additional binary data being streamed
             BasicMessageWithExtraData<BasicMessage> reqWithData = new ApiDeserializer().deserialize(binaryDataStream);
             BasicMessage request = reqWithData.getBasicMessage();
             BinaryData binaryData = reqWithData.getBinaryData();
             requestClassName = request.getClass().getName();
 
+            // make sure the user is authenticated
+            authenticate(request, session);
+
+            // determine what command this JSON request needs to execute, and execute it
             Class<? extends Command<?, ?>> commandClass = Constants.VALID_COMMANDS_FROM_UI.get(requestClassName);
             if (commandClass == null) {
                 MsgLogger.LOG.errorInvalidCommandRequestUIClient(uiClientId, session.getId(), requestClassName);
@@ -157,6 +183,15 @@ public class UIClientCommWebSocket {
                         uiClientListenerGenerator.getConnectionFactory(), session);
                 Command command = commandClass.newInstance();
                 response = command.execute(request, binaryData, context);
+            }
+        } catch (WebsocketAuthenticationException wae) {
+            response = null;
+            try {
+                session.close(new CloseReason(CloseCodes.VIOLATED_POLICY, wae.getLocalizedMessage()));
+            } catch (IOException ioe) {
+                MsgLogger.LOG.errorf(ioe,
+                        "Failed to close UI client [%s] (session [%s]) after authentication failure (request=[%s])",
+                        uiClientId, session.getId(), requestClassName);
             }
         } catch (Throwable t) {
             MsgLogger.LOG.errorCommandExecutionFailureUIClient(requestClassName, uiClientId, session.getId(), t);
@@ -183,5 +218,41 @@ public class UIClientCommWebSocket {
     private String getUIClientIDFromSession(Session session) {
         return session.getId(); // for now, the UI client ID *is* the session ID
         //return session.getRequestParameterMap().get("Hawkular-UI-Client-ID").get(0);
+    }
+
+    private void authenticate(BasicMessage basicMessage, Session session) throws WebsocketAuthenticationException {
+        if (!(basicMessage instanceof AuthMessage)) {
+            return; // this message does not need authentication; always allow it
+        }
+
+        AuthMessage authMessage = (AuthMessage) basicMessage;
+        Authentication auth = authMessage.getAuthentication();
+
+        if (auth == null) {
+            throw new WebsocketAuthenticationException("Missing credentials");
+        }
+
+        String username = auth.getUsername();
+        String password = auth.getPassword();
+        String token = auth.getToken();
+        String persona = auth.getPersona();
+
+        boolean hasUsername = (username != null && !username.isEmpty());
+        boolean hasToken = (token != null && !token.isEmpty());
+
+        if (!hasUsername && !hasToken) {
+            throw new WebsocketAuthenticationException("Must provide either username/password or token");
+        }
+
+        // even if both username and token are provided, token is used to authenticate
+        // TODO: call authenticator appropriately
+        if (hasToken) {
+            // authenticate based on the provided token
+            MsgLogger.LOG.errorf("TODO: authenticating token [%s/%s], session=[%s]", token, persona, session.getId());
+        } else {
+            // authenticate based on the provided username/password
+            MsgLogger.LOG.errorf("TODO: authenticating user [%s/%s/%s], session=[%s]", username, password, persona,
+                    session.getId());
+        }
     }
 }

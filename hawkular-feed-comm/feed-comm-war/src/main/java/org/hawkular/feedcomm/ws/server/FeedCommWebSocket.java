@@ -236,15 +236,16 @@ public class FeedCommWebSocket {
             throw new WebsocketAuthenticationException("Must provide either username/password or token");
         }
 
-        // even if both username and token are provided, token is used to authenticate
-        // TODO: call authenticator appropriately
+        // note that if both username and token are provided, we authenticate using the token
         if (hasToken) {
-            // authenticate based on the provided token
-            MsgLogger.LOG.errorf("TODO: authenticating token [%s/%s], session=[%s]", token, persona, session.getId());
+            MsgLogger.LOG.tracef("authenticating token [%s/%s], session=[%s]", token, persona, session.getId());
+            authenticator.authenticateWithToken(token, persona, session);
         } else {
-            // authenticate based on the provided username/password
-            MsgLogger.LOG.errorf("TODO: authenticating user [%s/%s/%s], session=[%s]", username, password, persona,
+            MsgLogger.LOG.tracef("authenticating user [%s/%s/%s], session=[%s]", username, password, persona,
                     session.getId());
+            authenticator.authenticateWithCredentials(username, password, persona, session);
         }
+
+        return; // authentication successful
     }
 }

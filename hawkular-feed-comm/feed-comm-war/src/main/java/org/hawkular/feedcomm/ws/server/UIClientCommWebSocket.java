@@ -221,37 +221,41 @@ public class UIClientCommWebSocket {
     }
 
     private void authenticate(BasicMessage basicMessage, Session session) throws WebsocketAuthenticationException {
-        if (!(basicMessage instanceof AuthMessage)) {
-            return; // this message does not need authentication; always allow it
+        // if no authentication information is passed in the message, we will still ask Hawkular Accounts
+        // to authenticate our session. This is to ensure any previous credentials/token that was authenticated
+        // in the past is still valid now.
+
+        String username = null;
+        String password = null;
+        String token = null;
+        String persona = null;
+
+        if (basicMessage instanceof AuthMessage) {
+            AuthMessage authMessage = (AuthMessage) basicMessage;
+            Authentication auth = authMessage.getAuthentication();
+            if (auth != null) {
+                username = auth.getUsername();
+                password = auth.getPassword();
+                token = auth.getToken();
+                persona = auth.getPersona();
+            }
         }
 
-        AuthMessage authMessage = (AuthMessage) basicMessage;
-        Authentication auth = authMessage.getAuthentication();
-
-        if (auth == null) {
-            throw new WebsocketAuthenticationException("Missing credentials");
-        }
-
-        String username = auth.getUsername();
-        String password = auth.getPassword();
-        String token = auth.getToken();
-        String persona = auth.getPersona();
-
-        boolean hasUsername = (username != null && !username.isEmpty());
-        boolean hasToken = (token != null && !token.isEmpty());
-
-        if (!hasUsername && !hasToken) {
-            throw new WebsocketAuthenticationException("Must provide either username/password or token");
-        }
-
-        // note that if both username and token are provided, we authenticate using the token
-        if (hasToken) {
-            MsgLogger.LOG.tracef("authenticating token [%s/%s], session=[%s]", token, persona, session.getId());
-            authenticator.authenticateWithToken(token, persona, session);
-        } else {
-            MsgLogger.LOG.tracef("authenticating user [%s/%s/%s], session=[%s]", username, password, persona,
-                    session.getId());
-            authenticator.authenticateWithCredentials(username, password, persona, session);
+        try {
+            // note that if both username and token are provided, we authenticate using the token
+            boolean hasToken = (token != null && !token.isEmpty());
+            if (hasToken) {
+                MsgLogger.LOG.tracef("authenticating token [%s/%s], session=[%s]", token, persona, session.getId());
+                authenticator.authenticateWithToken(token, persona, session);
+            } else {
+                MsgLogger.LOG.tracef("authenticating user [%s/%s/%s], session=[%s]", username, password, persona,
+                        session.getId());
+                authenticator.authenticateWithCredentials(username, password, persona, session);
+            }
+        } catch (WebsocketAuthenticationException wae) {
+            throw wae;
+        } catch (Exception e) {
+            throw new WebsocketAuthenticationException("Unauthorized!", e);
         }
 
         return; // authentication successful

@@ -54,7 +54,8 @@
   </modules>
 
   <properties>
-    <version.org.hawkular.inventory>0.3.0</version.org.hawkular.inventory>
+    <version.org.hawkular.accounts>1.0.11.Final</version.org.hawkular.accounts>
+    <version.org.hawkular.inventory>0.3.3.Final</version.org.hawkular.inventory>
   </properties>
 
   <dependencyManagement>
@@ -91,6 +92,12 @@
         <artifactId>activemq-rar</artifactId>
         <version>${version.org.apache.activemq}</version>
         <type>rar</type>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hawkular.accounts</groupId>
+        <artifactId>hawkular-accounts-websocket-api</artifactId>
+        <version>${version.org.hawkular.accounts}</version>
       </dependency>
 
       <dependency>

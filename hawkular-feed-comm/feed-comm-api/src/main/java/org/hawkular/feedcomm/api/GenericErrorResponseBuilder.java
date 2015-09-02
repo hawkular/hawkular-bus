@@ -43,6 +43,26 @@ public class GenericErrorResponseBuilder {
         return this;
     }
 
+    public GenericErrorResponseBuilder setUsername(String username) {
+        populateAuthentication().setUsername(username);
+        return this;
+    }
+
+    public GenericErrorResponseBuilder setPassword(String password) {
+        populateAuthentication().setPassword(password);
+        return this;
+    }
+
+    public GenericErrorResponseBuilder setToken(String token) {
+        populateAuthentication().setToken(token);
+        return this;
+    }
+
+    public GenericErrorResponseBuilder setPersona(String persona) {
+        populateAuthentication().setPersona(persona);
+        return this;
+    }
+
     public GenericErrorResponseBuilder setThrowable(Throwable t) {
         setErrorMessage(t.getMessage());
 
@@ -52,5 +72,14 @@ public class GenericErrorResponseBuilder {
         }
         setStackTrace(baos.toString());
         return this;
+    }
+
+    private Authentication populateAuthentication() {
+        Authentication auth = this.response.getAuthentication();
+        if (auth == null) {
+            auth = new Authentication();
+            this.response.setAuthentication(auth);
+        }
+        return auth;
     }
 }

@@ -22,6 +22,33 @@ import org.junit.Test;
 public class GenericErrorResponseBuilderTest {
 
     @Test
+    public void testBuilderWithAuth() {
+        GenericErrorResponseBuilder bldr;
+        GenericErrorResponse response;
+
+        bldr = new GenericErrorResponseBuilder();
+        bldr.setErrorMessage("err msg");
+        response = bldr.build();
+        Assert.assertNull(response.getAuthentication());
+
+        bldr.setUsername("uuu");
+        response = bldr.build();
+        Assert.assertEquals("uuu", response.getAuthentication().getUsername());
+        Assert.assertNull(response.getAuthentication().getPassword());
+        Assert.assertNull(response.getAuthentication().getToken());
+        Assert.assertNull(response.getAuthentication().getPersona());
+
+        bldr.setPassword("pwpw");
+        bldr.setToken("ttt");
+        bldr.setPersona("ppp");
+        response = bldr.build();
+        Assert.assertEquals("uuu", response.getAuthentication().getUsername());
+        Assert.assertEquals("pwpw", response.getAuthentication().getPassword());
+        Assert.assertEquals("ttt", response.getAuthentication().getToken());
+        Assert.assertEquals("ppp", response.getAuthentication().getPersona());
+    }
+
+    @Test
     public void testBuilder() {
         GenericErrorResponseBuilder bldr;
         GenericErrorResponse response;

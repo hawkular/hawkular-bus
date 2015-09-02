@@ -30,6 +30,35 @@ import org.junit.Test;
 public class ApiDeserializerTest {
 
     @Test
+    public void testAuthMessage() {
+        ApiDeserializer ad = new ApiDeserializer();
+
+        String nameAndJson = EchoRequest.class.getName()
+                + "={\"echoMessage\":\"msg\", \"authentication\":{\"username\":\"foo\", \"password\":\"bar\"}}";
+        BasicMessage request = ad.deserialize(nameAndJson);
+        Assert.assertTrue(request instanceof EchoRequest);
+        EchoRequest echoRequest = (EchoRequest) request;
+        Assert.assertEquals("msg", echoRequest.getEchoMessage());
+        Assert.assertNotNull(echoRequest.getAuthentication());
+        Assert.assertEquals("foo", echoRequest.getAuthentication().getUsername());
+        Assert.assertEquals("bar", echoRequest.getAuthentication().getPassword());
+        Assert.assertNull(echoRequest.getAuthentication().getToken());
+        Assert.assertNull(echoRequest.getAuthentication().getPersona());
+
+        nameAndJson = EchoRequest.class.getName()
+                + "={\"echoMessage\":\"msg\", \"authentication\":{\"token\":\"tok\", \"persona\":\"polly\"}}";
+        request = ad.deserialize(nameAndJson);
+        Assert.assertTrue(request instanceof EchoRequest);
+        echoRequest = (EchoRequest) request;
+        Assert.assertEquals("msg", echoRequest.getEchoMessage());
+        Assert.assertNotNull(echoRequest.getAuthentication());
+        Assert.assertNull(echoRequest.getAuthentication().getUsername());
+        Assert.assertNull(echoRequest.getAuthentication().getPassword());
+        Assert.assertEquals("tok", echoRequest.getAuthentication().getToken());
+        Assert.assertEquals("polly", echoRequest.getAuthentication().getPersona());
+    }
+
+    @Test
     public void testApiDeserializer() {
         ApiDeserializer ad = new ApiDeserializer();
 

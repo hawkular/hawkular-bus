@@ -30,6 +30,10 @@
   <name>Hawkular Bus: Feed Communications Parent</name>
   <packaging>pom</packaging>
 
+  <properties>
+    <plugin.version.org.jsonschema2pojo>0.4.14</plugin.version.org.jsonschema2pojo>
+  </properties>
+
   <modules>
     <module>feed-comm-api</module>
     <module>feed-comm-war</module>

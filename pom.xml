@@ -54,10 +54,8 @@
   </modules>
 
   <properties>
-    <plugin.version.org.jsonschema2pojo>0.4.14</plugin.version.org.jsonschema2pojo>
-
-    <version.org.hawkular.accounts>1.0.11.Final-SNAPSHOT</version.org.hawkular.accounts>
-    <version.org.hawkular.inventory>0.3.2.Final</version.org.hawkular.inventory>
+    <version.org.hawkular.accounts>1.0.11.Final</version.org.hawkular.accounts>
+    <version.org.hawkular.inventory>0.3.3.Final</version.org.hawkular.inventory>
   </properties>
 
   <dependencyManagement>

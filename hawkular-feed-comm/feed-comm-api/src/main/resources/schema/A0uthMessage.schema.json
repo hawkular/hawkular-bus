@@ -2,7 +2,7 @@
   "definitions": {
     "authentication": {
       "type": "object",
-      "description": "Provides user credentials or security token.",
+      "description": "Provides user credentials or security token. The awkward name is there so that this schema file precedes all other schema files alphabetically. This is required by jsonschema2pojo-maven-plugin that is not resolving the inter-schema dependencies, it just takes files in alphabetical order.",
       "additionalProperties": false,
       "properties": {
         "username": { "type": "string" },

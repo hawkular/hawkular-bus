@@ -39,6 +39,7 @@ import org.hawkular.bus.common.MessageProcessor;
 import org.hawkular.bus.common.consumer.ConsumerConnectionContext;
 import org.hawkular.feedcomm.ws.Constants;
 import org.hawkular.feedcomm.ws.MsgLogger;
+import org.hawkular.feedcomm.ws.mdb.AddJdbcDriverListener;
 import org.hawkular.feedcomm.ws.mdb.DeployApplicationListener;
 import org.hawkular.feedcomm.ws.mdb.ExecuteOperationListener;
 
@@ -111,6 +112,11 @@ public class FeedListenerGenerator {
         endpoint = Constants.DEST_FEED_DEPLOY_APPLICATION;
         ccc = ccf.createConsumerConnectionContext(endpoint, messageSelector);
         messageProcessor.listen(ccc, new DeployApplicationListener(connectedFeeds, threadPoolService));
+        contextList.add(ccc);
+
+        endpoint = Constants.DEST_FEED_ADD_JDBC_DRIVER;
+        ccc = ccf.createConsumerConnectionContext(endpoint, messageSelector);
+        messageProcessor.listen(ccc, new AddJdbcDriverListener(connectedFeeds, threadPoolService));
         contextList.add(ccc);
 
         return;

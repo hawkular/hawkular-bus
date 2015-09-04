@@ -50,12 +50,10 @@
     <module>hawkular-bus-ra-wf-module</module>
     <module>hawkular-bus-samples</module>
     <module>hawkular-nest</module>
-    <module>hawkular-feed-comm</module>
   </modules>
 
   <properties>
     <version.org.hawkular.accounts>1.0.11.Final</version.org.hawkular.accounts>
-    <version.org.hawkular.inventory>0.3.3.Final</version.org.hawkular.inventory>
   </properties>
 
   <dependencyManagement>
@@ -98,12 +96,6 @@
         <groupId>org.hawkular.accounts</groupId>
         <artifactId>hawkular-accounts-websocket-api</artifactId>
         <version>${version.org.hawkular.accounts}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.hawkular.inventory</groupId>
-        <artifactId>hawkular-inventory-json-helper</artifactId>
-        <version>${version.org.hawkular.inventory}</version>
       </dependency>
 
       <dependency>

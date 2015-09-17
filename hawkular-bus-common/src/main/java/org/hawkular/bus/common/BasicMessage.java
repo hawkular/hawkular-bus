@@ -23,6 +23,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.hawkular.bus.common.msg.features.FailOnUnknownProperties;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonFactory;
@@ -64,7 +66,12 @@ public abstract class BasicMessage {
     public static <T extends BasicMessage> T fromJSON(String json, Class<T> clazz) {
         try {
             Method buildObjectMapperForDeserializationMethod = findBuildObjectMapperForDeserializationMethod(clazz);
+
             final ObjectMapper mapper = (ObjectMapper) buildObjectMapperForDeserializationMethod.invoke(null);
+            if (FailOnUnknownProperties.class.isAssignableFrom(clazz)) {
+                mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
+            }
+
             return mapper.readValue(json, clazz);
         } catch (Exception e) {
             throw new IllegalStateException("JSON message cannot be converted to object of type [" + clazz + "]", e);
@@ -94,7 +101,12 @@ public abstract class BasicMessage {
         final byte[] remainder;
         try (JsonParser parser = new JsonFactory().configure(Feature.AUTO_CLOSE_SOURCE, false).createParser(in)) {
             Method buildObjectMapperForDeserializationMethod = findBuildObjectMapperForDeserializationMethod(clazz);
+
             final ObjectMapper mapper = (ObjectMapper) buildObjectMapperForDeserializationMethod.invoke(null);
+            if (FailOnUnknownProperties.class.isAssignableFrom(clazz)) {
+                mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
+            }
+
             obj = mapper.readValue(parser, clazz);
             final ByteArrayOutputStream remainderStream = new ByteArrayOutputStream();
             final int released = parser.releaseBuffered(remainderStream);

@@ -36,7 +36,7 @@ public class BasicMessageTest {
     @Test
     public void testHeaders() {
         // we don't get headers by default
-        BasicMessage msg = new SimpleBasicMessage("my msg");
+        AbstractMessage msg = new SimpleBasicMessage("my msg");
         assertNotNull(msg.getHeaders());
         assertTrue(msg.getHeaders().isEmpty());
 
@@ -80,7 +80,7 @@ public class BasicMessageTest {
         System.out.println(json);
         assertNotNull("missing JSON", json);
 
-        SimpleBasicMessage arec2 = BasicMessage.fromJSON(json, SimpleBasicMessage.class);
+        SimpleBasicMessage arec2 = AbstractMessage.fromJSON(json, SimpleBasicMessage.class);
         assertNotNull("JSON conversion failed", arec2);
         assertNotSame(arec, arec2);
         assertEquals(arec.getMessage(), arec2.getMessage());
@@ -104,7 +104,7 @@ public class BasicMessageTest {
         SimpleBasicMessage arec2 = SimpleBasicMessage.fromJSON(json, SimpleBasicMessage.class);
         assertNotNull("JSON conversion failed", arec2);
         assertNotSame(arec, arec2);
-        assertNull("Message ID should not be encoded in JSON", arec2.getMessageId());
+        assertNull("BasicMessage ID should not be encoded in JSON", arec2.getMessageId());
         assertNull("Correlation ID should not be encoded in JSON", arec2.getCorrelationId());
         assertEquals("my msg", arec2.getMessage());
         assertEquals(2, arec2.getDetails().size());
@@ -143,7 +143,7 @@ public class BasicMessageTest {
 
         ByteArrayInputStream in = new UncloseableByteArrayInputStream(jsonPlusExtra.getBytes());
 
-        BasicMessageWithExtraData<SimpleBasicMessage> fromJson = BasicMessage.fromJSON(in, SimpleBasicMessage.class);
+        BasicMessageWithExtraData<SimpleBasicMessage> fromJson = AbstractMessage.fromJSON(in, SimpleBasicMessage.class);
         SimpleBasicMessage msg2 = fromJson.getBasicMessage();
         BinaryData leftoverFromJsonParser = fromJson.getBinaryData();
 

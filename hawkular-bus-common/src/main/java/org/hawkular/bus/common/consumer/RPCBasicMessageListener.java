@@ -22,6 +22,7 @@ import javax.jms.Destination;
 import javax.jms.Message;
 import javax.jms.Session;
 
+import org.hawkular.bus.common.AbstractMessage;
 import org.hawkular.bus.common.BasicMessage;
 import org.hawkular.bus.common.BasicMessageWithExtraData;
 import org.hawkular.bus.common.MessageProcessor;
@@ -32,7 +33,7 @@ import org.hawkular.bus.common.producer.ProducerConnectionContext;
  * A listener that processes an incoming request that will require a response sent back to the sender of the request.
  *
  * Subclasses must override one and only one of the {@link #onBasicMessage(BasicMessageWithExtraData)} or
- * {@link #onBasicMessage(BasicMessage)} methods.
+ * {@link #onBasicMessage(AbstractMessage)} methods.
  *
  * @author John Mazzitelli
  *
@@ -140,7 +141,7 @@ public abstract class RPCBasicMessageListener<T extends BasicMessage, U extends 
     /**
      * Subclasses implement this method to process the received message.
      *
-     * If subclasses would rather just receive the {@link BasicMessage}, it can do so by
+     * If subclasses would rather just receive the {@link AbstractMessage}, it can do so by
      * overriding the onBasicMessage method that just takes the message type as a parameter
      * and leaving this method as-is (that is, do NOT override this method).
      *
@@ -153,7 +154,7 @@ public abstract class RPCBasicMessageListener<T extends BasicMessage, U extends 
 
     /**
      * Subclasses can implement this method rather than {@link #onBasicMessage(BasicMessageWithExtraData)}
-     * if they only expect to receive a {@link BasicMessage} with no additional data.
+     * if they only expect to receive a {@link AbstractMessage} with no additional data.
      *
      * If this method is overridden by subclasses, then the {@link #onBasicMessage(BasicMessageWithExtraData)}
      * should not be.

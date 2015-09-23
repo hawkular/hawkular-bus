@@ -114,7 +114,7 @@ public class EmbeddedBrokerTest {
             String brokerURL = broker.getBrokerURL();
             Endpoint endpoint = new Endpoint(Type.QUEUE, "testq");
 
-            // test that sending messages of a BasicMessage subclass type can flow
+            // test that sending messages of a AbstractMessage subclass type can flow
             Map<String, String> details = new HashMap<String, String>();
             details.put("key1", "val1");
             details.put("secondkey", "secondval");
@@ -165,7 +165,7 @@ public class EmbeddedBrokerTest {
             String brokerURL = broker.getBrokerURL();
             Endpoint endpoint = new Endpoint(Type.QUEUE, "testq");
 
-            // test that sending messages of a BasicMessage subclass type can flow
+            // test that sending messages of a AbstractMessage subclass type can flow
             Map<String, String> details = new HashMap<String, String>();
             details.put("key1", "val1");
             details.put("secondkey", "secondval");

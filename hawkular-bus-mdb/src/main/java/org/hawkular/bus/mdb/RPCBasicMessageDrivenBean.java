@@ -18,14 +18,14 @@ package org.hawkular.bus.mdb;
 
 import javax.jms.ConnectionFactory;
 
-import org.hawkular.bus.common.BasicMessage;
+import org.hawkular.bus.common.AbstractMessage;
 import org.hawkular.bus.common.ConnectionContextFactory;
 import org.hawkular.bus.common.Endpoint;
 import org.hawkular.bus.common.consumer.ConsumerConnectionContext;
 import org.hawkular.bus.common.consumer.RPCBasicMessageListener;
 import org.jboss.logging.Logger;
 
-public abstract class RPCBasicMessageDrivenBean<T extends BasicMessage, U extends BasicMessage> extends
+public abstract class RPCBasicMessageDrivenBean<T extends AbstractMessage, U extends AbstractMessage> extends
         RPCBasicMessageListener<T, U> {
     private final Logger log = Logger.getLogger(RPCBasicMessageDrivenBean.class);
 

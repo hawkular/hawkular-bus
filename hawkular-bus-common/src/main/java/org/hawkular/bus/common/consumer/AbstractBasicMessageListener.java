@@ -29,10 +29,12 @@ import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
 import org.apache.activemq.command.ActiveMQBlobMessage;
+import org.hawkular.bus.common.AbstractMessage;
 import org.hawkular.bus.common.BasicMessage;
 import org.hawkular.bus.common.BasicMessageWithExtraData;
 import org.hawkular.bus.common.BinaryData;
 import org.hawkular.bus.common.MessageId;
+import org.hawkular.bus.common.MessageProcessor;
 import org.hawkular.bus.common.log.MsgLogger;
 import org.jboss.logging.Logger;
 
@@ -47,6 +49,7 @@ import org.jboss.logging.Logger;
  */
 
 public abstract class AbstractBasicMessageListener<T extends BasicMessage> implements MessageListener {
+
     private final MsgLogger msglog = MsgLogger.LOGGER;
     private final Logger log = Logger.getLogger(this.getClass());
 
@@ -58,8 +61,11 @@ public abstract class AbstractBasicMessageListener<T extends BasicMessage> imple
     // into an instance of that class.
     private final Class<T> jsonDecoderRing;
 
+    private final ClassLoader basicMessageClassLoader;
+
     public AbstractBasicMessageListener() {
         this.jsonDecoderRing = determineBasicMessageClass();
+        this.basicMessageClassLoader = null;
     }
 
     /**
@@ -72,6 +78,22 @@ public abstract class AbstractBasicMessageListener<T extends BasicMessage> imple
      */
     protected AbstractBasicMessageListener(Class<T> jsonDecoderRing) {
         this.jsonDecoderRing = jsonDecoderRing;
+        this.basicMessageClassLoader = null;
+    }
+
+    /**
+     * A special constructor to be used when the desarialization should be based on the class name supplied in
+     * {@link MessageProcessor#HEADER_BASIC_MESSAGE_CLASS} string property of {@link Message}. The given
+     * {@link basicMessageClassLoader} should be able to resolve all types of messages the present listener can
+     * encounter.
+     *
+     * @param basicMessageClassLoader the {@link ClassLoader} to resolve the class supplied in
+     *        {@link MessageProcessor#HEADER_BASIC_MESSAGE_CLASS} string property of {@link Message}
+     */
+    protected AbstractBasicMessageListener(ClassLoader basicMessageClassLoader) {
+        super();
+        this.jsonDecoderRing = null;
+        this.basicMessageClassLoader = basicMessageClassLoader;
     }
 
     /**
@@ -90,25 +112,40 @@ public abstract class AbstractBasicMessageListener<T extends BasicMessage> imple
     }
 
     /**
-     * Given the Message received over the wire, convert it to our T representation of the message and
-     * keep any extra data that came with it.
+     * Given the BasicMessage received over the wire, convert it to our T representation of the message and keep any
+     * extra data that came with it.
+     * <p>
+     * The class T is determined as follows: First, the property {@link MessageProcessor#HEADER_BASIC_MESSAGE_CLASS} is
+     * looked up in the given {@code message}'s properties if there is a class name set and if
+     * {@link #basicMessageClassLoader} is not {@code null}, the class is gotten using
+     * {@code Class.forName(className, true, basicMessageClassLoader)} (may throw an unchecked
+     * {@link ClassNotFoundException}), otherwise {@link #getBasicMessageClass()} is used to get the Java type to
+     * deserialize to.
      *
      * @param message the over-the-wire message
      *
      * @return the message as a object T, or null if we should not or cannot process the message
      */
+    @SuppressWarnings("unchecked")
     protected BasicMessageWithExtraData<T> parseMessage(final Message message) {
         BasicMessageWithExtraData<T> retVal;
-
         try {
+            Class<T> basicMessageClass = null;
+            String basicMessageClassName = message.getStringProperty(MessageProcessor.HEADER_BASIC_MESSAGE_CLASS);
+            if (basicMessageClassLoader != null && basicMessageClassName != null) {
+                basicMessageClass = (Class<T>) Class.forName(basicMessageClassName, true, basicMessageClassLoader);
+            } else {
+                basicMessageClass = getBasicMessageClass();
+            }
+
             if (message instanceof TextMessage) {
                 String receivedBody = ((TextMessage) message).getText();
-                T basicMessage = BasicMessage.fromJSON(receivedBody, getBasicMessageClass());
+                T basicMessage = AbstractMessage.fromJSON(receivedBody, basicMessageClass);
                 retVal = new BasicMessageWithExtraData<T>(basicMessage, null);
 
             } else if (message instanceof ActiveMQBlobMessage) {
                 InputStream receivedBody = ((ActiveMQBlobMessage) message).getInputStream();
-                retVal = BasicMessage.fromJSON(receivedBody, getBasicMessageClass());
+                retVal = AbstractMessage.fromJSON(receivedBody, basicMessageClass);
                 BinaryData extraData = retVal.getBinaryData();
                 if (extraData != null) {
                     extraData.setOnCloseAction(new Runnable() {
@@ -125,7 +162,9 @@ public abstract class AbstractBasicMessageListener<T extends BasicMessage> imple
                     });
                 }
             } else {
-                throw new Exception("Message is not a valid type: " + message.getClass());
+                throw new Exception("Unexpected implementation of " + Message.class.getName() + ": "
+                        + message.getClass() + " expected " + TextMessage.class.getName() + " or "
+                        + ActiveMQBlobMessage.class.getName() +". Please report this bug.");
             }
 
             // grab some headers and put them in the message
@@ -144,7 +183,8 @@ public abstract class AbstractBasicMessageListener<T extends BasicMessage> imple
                 retVal.getBasicMessage().setHeaders(rawHeaders);
             }
 
-            getLog().tracef("Received basic message: %s", retVal.getBasicMessage());
+            getLog().tracef("Received basic message: %s", retVal.getBasicMessage().getClass());
+
         } catch (JMSException e) {
             msglog.errorNotValidTextMessage(e);
             retVal = null;
@@ -152,7 +192,6 @@ public abstract class AbstractBasicMessageListener<T extends BasicMessage> imple
             msglog.errorNotValidJsonMessage(e);
             retVal = null;
         }
-
         return retVal;
     }
 
@@ -173,7 +212,7 @@ public abstract class AbstractBasicMessageListener<T extends BasicMessage> imple
      */
     @SuppressWarnings("unchecked")
     protected Class<T> determineBasicMessageClass() {
-        // all of this is usually going to just return BasicMessage.class - but in case there is a subclass hierarchy
+        // all of this is usually going to just return AbstractMessage.class - but in case there is a subclass hierarchy
         // that makes it more specific, this will help discover the message class.
         Class<?> thisClazz = this.getClass();
         Type superClazz = thisClazz.getGenericSuperclass();

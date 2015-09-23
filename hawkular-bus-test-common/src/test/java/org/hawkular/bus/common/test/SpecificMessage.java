@@ -23,7 +23,7 @@ import org.hawkular.bus.common.SimpleBasicMessage;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
- * Test subclass of BasicMessage.
+ * Test subclass of AbstractMessage.
  */
 public class SpecificMessage extends SimpleBasicMessage {
     @JsonInclude

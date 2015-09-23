@@ -93,7 +93,7 @@ public class BasicMessageObjectMapperTest {
 
     @Test
     public void testOverrideStaticDeserializingMapper() {
-        // This tests that BasicMessage is able to get the subclass' overriding ObjectMapper for deserialization
+        // This tests that AbstractMessage is able to get the subclass' overriding ObjectMapper for deserialization
         // which is obtained by invoking a static method on the subclass.
         SomeMessage.SUPPORT_GETTER_SETTER = false;
         String jsonWithAllKnownProperties = "{\"one\":\"1\",\"two\":\"2\"}";
@@ -132,7 +132,7 @@ public class BasicMessageObjectMapperTest {
 
 }
 
-class SomeMessage extends BasicMessage {
+class SomeMessage extends AbstractMessage {
     // we'll flip this in our tests
     public static boolean FAIL_ON_UNKNOWN_PROPERTIES = false;
     public static boolean SUPPORT_GETTER_SETTER = true;

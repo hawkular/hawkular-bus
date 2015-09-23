@@ -17,7 +17,7 @@
 package org.hawkular.bus.common;
 
 /**
- * Just a simple container that contains a BasicMessage and some (optional) binary data associated with the message.
+ * Just a simple container that contains a AbstractMessage and some (optional) binary data associated with the message.
  */
 public class BasicMessageWithExtraData<T extends BasicMessage> {
     private final T basicMessage;

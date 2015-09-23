@@ -38,7 +38,7 @@ public interface MsgLogger extends BasicLogger {
     void errorNotValidTextMessage(@Cause Throwable cause);
 
     @LogMessage(level = Level.ERROR)
-    @Message(id = 100001, value = "A message was received that was not a valid JSON-encoded BasicMessage object")
+    @Message(id = 100001, value = "A message was received that was not a valid JSON-encoded AbstractMessage object")
     void errorNotValidJsonMessage(@Cause Throwable cause);
 
     @LogMessage(level = Level.ERROR)

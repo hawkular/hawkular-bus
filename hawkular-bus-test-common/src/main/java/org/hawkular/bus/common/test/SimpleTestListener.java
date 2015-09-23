@@ -19,7 +19,7 @@ package org.hawkular.bus.common.test;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.hawkular.bus.common.BasicMessage;
+import org.hawkular.bus.common.AbstractMessage;
 import org.hawkular.bus.common.BasicMessageWithExtraData;
 import org.hawkular.bus.common.consumer.BasicMessageListener;
 
@@ -32,7 +32,7 @@ import org.hawkular.bus.common.consumer.BasicMessageListener;
  *
  * @param <T> the expected message type
  */
-public class SimpleTestListener<T extends BasicMessage> extends BasicMessageListener<T> {
+public class SimpleTestListener<T extends AbstractMessage> extends BasicMessageListener<T> {
     private CountDownLatch latch = new CountDownLatch(1);
     public T message;
 

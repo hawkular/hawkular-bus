@@ -67,7 +67,7 @@ public class VirtualTopicSendServlet extends HttpServlet {
 
             PrintWriter out = response.getWriter();
             out.println("<h1>Fire and Forget</h1>");
-            out.println("<p>Message Sent [" + msg + "]</p>");
+            out.println("<p>BasicMessage Sent [" + msg + "]</p>");
             out.println("<p>(messageId=" + mid + ")</p>");
         } catch (Exception e) {
             e.printStackTrace();

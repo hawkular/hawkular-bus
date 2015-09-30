@@ -36,7 +36,7 @@ import org.junit.Test;
 public class MessageSelectorTest {
     @Test
     public void testFilterWithBasicMessageHeaders() throws Exception {
-        // this is the same test as testFilter except the headers will be put directly in BasicMessage
+        // this is the same test as testFilter except the headers will be put directly in AbstractMessage
         ConnectionContextFactory consumerFactory = null;
         ConnectionContextFactory producerFactory = null;
 
@@ -84,8 +84,10 @@ public class MessageSelectorTest {
             SpecificMessage receivedMsg = listener.getReceivedMessage();
             assertEquals("Should have received the message", receivedMsg.getSpecific(), "specific text");
             assertNotNull(receivedMsg.getHeaders());
-            assertEquals(1, receivedMsg.getHeaders().size());
+            assertEquals(2, receivedMsg.getHeaders().size());
             assertEquals("boo", receivedMsg.getHeaders().get("MyTest"));
+            assertEquals(receivedMsg.getClass().getName(),
+                    receivedMsg.getHeaders().get(MessageProcessor.HEADER_BASIC_MESSAGE_CLASS));
 
         } finally {
             // close everything
@@ -142,8 +144,10 @@ public class MessageSelectorTest {
             SpecificMessage receivedMsg = listener.getReceivedMessage();
             assertEquals("Should have received the message", receivedMsg.getSpecific(), "specific text");
             assertNotNull(receivedMsg.getHeaders());
-            assertEquals(1, receivedMsg.getHeaders().size());
+            assertEquals(2, receivedMsg.getHeaders().size());
             assertEquals("boo", receivedMsg.getHeaders().get("MyTest"));
+            assertEquals(receivedMsg.getClass().getName(),
+                    receivedMsg.getHeaders().get(MessageProcessor.HEADER_BASIC_MESSAGE_CLASS));
 
         } finally {
             // close everything

@@ -27,12 +27,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * A message that contains a complex object, which gets serialized into JSON.
  *
- * Use this class to send and receive ad-hoc objects - that is, ones that do not extend from {@link BasicMessage}.
+ * Use this class to send and receive ad-hoc objects - that is, ones that do not extend from {@link AbstractMessage}.
  *
  * @author Heiko W. Rupp
  * @author John Mazzitelli
  */
-public class ObjectMessage extends BasicMessage {
+public class ObjectMessage extends AbstractMessage {
     @JsonInclude
     private String message; // the object in JSON form
 

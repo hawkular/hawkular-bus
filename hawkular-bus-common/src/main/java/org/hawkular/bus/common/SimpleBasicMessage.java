@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 /**
  * A simple message that is sent over the message bus.
  */
-public class SimpleBasicMessage extends BasicMessage {
+public class SimpleBasicMessage extends AbstractMessage {
     // the basic message body - it will be exposed to the JSON output
     @JsonInclude
     private String message;

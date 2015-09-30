@@ -83,7 +83,7 @@ public class ObjectMessageTest {
         ObjectMessage msg = new ObjectMessage(myobj);
         String jsonPayload = msg.toJSON();
 
-        ObjectMessage objectUnderTest = BasicMessage.fromJSON(jsonPayload, ObjectMessage.class);
+        ObjectMessage objectUnderTest = AbstractMessage.fromJSON(jsonPayload, ObjectMessage.class);
         objectUnderTest.setObjectClass(MyObj.class);
         Assert.assertEquals("abc", ((MyObj) objectUnderTest.getObject()).letters);
         Assert.assertEquals(123, ((MyObj) objectUnderTest.getObject()).number);

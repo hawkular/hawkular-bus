@@ -24,7 +24,7 @@ import java.io.InputStream;
  * or empty) will be read first. Once the in-memory data has been exhausted, any additional reads will read data
  * from the input stream.
  *
- * This is used in the use-case that an input stream contained a JSON command (e.g. BasicMessage) followed by
+ * This is used in the use-case that an input stream contained a JSON command (e.g. AbstractMessage) followed by
  * additional binary data. The JSON parser may have read extra data over and beyond the actual JSON message data.
  * In that case, the extra data the JSON parser read will be found in an in-memory byte array. That additional
  * in-memory data byte array combined with the input stream that may contain even more data will both be stored

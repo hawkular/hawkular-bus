@@ -50,6 +50,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 public class MessageProcessor {
 
     private final Logger log = Logger.getLogger(MessageProcessor.class);
+    public static final String HEADER_BASIC_MESSAGE_CLASS = "org.hawkular.bus.common.BasicMessage.className";
 
     /**
      * Listens for messages.
@@ -137,8 +138,8 @@ public class MessageProcessor {
     }
 
     /**
-     * Same as {@link #sendWithBinaryData(ProducerConnectionContext, BasicMessage, InputStream, Map)}
-     * with <code>null</code> headers.
+     * Same as {@link #sendWithBinaryData(ProducerConnectionContext, BasicMessage, InputStream, Map)} with
+     * <code>null</code> headers.
      */
     public MessageId sendWithBinaryData(ProducerConnectionContext context, BasicMessage basicMessage,
             InputStream inputStream) throws JMSException {
@@ -146,8 +147,9 @@ public class MessageProcessor {
     }
 
     /**
-     * Same as {@link #sendWithBinaryData(ProducerConnectionContext, BasicMessage, File, Map)}
-     * with <code>null</code> headers.
+     * Same as {@link #sendWithBinaryData(ProducerConnectionContext, BasicMessage, File, Map)} with <code>null</code>
+     * headers.
+     *
      * @throws FileNotFoundException if the file does not exist
      */
     public MessageId sendWithBinaryData(ProducerConnectionContext context, BasicMessage basicMessage, File file)
@@ -156,19 +158,39 @@ public class MessageProcessor {
     }
 
     /**
-     * Same as {@link #sendWithBinaryData(ProducerConnectionContext, BasicMessage, InputStream, Map)}
-     * with the input stream being a stream to read the file.
+     * Same as {@link #sendWithBinaryData(ProducerConnectionContext, BasicMessage, InputStream, Map)} with the input
+     * stream being a stream to read the file.
+     *
      * @throws FileNotFoundException if the file does not exist
      */
-    public MessageId sendWithBinaryData(ProducerConnectionContext context, BasicMessage basicMessage,
-            File file, Map<String, String> headers) throws JMSException, FileNotFoundException {
+    public MessageId sendWithBinaryData(ProducerConnectionContext context, BasicMessage basicMessage, File file,
+            Map<String, String> headers) throws JMSException, FileNotFoundException {
         return sendWithBinaryData(context, basicMessage, new FileInputStream(file), headers);
     }
 
     /**
-     * Send the given message along with the stream of binary data to its destinations across the message bus.
-     * Once sent, the message will get assigned a generated message ID.
-     * That message ID will also be returned by this method.
+     * If the given {@code message.getBinaryData()} is not {@code null} delegates to
+     * {@link #sendWithBinaryData(ProducerConnectionContext, BasicMessage, InputStream, Map)} otherwise delegates to
+     * {@link #send(ProducerConnectionContext, BasicMessageWithExtraData, Map)}
+     *
+     * @param context information that determines where the message is sent
+     * @param message the message to send
+     * @param headers headers for the JMS transport that will override same-named headers in the basic message
+     * @return the message ID
+     * @throws JMSException any error
+     */
+    public <T extends BasicMessage> MessageId send(ProducerConnectionContext context,
+            BasicMessageWithExtraData<T> message, Map<String, String> headers) throws JMSException {
+        if (message.getBinaryData() == null) {
+            return send(context, message.getBasicMessage(), headers);
+        } else {
+            return sendWithBinaryData(context, message.getBasicMessage(), message.getBinaryData(), headers);
+        }
+    }
+
+    /**
+     * Send the given message along with the stream of binary data to its destinations across the message bus. Once
+     * sent, the message will get assigned a generated message ID. That message ID will also be returned by this method.
      *
      * Since this is fire-and-forget - no response is expected of the remote endpoint.
      *
@@ -239,13 +261,13 @@ public class MessageProcessor {
      * expect multiple response messages.
      *
      * If the caller merely wants to wait for a single response and obtain the response message to process it further,
-     * consider using instead the method {@link #sendRPC} and use its returned
-     * Future to wait for the response, rather than having to supply your own response listener.
+     * consider using instead the method {@link #sendRPC} and use its returned Future to wait for the response, rather
+     * than having to supply your own response listener.
      *
      * @param context information that determines where the message is sent
      * @param basicMessage the request message to send with optional headers included
      * @param responseListener The listener that will process the response of the request. This listener should close
-     *            its associated consumer when appropriate.
+     *        its associated consumer when appropriate.
      * @param headers headers for the JMS transport that will override same-named headers in the basic message
      *
      * @return the RPC context which includes information about the handling of the expected response
@@ -255,7 +277,7 @@ public class MessageProcessor {
      */
     public <T extends BasicMessage> RPCConnectionContext sendAndListen(ProducerConnectionContext context,
             BasicMessage basicMessage, BasicMessageListener<T> responseListener, Map<String, String> headers)
-            throws JMSException {
+                    throws JMSException {
 
         if (context == null) {
             throw new IllegalArgumentException("context must not be null");
@@ -320,7 +342,7 @@ public class MessageProcessor {
      */
     public <R extends BasicMessage> ListenableFuture<BasicMessageWithExtraData<R>> sendRPC(
             ProducerConnectionContext context, BasicMessage basicMessage, Class<R> expectedResponseMessageClass)
-            throws JMSException {
+                    throws JMSException {
         return sendRPC(context, basicMessage, expectedResponseMessageClass, null);
     }
 
@@ -363,7 +385,7 @@ public class MessageProcessor {
      *
      * @param context the context whose session is used to create the message
      * @param basicMessage contains the data that will be JSON-encoded and encapsulated in the created message, with
-     *                     optional headers included
+     *        optional headers included
      * @param headers headers for the Message that will override same-named headers in the basic message
      * @return the message that can be produced
      * @throws JMSException any error
@@ -384,11 +406,31 @@ public class MessageProcessor {
         }
         Message msg = session.createTextMessage(basicMessage.toJSON());
 
+        setHeaders(basicMessage, headers, msg);
+
+        return msg;
+    }
+
+    /**
+     * First sets the {@link MessageProcessor#HEADER_BASIC_MESSAGE_CLASS} string property of {@code destination} to
+     * {@code basicMessage.getClass().getName()}, then copies all headers from {@code basicMessage.getHeaders()} to
+     * {@code destination} using {@link Message#setStringProperty(String, String)} and then does the same thing with the
+     * supplied {@code headers}.
+     *
+     * @param basicMessage the {@link BasicMessage} to copy headers from
+     * @param headers the headers to copy to {@code destination}
+     * @param destination the {@link Message} to copy the headers to
+     * @throws JMSException
+     */
+    protected void setHeaders(BasicMessage basicMessage, Map<String, String> headers, Message destination)
+            throws JMSException {
+        destination.setStringProperty(MessageProcessor.HEADER_BASIC_MESSAGE_CLASS, basicMessage.getClass().getName());
+
         // if the basicMessage has headers, use those first
         Map<String, String> basicMessageHeaders = basicMessage.getHeaders();
         if (basicMessageHeaders != null) {
             for (Map.Entry<String, String> entry : basicMessageHeaders.entrySet()) {
-                msg.setStringProperty(entry.getKey(), entry.getValue());
+                destination.setStringProperty(entry.getKey(), entry.getValue());
             }
         }
 
@@ -396,11 +438,9 @@ public class MessageProcessor {
         // Notice these will override same-named headers that were found in the basic message itself.
         if (headers != null) {
             for (Map.Entry<String, String> entry : headers.entrySet()) {
-                msg.setStringProperty(entry.getKey(), entry.getValue());
+                destination.setStringProperty(entry.getKey(), entry.getValue());
             }
         }
-
-        return msg;
     }
 
     /**
@@ -417,7 +457,7 @@ public class MessageProcessor {
      *
      * @param context the context whose session is used to create the message
      * @param basicMessage contains the data that will be JSON-encoded and encapsulated in the created message, with
-     *                     optional headers included
+     *        optional headers included
      * @param inputStream binary data that will be sent with the message
      * @param headers headers for the Message that will override same-named headers in the basic message
      * @return the message that can be produced
@@ -449,21 +489,7 @@ public class MessageProcessor {
         // Need to play games to get the real ActiveMQ session so we can create BlobMessage.
         Message msg = getActiveMQSession(session).createBlobMessage(messagePlusBinaryData);
 
-        // if the basicMessage has headers, use those first
-        Map<String, String> basicMessageHeaders = basicMessage.getHeaders();
-        if (basicMessageHeaders != null) {
-            for (Map.Entry<String, String> entry : basicMessageHeaders.entrySet()) {
-                msg.setStringProperty(entry.getKey(), entry.getValue());
-            }
-        }
-
-        // If we were given headers separately, add those now.
-        // Notice these will override same-named headers that were found in the basic message itself.
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                msg.setStringProperty(entry.getKey(), entry.getValue());
-            }
-        }
+        setHeaders(basicMessage, headers, msg);
 
         return msg;
     }

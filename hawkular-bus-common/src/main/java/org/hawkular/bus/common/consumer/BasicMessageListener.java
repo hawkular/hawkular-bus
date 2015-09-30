@@ -44,6 +44,10 @@ public abstract class BasicMessageListener<T extends BasicMessage> extends Abstr
         super(jsonDecoderRing);
     }
 
+    protected BasicMessageListener(ClassLoader basicMessageClassLoader) {
+        super(basicMessageClassLoader);
+    }
+
     @Override
     public void onMessage(Message message) {
         BasicMessageWithExtraData<T> msgWithExtraData = parseMessage(message);

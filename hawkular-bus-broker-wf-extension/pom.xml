@@ -193,6 +193,16 @@
         </executions>
       </plugin>
 
+      <plugin>
+        <groupId>com.mycila</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <configuration>
+          <excludes combine.children="append">
+            <exclude>src/main/resources/module/main/config/spring-beans*.xsd</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+
       <!-- USAGE: mvn -Dorg.hawkular.wildfly.home=/opt/wildfly8 wildfly-extension:deploy -->
       <plugin>
         <groupId>org.wildfly.plugins</groupId>

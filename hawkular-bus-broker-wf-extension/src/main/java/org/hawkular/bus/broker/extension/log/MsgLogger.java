@@ -88,10 +88,6 @@ public interface MsgLogger {
     @Message(id = 110013, value = "Failed to shutdown broker")
     void errorFailedToShutdownBroker(@Cause Throwable t);
 
-    @LogMessage(level = Level.ERROR)
-    @Message(id = 110014, value = "The REST WAR could not be deployed; REST interface to the broker is unavailable: %s")
-    void errorRestWarCouldNotBeDeployed(String causeString);
-
     @LogMessage(level = Level.INFO)
     @Message(id = 110015, value = "Broker is not enabled and will not be deployed")
     void infoBrokerNotEnabled();

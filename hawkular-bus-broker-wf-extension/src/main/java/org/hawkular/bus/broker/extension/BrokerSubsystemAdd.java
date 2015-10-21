@@ -16,17 +16,6 @@
  */
 package org.hawkular.bus.broker.extension;
 
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.ADD;
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.ARCHIVE;
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.CONTENT;
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.DEPLOYMENT;
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.ENABLED;
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.PATH;
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.PERSISTENT;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,12 +25,7 @@ import org.jboss.as.controller.AbstractAddStepHandler;
 import org.jboss.as.controller.AttributeDefinition;
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationFailedException;
-import org.jboss.as.controller.OperationStepHandler;
-import org.jboss.as.controller.PathAddress;
-import org.jboss.as.controller.PathElement;
 import org.jboss.as.controller.ServiceVerificationHandler;
-import org.jboss.as.controller.operations.common.Util;
-import org.jboss.as.controller.registry.ImmutableManagementResourceRegistration;
 import org.jboss.as.controller.registry.Resource;
 import org.jboss.as.network.SocketBinding;
 import org.jboss.as.server.ServerEnvironment;
@@ -49,7 +33,6 @@ import org.jboss.as.server.ServerEnvironmentService;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.Property;
 import org.jboss.logging.Logger;
-import org.jboss.modules.Module;
 import org.jboss.msc.service.ServiceController;
 import org.jboss.msc.service.ServiceController.Mode;
 import org.jboss.msc.service.ServiceName;
@@ -70,45 +53,6 @@ class BrokerSubsystemAdd extends AbstractAddStepHandler {
     @Override
     protected void populateModel(OperationContext context, ModelNode operation, Resource resource)
             throws OperationFailedException {
-
-        // ask that the REST war be deployed
-        try {
-            if (requiresRuntime(context)) { // only add the step if we are going to actually deploy the war
-                PathAddress deploymentAddress = PathAddress.pathAddress(PathElement.pathElement(DEPLOYMENT,
-                        BrokerSubsystemExtension.DEPLOYMENT_REST_WAR));
-                ModelNode op = Util.getEmptyOperation(ADD, deploymentAddress.toModelNode());
-                op.get(ENABLED).set(true);
-                op.get(PERSISTENT).set(false); // prevents writing this deployment out to standalone.xml
-
-                Module module = Module.forClass(BrokerService.class);
-                URL url = module.getExportedResource(BrokerSubsystemExtension.DEPLOYMENT_REST_WAR);
-                if (url == null) {
-                    throw new FileNotFoundException("Could not find the REST WAR");
-                }
-                ModelNode contentItem = new ModelNode();
-
-                String urlString = new File(url.toURI()).getAbsolutePath();
-                if (!(new File(urlString).exists())) {
-                    throw new FileNotFoundException("Missing the WAR at [" + urlString + "]");
-                }
-                contentItem.get(PATH).set(urlString);
-                contentItem.get(ARCHIVE).set(false);
-
-                op.get(CONTENT).add(contentItem);
-
-                ImmutableManagementResourceRegistration rootResourceRegistration;
-                rootResourceRegistration = context.getRootResourceRegistration();
-                OperationStepHandler handler = rootResourceRegistration.getOperationHandler(deploymentAddress, ADD);
-
-                context.addStep(op, handler, OperationContext.Stage.MODEL);
-            }
-        } catch (Exception e) {
-            // log an error but keep going; this just means we lose our REST interface but the broker should still work
-            msglog.errorRestWarCouldNotBeDeployed(e.toString());
-            log.debug("The REST WAR deployment exception stack is logged with this message", e);
-        }
-
-        // finish the broker subsystem model
         populateModel(operation, resource.getModel());
     }
 

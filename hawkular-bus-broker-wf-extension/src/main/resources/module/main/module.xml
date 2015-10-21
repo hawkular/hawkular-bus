@@ -39,7 +39,6 @@
     <resource-root path="xpp3_min-1.1.4c.jar" />
     <resource-root path="xstream-1.4.7.jar" />
     <resource-root path="config" />
-    <resource-root path="deployments" />
   </resources>
 
   <dependencies>

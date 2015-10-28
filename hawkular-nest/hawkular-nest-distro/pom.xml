@@ -62,6 +62,13 @@
     </dependency>
 
     <dependency>
+      <groupId>org.hawkular.bus</groupId>
+      <artifactId>cassandra-driver-wf-module</artifactId>
+      <classifier>module</classifier>
+      <type>zip</type>
+    </dependency>
+
+    <dependency>
       <groupId>org.wildfly</groupId>
       <artifactId>wildfly-dist</artifactId>
       <type>zip</type>
@@ -149,6 +156,18 @@
               <includeArtifactIds>
                 hawkular-bus-ra-wf-module
               </includeArtifactIds>
+              <excludeTransitive>true</excludeTransitive>
+            </configuration>
+          </execution>
+          <execution>
+            <id>unpack-cassandra-driver</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${assembly.dir}/${wildfly.dist.zip.root.dir}/modules/</outputDirectory>
+              <includeArtifactIds>cassandra-driver-wf-module</includeArtifactIds>
               <excludeTransitive>true</excludeTransitive>
             </configuration>
           </execution>

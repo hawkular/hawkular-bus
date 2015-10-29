@@ -74,6 +74,14 @@
         <type>zip</type>
       </dependency>
 
+      <dependency>
+        <groupId>org.hawkular.bus</groupId>
+        <artifactId>cassandra-driver-wf-module</artifactId>
+        <version>${project.version}</version>
+        <classifier>module</classifier>
+        <type>zip</type>
+      </dependency>
+
 <!--
      THESE DEPS ARE HERE JUST IN CASE WE MOVE HAWKULAR NEST TO ITS
      OWN REPO UNDER ITS OWN ROOT PARENT MVN MODULE. THESE WOULD BE NEEDED.

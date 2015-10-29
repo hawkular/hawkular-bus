@@ -49,6 +49,7 @@
     <module>hawkular-bus-broker-wf-extension</module>
     <module>hawkular-bus-ra-wf-module</module>
     <module>hawkular-bus-samples</module>
+    <module>cassandra-driver-wf-module</module>
     <module>hawkular-nest</module>
   </modules>
 

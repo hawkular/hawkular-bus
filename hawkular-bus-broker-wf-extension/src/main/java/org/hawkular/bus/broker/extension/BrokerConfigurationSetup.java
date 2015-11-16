@@ -21,10 +21,10 @@ import java.util.Map;
 
 import org.hawkular.bus.broker.extension.log.MsgLogger;
 import org.jboss.as.server.ServerEnvironment;
+import org.jboss.common.beans.property.PropertiesValueResolver;
 import org.jboss.logging.Logger;
 import org.jboss.modules.Module;
 import org.jboss.modules.Resource;
-import org.jboss.util.StringPropertyReplacer;
 
 public class BrokerConfigurationSetup {
     private final MsgLogger msglog = MsgLogger.LOGGER;
@@ -86,7 +86,7 @@ public class BrokerConfigurationSetup {
         for (Map.Entry<String, String> entry : customConfigProps.entrySet()) {
             String value = entry.getValue();
             if (value != null) {
-                entry.setValue(StringPropertyReplacer.replaceProperties(value));
+                entry.setValue(PropertiesValueResolver.replaceProperties(value));
             }
         }
         return;

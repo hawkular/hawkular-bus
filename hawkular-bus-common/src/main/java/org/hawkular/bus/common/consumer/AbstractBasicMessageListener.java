@@ -131,9 +131,15 @@ public abstract class AbstractBasicMessageListener<T extends BasicMessage> imple
         BasicMessageWithExtraData<T> retVal;
         try {
             Class<T> basicMessageClass = null;
+
+            // If a basic message class name was provided to us in the header, we will try our best to use that by:
+            //   1. First, if we were already given a basic message class loader, we'll use it.
+            //   2. If we don't have a basic message class loader, use this listener's own classloader
             String basicMessageClassName = message.getStringProperty(MessageProcessor.HEADER_BASIC_MESSAGE_CLASS);
-            if (basicMessageClassLoader != null && basicMessageClassName != null) {
-                basicMessageClass = (Class<T>) Class.forName(basicMessageClassName, true, basicMessageClassLoader);
+            if (basicMessageClassName != null) {
+                ClassLoader cl = (basicMessageClassLoader != null) ? basicMessageClassLoader
+                        : this.getClass().getClassLoader();
+                basicMessageClass = (Class<T>) Class.forName(basicMessageClassName, true, cl);
             } else {
                 basicMessageClass = getBasicMessageClass();
             }

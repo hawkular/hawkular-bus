@@ -132,11 +132,14 @@ public abstract class AbstractBasicMessageListener<T extends BasicMessage> imple
         try {
             Class<T> basicMessageClass = null;
 
-            // If a basic message class name was provided to us in the header, we will try our best to use that by:
-            //   1. First, if we were already given a basic message class loader, we'll use it.
-            //   2. If we don't have a basic message class loader, use this listener's own classloader
+            // If a basic message class name was provided to us in the header, we will try our best to use that
+            // unless a subclass wants to substitute another class for it.
             String basicMessageClassName = message.getStringProperty(MessageProcessor.HEADER_BASIC_MESSAGE_CLASS);
             if (basicMessageClassName != null) {
+                String desired = convertReceivedMessageClassNameToDesiredMessageClassName(basicMessageClassName);
+                if (desired != null) {
+                    basicMessageClassName = desired;
+                }
                 ClassLoader cl = (basicMessageClassLoader != null) ? basicMessageClassLoader
                         : this.getClass().getClassLoader();
                 basicMessageClass = (Class<T>) Class.forName(basicMessageClassName, true, cl);
@@ -238,6 +241,23 @@ public abstract class AbstractBasicMessageListener<T extends BasicMessage> imple
             clazz = (Class<T>) typeVar.getBounds()[0];
         }
         return clazz;
+    }
+
+    /**
+     * This allows subclasses to name a different JSON POJO implementation to use when deserializing
+     * incoming JSON. When JSON messages are received with a classname specified as the one to deserialize
+     * the JSON, this method lets you switch the classname so it will be used to deserialize the JSON.
+     *
+     * This is helpful if the JSON classname is not available on the classloader, but the listener instead
+     * has another class that can be used to deserialize the JSON.
+     *
+     * This implementation always returns null. Subclasses are free to override.
+     *
+     * @param className the received JSON can be handled by this class
+     * @return if not null, this will be the name of another class that is to be used to deserialize a JSON message
+     */
+    protected String convertReceivedMessageClassNameToDesiredMessageClassName(String className) {
+        return null;
     }
 
     /**

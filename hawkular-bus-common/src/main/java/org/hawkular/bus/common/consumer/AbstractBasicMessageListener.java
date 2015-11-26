@@ -16,7 +16,6 @@
  */
 package org.hawkular.bus.common.consumer;
 
-import java.io.InputStream;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -28,11 +27,9 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
-import org.apache.activemq.command.ActiveMQBlobMessage;
 import org.hawkular.bus.common.AbstractMessage;
 import org.hawkular.bus.common.BasicMessage;
 import org.hawkular.bus.common.BasicMessageWithExtraData;
-import org.hawkular.bus.common.BinaryData;
 import org.hawkular.bus.common.MessageId;
 import org.hawkular.bus.common.MessageProcessor;
 import org.hawkular.bus.common.log.MsgLogger;
@@ -152,35 +149,35 @@ public abstract class AbstractBasicMessageListener<T extends BasicMessage> imple
                 T basicMessage = AbstractMessage.fromJSON(receivedBody, basicMessageClass);
                 retVal = new BasicMessageWithExtraData<T>(basicMessage, null);
 
-            } else if (message instanceof ActiveMQBlobMessage) {
-                InputStream receivedBody = ((ActiveMQBlobMessage) message).getInputStream();
-                retVal = AbstractMessage.fromJSON(receivedBody, basicMessageClass);
-                BinaryData extraData = retVal.getBinaryData();
-                if (extraData != null) {
-                    extraData.setOnCloseAction(new Runnable() {
-                        @Override
-                        public void run() {
-                            ActiveMQBlobMessage blob = (ActiveMQBlobMessage) message;
-                            try {
-                                getLog().tracef("Deleting blob msg file [%s]", blob.getRemoteBlobUrl());
-                                blob.deleteFile();
-                            } catch (Exception e) {
-                                getLog().warnf(e, "Failed to delete blob msg file: [%s]", blob.getRemoteBlobUrl());
-                            }
-                        }
-                    });
-                }
+//            } else if (message instanceof ActiveMQBlobMessage) {
+//                InputStream receivedBody = ((ActiveMQBlobMessage) message).getInputStream();
+//                retVal = AbstractMessage.fromJSON(receivedBody, basicMessageClass);
+//                BinaryData extraData = retVal.getBinaryData();
+//                if (extraData != null) {
+//                    extraData.setOnCloseAction(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            ActiveMQBlobMessage blob = (ActiveMQBlobMessage) message;
+//                            try {
+//                                getLog().tracef("Deleting blob msg file [%s]", blob.getRemoteBlobUrl());
+//                                blob.deleteFile();
+//                            } catch (Exception e) {
+//                                getLog().warnf(e, "Failed to delete blob msg file: [%s]", blob.getRemoteBlobUrl());
+//                            }
+//                        }
+//                    });
+//                }
             } else {
-                throw new Exception("Unexpected implementation of " + Message.class.getName() + ": "
-                        + message.getClass() + " expected " + TextMessage.class.getName() + " or "
-                        + ActiveMQBlobMessage.class.getName() +". Please report this bug.");
+//                throw new Exception("Unexpected implementation of " + Message.class.getName() + ": "
+//                        + message.getClass() + " expected " + TextMessage.class.getName() + " or "
+//                        + ActiveMQBlobMessage.class.getName() +". Please report this bug.");
             }
 
             // grab some headers and put them in the message
-            retVal.getBasicMessage().setMessageId(new MessageId(message.getJMSMessageID()));
+//            retVal.getBasicMessage().setMessageId(new MessageId(message.getJMSMessageID()));
             if (message.getJMSCorrelationID() != null) {
                 MessageId correlationId = new MessageId(message.getJMSCorrelationID());
-                retVal.getBasicMessage().setCorrelationId(correlationId);
+//                retVal.getBasicMessage().setCorrelationId(correlationId);
             }
 
             HashMap<String, String> rawHeaders = new HashMap<String, String>();
@@ -189,10 +186,10 @@ public abstract class AbstractBasicMessageListener<T extends BasicMessage> imple
                 rawHeaders.put(propName, message.getStringProperty(propName));
             }
             if (!rawHeaders.isEmpty()) {
-                retVal.getBasicMessage().setHeaders(rawHeaders);
+//                retVal.getBasicMessage().setHeaders(rawHeaders);
             }
 
-            getLog().tracef("Received basic message: %s", retVal.getBasicMessage().getClass());
+//            getLog().tracef("Received basic message: %s", retVal.getBasicMessage().getClass());
 
         } catch (JMSException e) {
             msglog.errorNotValidTextMessage(e);
@@ -201,7 +198,8 @@ public abstract class AbstractBasicMessageListener<T extends BasicMessage> imple
             msglog.errorNotValidJsonMessage(e);
             retVal = null;
         }
-        return retVal;
+//        return retVal;
+        return null;
     }
 
     protected Class<T> getBasicMessageClass() {

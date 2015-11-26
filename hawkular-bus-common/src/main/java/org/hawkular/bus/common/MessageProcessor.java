@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.util.Map;
 
 import javax.jms.JMSException;
@@ -30,16 +29,12 @@ import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.TemporaryQueue;
 
-import org.apache.activemq.ActiveMQSession;
 import org.hawkular.bus.common.consumer.AbstractBasicMessageListener;
 import org.hawkular.bus.common.consumer.BasicMessageListener;
 import org.hawkular.bus.common.consumer.ConsumerConnectionContext;
-import org.hawkular.bus.common.consumer.FutureBasicMessageListener;
 import org.hawkular.bus.common.consumer.RPCConnectionContext;
 import org.hawkular.bus.common.producer.ProducerConnectionContext;
 import org.jboss.logging.Logger;
-
-import com.google.common.util.concurrent.ListenableFuture;
 
 /**
  * Provides some functionality to process messages, both as a producer or consumer.
@@ -340,11 +335,11 @@ public class MessageProcessor {
     /**
      * Same as {@link #sendRPC(ProducerConnectionContext, BasicMessage, Class, Map)} with <code>null</code> headers.
      */
-    public <R extends BasicMessage> ListenableFuture<BasicMessageWithExtraData<R>> sendRPC(
-            ProducerConnectionContext context, BasicMessage basicMessage, Class<R> expectedResponseMessageClass)
-                    throws JMSException {
-        return sendRPC(context, basicMessage, expectedResponseMessageClass, null);
-    }
+//    public <R extends BasicMessage> ListenableFuture<BasicMessageWithExtraData<R>> sendRPC(
+//            ProducerConnectionContext context, BasicMessage basicMessage, Class<R> expectedResponseMessageClass)
+//                    throws JMSException {
+//        return sendRPC(context, basicMessage, expectedResponseMessageClass, null);
+//    }
 
     /**
      * Send the given message to its destinations across the message bus and returns a Future to allow the caller to
@@ -364,14 +359,14 @@ public class MessageProcessor {
      *
      * @see org.hawkular.bus.common.ConnectionContextFactory#createProducerConnectionContext(Endpoint)
      */
-    public <R extends BasicMessage> ListenableFuture<BasicMessageWithExtraData<R>> sendRPC(
-            ProducerConnectionContext context, BasicMessage basicMessage, Class<R> expectedResponseMessageClass,
-            Map<String, String> headers) throws JMSException {
-
-        FutureBasicMessageListener<R> futureListener = new FutureBasicMessageListener<R>(expectedResponseMessageClass);
-        sendAndListen(context, basicMessage, futureListener, headers);
-        return futureListener;
-    }
+//    public <R extends BasicMessage> ListenableFuture<BasicMessageWithExtraData<R>> sendRPC(
+//            ProducerConnectionContext context, BasicMessage basicMessage, Class<R> expectedResponseMessageClass,
+//            Map<String, String> headers) throws JMSException {
+//
+//        FutureBasicMessageListener<R> futureListener = new FutureBasicMessageListener<R>(expectedResponseMessageClass);
+//        sendAndListen(context, basicMessage, futureListener, headers);
+//        return futureListener;
+//    }
 
     /**
      * Same as {@link #createMessage(ConnectionContext, BasicMessage, Map)} with <code>null</code> headers.
@@ -487,26 +482,27 @@ public class MessageProcessor {
         // we are using a ActiveMQ-specific feature that allows us to stream blobs
         // for some unknown reason, ActiveMQ doesn't allow RA-obtained sessions to create BlobMessages.
         // Need to play games to get the real ActiveMQ session so we can create BlobMessage.
-        Message msg = getActiveMQSession(session).createBlobMessage(messagePlusBinaryData);
-
-        setHeaders(basicMessage, headers, msg);
-
-        return msg;
+//        Message msg = getActiveMQSession(session).createBlobMessage(messagePlusBinaryData);
+//
+//        setHeaders(basicMessage, headers, msg);
+//
+//        return msg;
+        return null;
     }
 
-    protected ActiveMQSession getActiveMQSession(Session session) {
-        if (session instanceof ActiveMQSession) {
-            return (ActiveMQSession) session;
-        }
-
-        // This is probably a session obtained from the resource adapter, which is really a proxy.
-        // It has a non-public method called "getSession" that gets the session we want, so use reflection to get it.
-        try {
-            Method m = session.getClass().getDeclaredMethod("getSession");
-            m.setAccessible(true);
-            return (ActiveMQSession) m.invoke(session);
-        } catch (Exception e) {
-            throw new IllegalStateException("Not running with ActiveMQ", e);
-        }
-    }
+//    protected ActiveMQSession getActiveMQSession(Session session) {
+//        if (session instanceof ActiveMQSession) {
+//            return (ActiveMQSession) session;
+//        }
+//
+//        // This is probably a session obtained from the resource adapter, which is really a proxy.
+//        // It has a non-public method called "getSession" that gets the session we want, so use reflection to get it.
+//        try {
+//            Method m = session.getClass().getDeclaredMethod("getSession");
+//            m.setAccessible(true);
+//            return (ActiveMQSession) m.invoke(session);
+//        } catch (Exception e) {
+//            throw new IllegalStateException("Not running with ActiveMQ", e);
+//        }
+//    }
 }

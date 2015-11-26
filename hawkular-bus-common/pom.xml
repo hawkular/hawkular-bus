@@ -31,15 +31,29 @@
   <name>Hawkular Bus: Bus Framework Common Library</name>
   <description>Hawkular Bus Framework Common Library for use with both consumer and producer code.</description>
 
+  <properties>
+    <moduleDir>org/hawkular/bus</moduleDir>
+    <moduleName>org.hawkular.bus</moduleName>
+  </properties>
+
   <dependencies>
     <dependency>
-      <groupId>org.apache.activemq</groupId>
-      <artifactId>activemq-all</artifactId>
+      <groupId>javax.enterprise</groupId>
+      <artifactId>cdi-api</artifactId>
+      <!--<version>1.2</version>-->
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
-      <groupId>org.apache.activemq</groupId>
-      <artifactId>activemq-jaas</artifactId>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.spec.javax.jms</groupId>
+      <artifactId>jboss-jms-api_2.0_spec</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -72,22 +86,65 @@
       <scope>provided</scope>
     </dependency>
 
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jboss.resteasy</groupId>
-      <artifactId>resteasy-jackson2-provider</artifactId>
-      <scope>provided</scope>
-    </dependency>
+    <!--<dependency>-->
+      <!--<groupId>org.jboss.resteasy</groupId>-->
+      <!--<artifactId>resteasy-jackson2-provider</artifactId>-->
+      <!--<scope>provided</scope>-->
+    <!--</dependency>-->
 
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>org.jboss.arquillian.junit</groupId>
+      <artifactId>arquillian-junit-container</artifactId>
+      <version>1.1.10.Final</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.arquillian.container</groupId>
+      <artifactId>arquillian-container-chameleon</artifactId>
+      <version>1.0.0.Alpha6</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+        <excludes>
+          <!-- these don't need to be in the jar, just in our module .zip -->
+          <exclude>module/**</exclude>
+        </excludes>
+      </resource>
+    </resources>
+
+    <plugins>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <finalName>hawkular-bus-common-${project.version}</finalName>
+          <appendAssemblyId>false</appendAssemblyId>
+          <descriptors>
+            <descriptor>src/main/scripts/module-assembly.xml</descriptor>
+          </descriptors>
+        </configuration>
+        <executions>
+          <execution>
+            <id>module-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>

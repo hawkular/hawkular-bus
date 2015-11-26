@@ -16,6 +16,7 @@
  */
 package org.hawkular.bus.common;
 
+import javax.annotation.Resource;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
@@ -24,7 +25,6 @@ import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 
-import org.apache.activemq.ActiveMQConnectionFactory;
 import org.hawkular.bus.common.consumer.ConsumerConnectionContext;
 import org.hawkular.bus.common.log.MsgLogger;
 import org.hawkular.bus.common.producer.ProducerConnectionContext;
@@ -48,8 +48,11 @@ public class ConnectionContextFactory implements AutoCloseable {
 
     private final MsgLogger msglog = MsgLogger.LOGGER;
     private final Logger log = Logger.getLogger(ConnectionContextFactory.class);
-    private final boolean reuseConnection;
-    protected final ConnectionFactory connectionFactory;
+    private boolean reuseConnection;
+
+    @Resource(name = "java:/ConnectionFactory")
+    protected ConnectionFactory connectionFactory;
+
     private Connection connection;
 
     /**
@@ -76,9 +79,9 @@ public class ConnectionContextFactory implements AutoCloseable {
      * @throws JMSException any error
      */
     public ConnectionContextFactory(boolean reuseConnection, String brokerURL) throws JMSException {
-        this.reuseConnection = reuseConnection;
-        this.connectionFactory = new ActiveMQConnectionFactory(brokerURL);
-        log.debugf("%s has been created: %s", this.getClass().getSimpleName(), brokerURL);
+//        this.reuseConnection = reuseConnection;
+//        this.connectionFactory = new ActiveMQConnectionFactory(brokerURL);
+//        log.debugf("%s has been created: %s", this.getClass().getSimpleName(), brokerURL);
     }
 
     /**
@@ -110,10 +113,10 @@ public class ConnectionContextFactory implements AutoCloseable {
      */
     public ConnectionContextFactory(boolean reuseConnection, String brokerURL, String username, String password)
             throws JMSException {
-        this.reuseConnection = reuseConnection;
-        this.connectionFactory = new ActiveMQConnectionFactory(username, password, brokerURL);
-        log.debugf("%s has been created: [%s] with username [%s]", this.getClass().getSimpleName(), brokerURL,
-                username);
+//        this.reuseConnection = reuseConnection;
+//        this.connectionFactory = new ActiveMQConnectionFactory(username, password, brokerURL);
+//        log.debugf("%s has been created: [%s] with username [%s]", this.getClass().getSimpleName(), brokerURL,
+//                username);
     }
 
     /**

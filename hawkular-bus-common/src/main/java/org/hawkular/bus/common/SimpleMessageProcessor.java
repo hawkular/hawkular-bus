@@ -27,8 +27,6 @@ import org.hawkular.bus.common.consumer.ConsumerConnectionContext;
 import org.hawkular.bus.common.consumer.RPCConnectionContext;
 import org.hawkular.bus.common.producer.ProducerConnectionContext;
 
-import com.google.common.util.concurrent.ListenableFuture;
-
 /**
  * A version of the MessageProcessor that keeps the passed interfaces internally.
  *
@@ -67,16 +65,16 @@ public class SimpleMessageProcessor extends MessageProcessor {
         return super.sendAndListen(producerCtx, basicMessage, responseListener, headers);
     }
 
-    public <R extends BasicMessage> ListenableFuture<BasicMessageWithExtraData<R>> sendRPC(BasicMessage basicMessage,
-            Class<R> expectedResponseMessageClass) throws JMSException {
-        return super.sendRPC(producerCtx, basicMessage, expectedResponseMessageClass);
-    }
-
-    public <R extends BasicMessage> ListenableFuture<BasicMessageWithExtraData<R>> sendRPC(BasicMessage basicMessage,
-            Class<R> expectedResponseMessageClass, Map<String, String> headers)
-            throws JMSException {
-        return super.sendRPC(producerCtx, basicMessage, expectedResponseMessageClass, headers);
-    }
+//    public <R extends BasicMessage> ListenableFuture<BasicMessageWithExtraData<R>> sendRPC(BasicMessage basicMessage,
+//            Class<R> expectedResponseMessageClass) throws JMSException {
+//        return super.sendRPC(producerCtx, basicMessage, expectedResponseMessageClass);
+//    }
+//
+//    public <R extends BasicMessage> ListenableFuture<BasicMessageWithExtraData<R>> sendRPC(BasicMessage basicMessage,
+//            Class<R> expectedResponseMessageClass, Map<String, String> headers)
+//            throws JMSException {
+//        return super.sendRPC(producerCtx, basicMessage, expectedResponseMessageClass, headers);
+//    }
 
     protected Message createMessage(ConnectionContext context, BasicMessage basicMessage) throws JMSException {
         return super.createMessage(context, basicMessage);

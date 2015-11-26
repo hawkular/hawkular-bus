@@ -46,6 +46,7 @@
     <module>hawkular-bus-rest-client</module>
     <!-- <module>hawkular-bus-test-common</module> -->
     <!-- <module>hawkular-bus-samples</module> -->
+    <module>hawkular-bus-feature-pack</module>
   </modules>
 
   <dependencyManagement>

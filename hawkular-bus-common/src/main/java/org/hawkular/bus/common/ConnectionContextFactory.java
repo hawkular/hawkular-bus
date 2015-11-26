@@ -16,6 +16,7 @@
  */
 package org.hawkular.bus.common;
 
+import javax.annotation.Resource;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
@@ -48,8 +49,11 @@ public class ConnectionContextFactory implements AutoCloseable {
 
     private final MsgLogger msglog = MsgLogger.LOGGER;
     private final Logger log = Logger.getLogger(ConnectionContextFactory.class);
-    private final boolean reuseConnection;
-    protected final ConnectionFactory connectionFactory;
+    private boolean reuseConnection;
+
+    @Resource(name = "java:/ConnectionFactory")
+    protected ConnectionFactory connectionFactory;
+
     private Connection connection;
 
     /**

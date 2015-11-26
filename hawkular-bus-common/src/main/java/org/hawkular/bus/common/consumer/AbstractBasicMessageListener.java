@@ -22,6 +22,7 @@ import java.lang.reflect.TypeVariable;
 import java.util.Enumeration;
 import java.util.HashMap;
 
+import javax.jms.BytesMessage;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -149,28 +150,15 @@ public abstract class AbstractBasicMessageListener<T extends BasicMessage> imple
                 T basicMessage = AbstractMessage.fromJSON(receivedBody, basicMessageClass);
                 retVal = new BasicMessageWithExtraData<T>(basicMessage, null);
 
-//            } else if (message instanceof ActiveMQBlobMessage) {
-//                InputStream receivedBody = ((ActiveMQBlobMessage) message).getInputStream();
-//                retVal = AbstractMessage.fromJSON(receivedBody, basicMessageClass);
-//                BinaryData extraData = retVal.getBinaryData();
-//                if (extraData != null) {
-//                    extraData.setOnCloseAction(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            ActiveMQBlobMessage blob = (ActiveMQBlobMessage) message;
-//                            try {
-//                                getLog().tracef("Deleting blob msg file [%s]", blob.getRemoteBlobUrl());
-//                                blob.deleteFile();
-//                            } catch (Exception e) {
-//                                getLog().warnf(e, "Failed to delete blob msg file: [%s]", blob.getRemoteBlobUrl());
-//                            }
-//                        }
-//                    });
-//                }
+            } else if (message instanceof BytesMessage) {
+
+                BytesMessage bytesMessage = (BytesMessage) message;
+                InputStream receivedBody = new BytesMessageInputStream(bytesMessage);
+                retVal = AbstractMessage.fromJSON(receivedBody, basicMessageClass);
             } else {
-//                throw new Exception("Unexpected implementation of " + Message.class.getName() + ": "
-//                        + message.getClass() + " expected " + TextMessage.class.getName() + " or "
-//                        + ActiveMQBlobMessage.class.getName() +". Please report this bug.");
+                throw new Exception("Unexpected implementation of " + Message.class.getName() + ": "
+                        + message.getClass() + " expected " + TextMessage.class.getName() + " or "
+                        + ActiveMQBlobMessage.class.getName() +". Please report this bug.");
             }
 
             // grab some headers and put them in the message

@@ -25,6 +25,7 @@ import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 
+import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 import org.hawkular.bus.common.consumer.ConsumerConnectionContext;
 import org.hawkular.bus.common.log.MsgLogger;
 import org.hawkular.bus.common.producer.ProducerConnectionContext;

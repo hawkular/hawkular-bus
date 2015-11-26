@@ -22,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Map;
 
+import javax.jms.BytesMessage;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
@@ -482,27 +483,27 @@ public class MessageProcessor {
         // we are using a ActiveMQ-specific feature that allows us to stream blobs
         // for some unknown reason, ActiveMQ doesn't allow RA-obtained sessions to create BlobMessages.
         // Need to play games to get the real ActiveMQ session so we can create BlobMessage.
-//        Message msg = getActiveMQSession(session).createBlobMessage(messagePlusBinaryData);
-//
-//        setHeaders(basicMessage, headers, msg);
-//
-//        return msg;
-        return null;
+        BytesMessage msg = session.createBytesMessage();
+        msg.setObjectProperty("JMS_AMQ_InputStream", messagePlusBinaryData);
+
+        setHeaders(basicMessage, headers, msg);
+
+        return msg;
     }
 
-//    protected ActiveMQSession getActiveMQSession(Session session) {
-//        if (session instanceof ActiveMQSession) {
-//            return (ActiveMQSession) session;
-//        }
-//
-//        // This is probably a session obtained from the resource adapter, which is really a proxy.
-//        // It has a non-public method called "getSession" that gets the session we want, so use reflection to get it.
-//        try {
-//            Method m = session.getClass().getDeclaredMethod("getSession");
-//            m.setAccessible(true);
-//            return (ActiveMQSession) m.invoke(session);
-//        } catch (Exception e) {
-//            throw new IllegalStateException("Not running with ActiveMQ", e);
-//        }
-//    }
+    protected ActiveMQSession getActiveMQSession(Session session) {
+        if (session instanceof ActiveMQSession) {
+            return (ActiveMQSession) session;
+        }
+
+        // This is probably a session obtained from the resource adapter, which is really a proxy.
+        // It has a non-public method called "getSession" that gets the session we want, so use reflection to get it.
+        try {
+            Method m = session.getClass().getDeclaredMethod("getSession");
+            m.setAccessible(true);
+            return (ActiveMQSession) m.invoke(session);
+        } catch (Exception e) {
+            throw new IllegalStateException("Not running with ActiveMQ", e);
+        }
+    }
 }

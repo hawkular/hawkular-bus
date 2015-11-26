@@ -73,10 +73,11 @@
       </dependency>
 
       <!-- ActiveMQ BOM -->
+
       <dependency>
-        <groupId>org.apache.activemq</groupId>
-        <artifactId>activemq-parent</artifactId>
-        <version>${version.org.apache.activemq}</version>
+        <groupId>org.wildfly</groupId>
+        <artifactId>wildfly-jms-client-bom</artifactId>
+        <version>${version.org.wildfly}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>

@@ -17,7 +17,8 @@
     limitations under the License.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -32,14 +33,35 @@
   <description>Hawkular Bus Framework Common Library for use with both consumer and producer code.</description>
 
   <dependencies>
+
     <dependency>
-      <groupId>org.apache.activemq</groupId>
-      <artifactId>activemq-all</artifactId>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.enterprise</groupId>
+      <artifactId>cdi-api</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.apache.activemq</groupId>
-      <artifactId>activemq-jaas</artifactId>
+      <artifactId>artemis-jms-client</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.spec.javax.jms</groupId>
+      <artifactId>jboss-jms-api_2.0_spec</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -60,10 +82,10 @@
     </dependency>
 
     <!-- To avoid javadoc errors (and thus causing mvn release plugin to fail) we need this provided dependency.
-         Google Guava uses com.google.common.util.concurrent.ExecutionList which is annotated with @GuardedBy.
-         Without this dep to give us that annotation class, we get this error:
-            Cannot find annotation method 'value()' in type 'GuardedBy':
-            class file for javax.annotation.concurrent.GuardedBy not found
+      Google Guava uses com.google.common.util.concurrent.ExecutionList which is annotated with @GuardedBy.
+      Without this dep to give us that annotation class, we get this error:
+      Cannot find annotation method 'value()' in type 'GuardedBy':
+      class file for javax.annotation.concurrent.GuardedBy not found
     -->
     <dependency>
       <groupId>com.google.code.findbugs</groupId>

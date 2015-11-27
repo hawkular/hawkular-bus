@@ -16,6 +16,7 @@
  */
 package org.hawkular.bus.common;
 
+import javax.annotation.Resource;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
@@ -24,7 +25,7 @@ import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 
-import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 import org.hawkular.bus.common.consumer.ConsumerConnectionContext;
 import org.hawkular.bus.common.log.MsgLogger;
 import org.hawkular.bus.common.producer.ProducerConnectionContext;
@@ -48,8 +49,11 @@ public class ConnectionContextFactory implements AutoCloseable {
 
     private final MsgLogger msglog = MsgLogger.LOGGER;
     private final Logger log = Logger.getLogger(ConnectionContextFactory.class);
-    private final boolean reuseConnection;
-    protected final ConnectionFactory connectionFactory;
+    private boolean reuseConnection;
+
+    @Resource(name = "java:/ConnectionFactory")
+    protected ConnectionFactory connectionFactory;
+
     private Connection connection;
 
     /**

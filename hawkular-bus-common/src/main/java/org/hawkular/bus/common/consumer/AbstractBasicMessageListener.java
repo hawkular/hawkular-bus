@@ -87,7 +87,7 @@ public abstract class AbstractBasicMessageListener<T extends BasicMessage> imple
      * encounter.
      *
      * @param basicMessageClassLoader the {@link ClassLoader} to resolve the class supplied in
-     *        {@link MessageProcessor#HEADER_BASIC_MESSAGE_CLASS} string property of {@link Message}
+     *            {@link MessageProcessor#HEADER_BASIC_MESSAGE_CLASS} string property of {@link Message}
      */
     protected AbstractBasicMessageListener(ClassLoader basicMessageClassLoader) {
         super();
@@ -130,12 +130,16 @@ public abstract class AbstractBasicMessageListener<T extends BasicMessage> imple
         BasicMessageWithExtraData<T> retVal;
         try {
             Class<T> basicMessageClass = null;
-            String basicMessageClassName = message.getStringProperty(MessageProcessor.HEADER_BASIC_MESSAGE_CLASS);
+            String basicMessageClassName =
+                    (String) message.getObjectProperty(MessageProcessor.HEADER_BASIC_MESSAGE_CLASS);
+            log.infof("About to parse message of type [%s]", basicMessageClassName);
+            log.infof("Loader [%s]", basicMessageClassLoader);
             if (basicMessageClassLoader != null && basicMessageClassName != null) {
                 basicMessageClass = (Class<T>) Class.forName(basicMessageClassName, true, basicMessageClassLoader);
             } else {
                 basicMessageClass = getBasicMessageClass();
             }
+            log.infof("Effective message type [%s]", basicMessageClass);
 
             if (message instanceof TextMessage) {
                 String receivedBody = ((TextMessage) message).getText();
@@ -150,7 +154,7 @@ public abstract class AbstractBasicMessageListener<T extends BasicMessage> imple
             } else {
                 throw new Exception("Unexpected implementation of " + Message.class.getName() + ": "
                         + message.getClass() + " expected " + TextMessage.class.getName() + " or "
-                        + BytesMessage.class.getName() +". Please report this bug.");
+                        + BytesMessage.class.getName() + ". Please report this bug.");
             }
 
             // grab some headers and put them in the message

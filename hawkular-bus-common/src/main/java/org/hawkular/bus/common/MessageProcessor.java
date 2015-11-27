@@ -29,6 +29,7 @@ import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.TemporaryQueue;
+import javax.jms.TextMessage;
 
 import org.hawkular.bus.common.consumer.AbstractBasicMessageListener;
 import org.hawkular.bus.common.consumer.BasicMessageListener;
@@ -46,8 +47,7 @@ import org.jboss.logging.Logger;
 public class MessageProcessor {
 
     private final Logger log = Logger.getLogger(MessageProcessor.class);
-//    public static final String HEADER_BASIC_MESSAGE_CLASS = "org.hawkular.bus.common.BasicMessage.className";
-    public static final String HEADER_BASIC_MESSAGE_CLASS = "_AMQ_CONTENT_TYPE";
+    public static final String HEADER_BASIC_MESSAGE_CLASS = "basicMessageClassName";
 
     /**
      * Listens for messages.
@@ -115,7 +115,8 @@ public class MessageProcessor {
         }
 
         if (basicMessage.getMessageId() != null) {
-            log.debugf("Non-null message ID [%s] will be ignored and a new one generated", basicMessage.getMessageId());
+            log.debugf("Non-null message ID [%s] will be ignored and a new one generated",
+                    basicMessage.getMessageId());
             basicMessage.setMessageId(null);
         }
 
@@ -221,7 +222,8 @@ public class MessageProcessor {
         }
 
         if (basicMessage.getMessageId() != null) {
-            log.debugf("Non-null message ID [%s] will be ignored and a new one generated", basicMessage.getMessageId());
+            log.debugf("Non-null message ID [%s] will be ignored and a new one generated",
+                    basicMessage.getMessageId());
             basicMessage.setMessageId(null);
         }
 
@@ -264,7 +266,7 @@ public class MessageProcessor {
      * @param context information that determines where the message is sent
      * @param basicMessage the request message to send with optional headers included
      * @param responseListener The listener that will process the response of the request. This listener should close
-     *        its associated consumer when appropriate.
+     *            its associated consumer when appropriate.
      * @param headers headers for the JMS transport that will override same-named headers in the basic message
      *
      * @return the RPC context which includes information about the handling of the expected response
@@ -295,7 +297,8 @@ public class MessageProcessor {
         }
 
         if (basicMessage.getMessageId() != null) {
-            log.debugf("Non-null message ID [%s] will be ignored and a new one generated", basicMessage.getMessageId());
+            log.debugf("Non-null message ID [%s] will be ignored and a new one generated",
+                    basicMessage.getMessageId());
             basicMessage.setMessageId(null);
         }
 
@@ -382,7 +385,7 @@ public class MessageProcessor {
      *
      * @param context the context whose session is used to create the message
      * @param basicMessage contains the data that will be JSON-encoded and encapsulated in the created message, with
-     *        optional headers included
+     *            optional headers included
      * @param headers headers for the Message that will override same-named headers in the basic message
      * @return the message that can be produced
      * @throws JMSException any error
@@ -401,9 +404,11 @@ public class MessageProcessor {
         if (session == null) {
             throw new IllegalArgumentException("The context had a null session");
         }
-        Message msg = session.createTextMessage(basicMessage.toJSON());
+        TextMessage msg = session.createTextMessage(basicMessage.toJSON());
 
         setHeaders(basicMessage, headers, msg);
+
+        log.infof("Created text message [%s] with text [%s]", msg, msg.getText());
 
         return msg;
     }
@@ -421,6 +426,8 @@ public class MessageProcessor {
      */
     protected void setHeaders(BasicMessage basicMessage, Map<String, String> headers, Message destination)
             throws JMSException {
+        log.infof("Setting [%s] = [%s] on a message of type [%s]", MessageProcessor.HEADER_BASIC_MESSAGE_CLASS,
+                basicMessage.getClass().getName(), destination.getClass().getName());
         destination.setStringProperty(MessageProcessor.HEADER_BASIC_MESSAGE_CLASS, basicMessage.getClass().getName());
 
         // if the basicMessage has headers, use those first
@@ -454,7 +461,7 @@ public class MessageProcessor {
      *
      * @param context the context whose session is used to create the message
      * @param basicMessage contains the data that will be JSON-encoded and encapsulated in the created message, with
-     *        optional headers included
+     *            optional headers included
      * @param inputStream binary data that will be sent with the message
      * @param headers headers for the Message that will override same-named headers in the basic message
      * @return the message that can be produced
@@ -488,6 +495,8 @@ public class MessageProcessor {
         msg.setObjectProperty("JMS_AMQ_InputStream", messagePlusBinaryData);
 
         setHeaders(basicMessage, headers, msg);
+
+        log.infof("Created binary message [%s]", msg);
 
         return msg;
     }

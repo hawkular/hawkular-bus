@@ -50,10 +50,31 @@
 
   <dependencies>
     <dependency>
-      <groupId>${project.groupId}</groupId>
+      <groupId>org.hawkular.bus</groupId>
       <artifactId>hawkular-bus-common</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hawkular.bus</groupId>
+      <artifactId>hawkular-bus-feature-pack</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hawkular.bus</groupId>
+      <artifactId>hawkular-bus-feature-pack</artifactId>
+      <version>${project.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
@@ -61,13 +82,6 @@
       <artifactId>cdi-api</artifactId>
       <version>1.2</version>
       <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.wildfly</groupId>
-      <artifactId>wildfly-dist</artifactId>
-      <version>${version.org.wildfly}</version>
-      <type>zip</type>
     </dependency>
 
     <dependency>
@@ -85,137 +99,70 @@
     <dependency>
       <groupId>org.jboss.arquillian.junit</groupId>
       <artifactId>arquillian-junit-container</artifactId>
-      <version>1.1.10.Final</version>
       <scope>test</scope>
     </dependency>
 
     <dependency>
-      <groupId>org.arquillian.container</groupId>
-      <artifactId>arquillian-container-chameleon</artifactId>
-      <version>1.0.0.Alpha6</version>
+      <groupId>org.wildfly</groupId>
+      <artifactId>wildfly-arquillian-container-managed</artifactId>
+      <version>8.2.1.Final</version>
       <scope>test</scope>
     </dependency>
+
   </dependencies>
 
   <build>
     <plugins>
-      <!--<plugin>-->
-        <!--<groupId>org.apache.maven.plugins</groupId>-->
-        <!--<artifactId>maven-surefire-plugin</artifactId>-->
-        <!--<configuration>-->
-          <!--<skipTests>true</skipTests>-->
-        <!--</configuration>-->
-      <!--</plugin>-->
-      <!--<plugin>-->
-        <!--<groupId>org.apache.maven.plugins</groupId>-->
-        <!--<artifactId>maven-failsafe-plugin</artifactId>-->
-        <!--<configuration>-->
-          <!--<includes>-->
-            <!--<include>**/*ITest*</include>-->
-          <!--</includes>-->
-        <!--</configuration>-->
-        <!--<executions>-->
-          <!--<execution>-->
-            <!--<goals>-->
-              <!--<goal>integration-test</goal>-->
-              <!--<goal>verify</goal>-->
-            <!--</goals>-->
-          <!--</execution>-->
-        <!--</executions>-->
-      <!--</plugin>-->
+
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
+        <groupId>org.wildfly.build</groupId>
+        <artifactId>wildfly-server-provisioning-maven-plugin</artifactId>
         <executions>
           <execution>
-            <id>unpack-wildfly</id>
-            <phase>test-compile</phase>
+            <id>server-provisioning</id>
             <goals>
-              <goal>unpack</goal>
+              <goal>build</goal>
             </goals>
+            <phase>compile</phase>
             <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.wildfly</groupId>
-                  <artifactId>wildfly-dist</artifactId>
-                  <version>${version.org.wildfly}</version>
-                  <type>zip</type>
-                </artifactItem>
-              </artifactItems>
-              <outputDirectory>${project.build.directory}/wildfly</outputDirectory>
-            </configuration>
-          </execution>
-          <execution>
-            <id>unpack-bus-module</id>
-            <phase>test-compile</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>${project.groupId}</groupId>
-                  <artifactId>hawkular-bus-common</artifactId>
-                  <version>${project.version}</version>
-                  <type>zip</type>
-                </artifactItem>
-              </artifactItems>
-              <outputDirectory>${project.build.directory}/wildfly/wildfly-${version.org.wildfly}/modules</outputDirectory>
+              <config-file>server-provisioning.xml</config-file>
             </configuration>
           </execution>
         </executions>
       </plugin>
-      <!--<plugin>-->
-        <!--<groupId>org.wildfly.plugins</groupId>-->
-        <!--<artifactId>wildfly-maven-plugin</artifactId>-->
-        <!--<configuration>-->
-          <!--<jbossHome>${project.build.directory}/wildfly/wildfly-${version.org.wildfly}</jbossHome>-->
-          <!--<serverConfig>../../../../test-classes/standalone-test.xml</serverConfig>-->
-          <!--<add-user>-->
-            <!--<users>-->
-              <!--<user>-->
-                <!--<username>admin</username>-->
-                <!--<password>redhat</password>-->
-                <!--<groups>-->
-                  <!--<group>guest</group>-->
-                <!--</groups>-->
-                <!--<application-user>true</application-user>-->
-              <!--</user>-->
-            <!--</users>-->
-          <!--</add-user>-->
-        <!--</configuration>-->
-        <!--<executions>-->
-          <!--<execution>-->
-            <!--<id>start-wildfly</id>-->
-            <!--<phase>pre-integration-test</phase>-->
-            <!--<goals>-->
-              <!--<goal>start</goal>-->
-            <!--</goals>-->
-            <!--<configuration>-->
-              <!--<skip>${wildfly-maven-plugin.skip}</skip>-->
-              <!--<port>${component.wildfly.management.port}</port>-->
-              <!--<javaOpts>-->
-                <!--<javaOpt>-Xms64m</javaOpt>-->
-                <!--<javaOpt>-Xmx512m</javaOpt>-->
-                <!--<javaOpt>-Xss256k</javaOpt>-->
-                <!--<javaOpt>-Djava.net.preferIPv4Stack=true</javaOpt>-->
-                <!--<javaOpt>-Dsun.rmi.dgc.client.gcInterval=3600000</javaOpt>-->
-                <!--<javaOpt>-Dsun.rmi.dgc.server.gcInterval=3600000</javaOpt>-->
-                <!--<javaOpt>-Djboss.socket.binding.port-offset=${component.wildfly.port.offset}</javaOpt>-->
-                <!--<javaOpt>-Xdebug</javaOpt>-->
-                <!--<javaOpt>-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8787</javaOpt>-->
-              <!--</javaOpts>-->
-            <!--</configuration>-->
-          <!--</execution>-->
-          <!--<execution>-->
-            <!--<id>stop-wildfly</id>-->
-            <!--<phase>post-integration-test</phase>-->
-            <!--<goals>-->
-              <!--<goal>shutdown</goal>-->
-            <!--</goals>-->
-          <!--</execution>-->
-        <!--</executions>-->
-      <!--</plugin>-->
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-resources</id>
+            <phase>test-compile</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/standalone/configuration</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>src/test/resources</directory>
+                  <include>standalone-test.xml</include>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <systemPropertyVariables>
+            <jbossHome>${project.build.directory}/${project.artifactId}-${project.version}</jbossHome>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 </project>

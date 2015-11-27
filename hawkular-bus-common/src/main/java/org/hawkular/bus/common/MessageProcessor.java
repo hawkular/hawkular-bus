@@ -46,7 +46,8 @@ import org.jboss.logging.Logger;
 public class MessageProcessor {
 
     private final Logger log = Logger.getLogger(MessageProcessor.class);
-    public static final String HEADER_BASIC_MESSAGE_CLASS = "org.hawkular.bus.common.BasicMessage.className";
+//    public static final String HEADER_BASIC_MESSAGE_CLASS = "org.hawkular.bus.common.BasicMessage.className";
+    public static final String HEADER_BASIC_MESSAGE_CLASS = "_AMQ_CONTENT_TYPE";
 
     /**
      * Listens for messages.

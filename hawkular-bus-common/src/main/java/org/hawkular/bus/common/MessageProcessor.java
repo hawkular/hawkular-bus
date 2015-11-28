@@ -47,6 +47,7 @@ import org.jboss.logging.Logger;
 public class MessageProcessor {
 
     private final Logger log = Logger.getLogger(MessageProcessor.class);
+
     public static final String HEADER_BASIC_MESSAGE_CLASS = "basicMessageClassName";
 
     /**

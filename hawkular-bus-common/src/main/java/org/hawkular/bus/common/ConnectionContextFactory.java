@@ -391,16 +391,25 @@ public class ConnectionContextFactory implements AutoCloseable {
             if (endpoint.isTemporary()) {
                 dest = session.createTemporaryQueue();
             } else {
-                dest = session.createQueue(endpoint.getName());
+                dest = session.createQueue(getDestinationName(endpoint));
             }
         } else {
             if (endpoint.isTemporary()) {
                 dest = session.createTemporaryTopic();
             } else {
-                dest = session.createTopic(endpoint.getName());
+                dest = session.createTopic(getDestinationName(endpoint));
             }
         }
         context.setDestination(dest);
+    }
+
+    /**
+     * With ActiveMQ we were passing the full JNDI name, e.g., java:/topic/HawkularInventoryChanges, to
+     * Session.createTopic (or Session.createQueue). Using the full JNDI name/path does not work with Artemis.
+     */
+    private String getDestinationName(Endpoint endpoint) {
+        int start = endpoint.getName().lastIndexOf('/') + 1;
+        return endpoint.getName().substring(start);
     }
 
     /**

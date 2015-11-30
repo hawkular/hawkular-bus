@@ -157,10 +157,10 @@ public abstract class AbstractBasicMessageListener<T extends BasicMessage> imple
             }
 
             // grab some headers and put them in the message
-//            retVal.getBasicMessage().setMessageId(new MessageId(message.getJMSMessageID()));
+            retVal.getBasicMessage().setMessageId(new MessageId(message.getJMSMessageID()));
             if (message.getJMSCorrelationID() != null) {
                 MessageId correlationId = new MessageId(message.getJMSCorrelationID());
-//                retVal.getBasicMessage().setCorrelationId(correlationId);
+                retVal.getBasicMessage().setCorrelationId(correlationId);
             }
 
             HashMap<String, String> rawHeaders = new HashMap<String, String>();
@@ -169,10 +169,10 @@ public abstract class AbstractBasicMessageListener<T extends BasicMessage> imple
                 rawHeaders.put(propName, message.getStringProperty(propName));
             }
             if (!rawHeaders.isEmpty()) {
-//                retVal.getBasicMessage().setHeaders(rawHeaders);
+                retVal.getBasicMessage().setHeaders(rawHeaders);
             }
 
-//            getLog().tracef("Received basic message: %s", retVal.getBasicMessage().getClass());
+            getLog().tracef("Received basic message: %s", retVal.getBasicMessage().getClass());
 
         } catch (JMSException e) {
             msglog.errorNotValidTextMessage(e);
@@ -181,8 +181,7 @@ public abstract class AbstractBasicMessageListener<T extends BasicMessage> imple
             msglog.errorNotValidJsonMessage(e);
             retVal = null;
         }
-//        return retVal;
-        return null;
+        return retVal;
     }
 
     protected Class<T> getBasicMessageClass() {

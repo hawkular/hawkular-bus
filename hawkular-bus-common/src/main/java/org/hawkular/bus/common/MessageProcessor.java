@@ -339,42 +339,6 @@ public class MessageProcessor {
     }
 
     /**
-     * Same as {@link #sendRPC(ProducerConnectionContext, BasicMessage, Class, Map)} with <code>null</code> headers.
-     */
-//    public <R extends BasicMessage> ListenableFuture<BasicMessageWithExtraData<R>> sendRPC(
-//            ProducerConnectionContext context, BasicMessage basicMessage, Class<R> expectedResponseMessageClass)
-//                    throws JMSException {
-//        return sendRPC(context, basicMessage, expectedResponseMessageClass, null);
-//    }
-
-    /**
-     * Send the given message to its destinations across the message bus and returns a Future to allow the caller to
-     * retrieve the response.
-     *
-     * This is intended to mimic an RPC-like request-response workflow. It is assumed the request will trigger a single
-     * response message to be sent back. This method returns a Future that will provide you with the response message
-     * that is received back.
-     *
-     * @param context information that determines where the message is sent
-     * @param basicMessage the request message to send with optional headers included
-     * @param expectedResponseMessageClass this is the message class of the expected response object.
-     * @param headers headers for the JMS transport that will override same-named headers in the basic message
-     *
-     * @return a future that allows you to wait for and get the response of the given response type
-     * @throws JMSException any error
-     *
-     * @see org.hawkular.bus.common.ConnectionContextFactory#createProducerConnectionContext(Endpoint)
-     */
-//    public <R extends BasicMessage> ListenableFuture<BasicMessageWithExtraData<R>> sendRPC(
-//            ProducerConnectionContext context, BasicMessage basicMessage, Class<R> expectedResponseMessageClass,
-//            Map<String, String> headers) throws JMSException {
-//
-//        FutureBasicMessageListener<R> futureListener = new FutureBasicMessageListener<R>(expectedResponseMessageClass);
-//        sendAndListen(context, basicMessage, futureListener, headers);
-//        return futureListener;
-//    }
-
-    /**
      * Same as {@link #createMessage(ConnectionContext, BasicMessage, Map)} with <code>null</code> headers.
      */
     protected Message createMessage(ConnectionContext context, BasicMessage basicMessage) throws JMSException {
@@ -502,19 +466,4 @@ public class MessageProcessor {
         return msg;
     }
 
-    protected ActiveMQSession getActiveMQSession(Session session) {
-        if (session instanceof ActiveMQSession) {
-            return (ActiveMQSession) session;
-        }
-
-        // This is probably a session obtained from the resource adapter, which is really a proxy.
-        // It has a non-public method called "getSession" that gets the session we want, so use reflection to get it.
-        try {
-            Method m = session.getClass().getDeclaredMethod("getSession");
-            m.setAccessible(true);
-            return (ActiveMQSession) m.invoke(session);
-        } catch (Exception e) {
-            throw new IllegalStateException("Not running with ActiveMQ", e);
-        }
-    }
 }

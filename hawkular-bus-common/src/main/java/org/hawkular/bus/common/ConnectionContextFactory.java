@@ -16,7 +16,6 @@
  */
 package org.hawkular.bus.common;
 
-import javax.annotation.Resource;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
@@ -51,74 +50,9 @@ public class ConnectionContextFactory implements AutoCloseable {
     private final Logger log = Logger.getLogger(ConnectionContextFactory.class);
     private boolean reuseConnection;
 
-    @Resource(name = "java:/ConnectionFactory")
     protected ConnectionFactory connectionFactory;
 
     private Connection connection;
-
-    /**
-     * Initializes the factory with the given broker URL.
-     *
-     * @param brokerURL the broker that is used for the contexts created by this factory;
-     *                  all messages sent and received through the contexts will go through this broker.
-     *
-     * @throws JMSException any error
-     */
-    public ConnectionContextFactory(String brokerURL) throws JMSException {
-        this(false, brokerURL);
-    }
-
-    /**
-     * Initializes the factory with the given broker URL.
-     *
-     * @param reuseConnection if true this factory will reuse its connection so contexts it creates can share it.
-     *                        Use this with caution because if a shared connection is closed, all contexts created
-     *                        with that connection will no longer work.
-     * @param brokerURL the broker that is used for the contexts created by this factory;
-     *                  all messages sent and received through the contexts will go through this broker.
-     *
-     * @throws JMSException any error
-     */
-    public ConnectionContextFactory(boolean reuseConnection, String brokerURL) throws JMSException {
-//        this.reuseConnection = reuseConnection;
-//        this.connectionFactory = new ActiveMQConnectionFactory(brokerURL);
-//        log.debugf("%s has been created: %s", this.getClass().getSimpleName(), brokerURL);
-    }
-
-    /**
-     * Initializes the factory with the given broker URL and the given security credentials.
-     *
-     * @param brokerURL the broker that is used for the contexts created by this factory;
-     *                  all messages sent and received through the contexts will go through this broker.
-     * @param username user to connect to
-     * @param password credentials of user
-     *
-     * @throws JMSException any error
-     */
-    public ConnectionContextFactory(String brokerURL, String username, String password) throws JMSException {
-        this(false, brokerURL, username, password);
-    }
-
-    /**
-     * Initializes the factory with the given broker URL and the given security credentials.
-     *
-     * @param reuseConnection if true this factory will reuse its connection so contexts it creates can share it.
-     *                        Use this with caution because if a shared connection is closed, all contexts created
-     *                        with that connection will no longer work.
-     * @param brokerURL the broker that is used for the contexts created by this factory;
-     *                  all messages sent and received through the contexts will go through this broker.
-     * @param username user to connect to
-     * @param password credentials of user
-     *
-     * @throws JMSException any error
-     */
-    public ConnectionContextFactory(boolean reuseConnection, String brokerURL, String username, String password)
-            throws JMSException {
-//        this.reuseConnection = reuseConnection;
-//        this.connectionFactory = new ActiveMQConnectionFactory(username, password, brokerURL);
-//        log.debugf("%s has been created: [%s] with username [%s]", this.getClass().getSimpleName(), brokerURL,
-//                username);
-    }
 
     /**
      * Initializes with the given factory.

@@ -143,7 +143,7 @@
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
           <finalName>hawkular-bus-common-${project.version}</finalName>
-          <appendAssemblyId>false</appendAssemblyId>
+          <!--<appendAssemblyId>false</appendAssemblyId>-->
           <descriptors>
             <descriptor>src/main/scripts/module-assembly.xml</descriptor>
           </descriptors>

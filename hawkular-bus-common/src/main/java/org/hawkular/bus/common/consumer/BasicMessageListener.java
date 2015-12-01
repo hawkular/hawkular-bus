@@ -53,7 +53,7 @@ public abstract class BasicMessageListener<T extends BasicMessage> extends Abstr
     @Override
     public void onMessage(Message message) {
 
-        log.infof("Received raw message [%s]", message);
+        log.debugf("Received raw message [%s]", message);
 
         BasicMessageWithExtraData<T> msgWithExtraData = parseMessage(message);
         if (msgWithExtraData == null) {

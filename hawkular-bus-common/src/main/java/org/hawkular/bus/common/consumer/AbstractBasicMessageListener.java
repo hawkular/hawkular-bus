@@ -132,8 +132,8 @@ public abstract class AbstractBasicMessageListener<T extends BasicMessage> imple
             Class<T> basicMessageClass = null;
             String basicMessageClassName =
                     (String) message.getObjectProperty(MessageProcessor.HEADER_BASIC_MESSAGE_CLASS);
-            log.infof("About to parse message of type [%s]", basicMessageClassName);
-            log.infof("Loader [%s]", basicMessageClassLoader);
+            log.debugf("About to parse message of type [%s]", basicMessageClassName);
+            log.debugf("Loader [%s]", basicMessageClassLoader);
             if (basicMessageClassLoader != null && basicMessageClassName != null) {
                 basicMessageClass = (Class<T>) Class.forName(basicMessageClassName, true, basicMessageClassLoader);
             } else {

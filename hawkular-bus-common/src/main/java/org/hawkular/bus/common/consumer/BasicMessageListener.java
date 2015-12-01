@@ -20,6 +20,7 @@ import javax.jms.Message;
 
 import org.hawkular.bus.common.BasicMessage;
 import org.hawkular.bus.common.BasicMessageWithExtraData;
+import org.jboss.logging.Logger;
 
 /**
  * A message listener that expects to receive a JSON-encoded BasicMessage or one of its subclasses. Implementors need
@@ -35,6 +36,7 @@ import org.hawkular.bus.common.BasicMessageWithExtraData;
  */
 
 public abstract class BasicMessageListener<T extends BasicMessage> extends AbstractBasicMessageListener<T> {
+    private static final Logger log = Logger.getLogger(BasicMessageListener.class);
 
     public BasicMessageListener() {
         super();
@@ -50,6 +52,9 @@ public abstract class BasicMessageListener<T extends BasicMessage> extends Abstr
 
     @Override
     public void onMessage(Message message) {
+
+        log.debugf("Received raw message [%s]", message);
+
         BasicMessageWithExtraData<T> msgWithExtraData = parseMessage(message);
         if (msgWithExtraData == null) {
             return; // either we are not to process this message or some error occurred, so we skip it

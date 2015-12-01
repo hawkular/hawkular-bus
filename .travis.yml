@@ -17,7 +17,7 @@ notifications:
 install:
 - mvn -s .travis.maven.settings.xml -version -B
 script:
-- mvn -s .travis.maven.settings.xml verify
+- mvn -s .travis.maven.settings.xml install
 env:
   global:
   - secure: OgA3pyTTPKWbUu8IXIsdkYssKLVAiTb47XyHbqH+T0H5YQ6CGz4DND0PDm89IW66un6161u9dzoPb/8sLb/0N7WpLcQrlKokz38on9sUpFfvni2+jAJaIzlRz48JGfmu+v9yNKF+TKB7GKl/1LARLSn/MGcH44gUCWPIc/Eny50=

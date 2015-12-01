@@ -23,16 +23,15 @@ import java.lang.reflect.TypeVariable;
 import java.util.Enumeration;
 import java.util.HashMap;
 
+import javax.jms.BytesMessage;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
-import org.apache.activemq.command.ActiveMQBlobMessage;
 import org.hawkular.bus.common.AbstractMessage;
 import org.hawkular.bus.common.BasicMessage;
 import org.hawkular.bus.common.BasicMessageWithExtraData;
-import org.hawkular.bus.common.BinaryData;
 import org.hawkular.bus.common.MessageId;
 import org.hawkular.bus.common.MessageProcessor;
 import org.hawkular.bus.common.log.MsgLogger;
@@ -88,7 +87,7 @@ public abstract class AbstractBasicMessageListener<T extends BasicMessage> imple
      * encounter.
      *
      * @param basicMessageClassLoader the {@link ClassLoader} to resolve the class supplied in
-     *        {@link MessageProcessor#HEADER_BASIC_MESSAGE_CLASS} string property of {@link Message}
+     *            {@link MessageProcessor#HEADER_BASIC_MESSAGE_CLASS} string property of {@link Message}
      */
     protected AbstractBasicMessageListener(ClassLoader basicMessageClassLoader) {
         super();
@@ -146,34 +145,22 @@ public abstract class AbstractBasicMessageListener<T extends BasicMessage> imple
             } else {
                 basicMessageClass = getBasicMessageClass();
             }
+            log.debugf("Effective message type [%s]", basicMessageClass);
 
             if (message instanceof TextMessage) {
                 String receivedBody = ((TextMessage) message).getText();
                 T basicMessage = AbstractMessage.fromJSON(receivedBody, basicMessageClass);
                 retVal = new BasicMessageWithExtraData<T>(basicMessage, null);
 
-            } else if (message instanceof ActiveMQBlobMessage) {
-                InputStream receivedBody = ((ActiveMQBlobMessage) message).getInputStream();
+            } else if (message instanceof BytesMessage) {
+
+                BytesMessage bytesMessage = (BytesMessage) message;
+                InputStream receivedBody = new BytesMessageInputStream(bytesMessage);
                 retVal = AbstractMessage.fromJSON(receivedBody, basicMessageClass);
-                BinaryData extraData = retVal.getBinaryData();
-                if (extraData != null) {
-                    extraData.setOnCloseAction(new Runnable() {
-                        @Override
-                        public void run() {
-                            ActiveMQBlobMessage blob = (ActiveMQBlobMessage) message;
-                            try {
-                                getLog().tracef("Deleting blob msg file [%s]", blob.getRemoteBlobUrl());
-                                blob.deleteFile();
-                            } catch (Exception e) {
-                                getLog().warnf(e, "Failed to delete blob msg file: [%s]", blob.getRemoteBlobUrl());
-                            }
-                        }
-                    });
-                }
             } else {
                 throw new Exception("Unexpected implementation of " + Message.class.getName() + ": "
                         + message.getClass() + " expected " + TextMessage.class.getName() + " or "
-                        + ActiveMQBlobMessage.class.getName() +". Please report this bug.");
+                        + BytesMessage.class.getName() + ". Please report this bug.");
             }
 
             // grab some headers and put them in the message

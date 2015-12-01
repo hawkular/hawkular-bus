@@ -130,16 +130,22 @@ public abstract class AbstractBasicMessageListener<T extends BasicMessage> imple
         BasicMessageWithExtraData<T> retVal;
         try {
             Class<T> basicMessageClass = null;
-            String basicMessageClassName =
-                    (String) message.getObjectProperty(MessageProcessor.HEADER_BASIC_MESSAGE_CLASS);
-            log.debugf("About to parse message of type [%s]", basicMessageClassName);
-            log.debugf("Loader [%s]", basicMessageClassLoader);
-            if (basicMessageClassLoader != null && basicMessageClassName != null) {
-                basicMessageClass = (Class<T>) Class.forName(basicMessageClassName, true, basicMessageClassLoader);
+
+            // If a basic message class name was provided to us in the header, we will try our best to use that
+            // unless a subclass wants to substitute another class for it.
+            String basicMessageClassName = message.getStringProperty(MessageProcessor.HEADER_BASIC_MESSAGE_CLASS);
+            if (basicMessageClassName != null) {
+                String desired = convertReceivedMessageClassNameToDesiredMessageClassName(basicMessageClassName);
+                if (desired != null) {
+                    basicMessageClassName = desired;
+                }
+                ClassLoader cl = (basicMessageClassLoader != null) ? basicMessageClassLoader
+                        : this.getClass().getClassLoader();
+                basicMessageClass = (Class<T>) Class.forName(basicMessageClassName, true, cl);
             } else {
                 basicMessageClass = getBasicMessageClass();
             }
-            log.infof("Effective message type [%s]", basicMessageClass);
+            log.debugf("Effective message type [%s]", basicMessageClass);
 
             if (message instanceof TextMessage) {
                 String receivedBody = ((TextMessage) message).getText();

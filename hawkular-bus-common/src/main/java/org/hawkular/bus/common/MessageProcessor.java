@@ -453,9 +453,6 @@ public class MessageProcessor {
         // we are going to use BinaryData which allows us to prefix the binary data with the JSON message
         BinaryData messagePlusBinaryData = new BinaryData(basicMessage.toJSON().getBytes(), inputStream);
 
-        // we are using a ActiveMQ-specific feature that allows us to stream blobs
-        // for some unknown reason, ActiveMQ doesn't allow RA-obtained sessions to create BlobMessages.
-        // Need to play games to get the real ActiveMQ session so we can create BlobMessage.
         BytesMessage msg = session.createBytesMessage();
         msg.setObjectProperty("JMS_AMQ_InputStream", messagePlusBinaryData);
 

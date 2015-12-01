@@ -18,6 +18,8 @@
 
 -->
 
+<!-- TODO Remove this file once WildFly feature packs are in place -->
+
 <assembly>
   <id>module</id>
   <formats>

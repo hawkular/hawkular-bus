@@ -119,6 +119,7 @@
     </resources>
 
     <plugins>
+      <!-- TODO Remove assembly plugin once WildFly feature packs are in place -->
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>

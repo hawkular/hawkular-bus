@@ -20,6 +20,8 @@
 
 <module xmlns="urn:jboss:module:1.0" name="${moduleName}">
 
+  <!-- TODO Remove module.xml once WildFly feature packs are in place -->
+
   <resources>
     <resource-root path="${project.build.finalName}.jar" />
   </resources>

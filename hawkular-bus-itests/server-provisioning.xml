@@ -17,7 +17,7 @@
 
 -->
 <server-provisioning xmlns="urn:wildfly:server-provisioning:1.1" extract-schemas="true"
-  copy-module-artifacts="false">
+  copy-module-artifacts="true">
   <feature-packs>
     <feature-pack groupId="org.hawkular.bus" artifactId="hawkular-bus-feature-pack" version="${project.version}" />
   </feature-packs>

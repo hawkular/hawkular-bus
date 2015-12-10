@@ -21,6 +21,7 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.jms.JMSException;
 import javax.jms.QueueConnectionFactory;
 import javax.naming.InitialContext;
 import javax.servlet.ServletException;
@@ -34,11 +35,11 @@ import org.hawkular.bus.common.Endpoint;
 import org.hawkular.bus.common.MessageId;
 import org.hawkular.bus.common.MessageProcessor;
 import org.hawkular.bus.common.SimpleBasicMessage;
+import org.hawkular.bus.common.consumer.BasicMessageListener;
+import org.hawkular.bus.common.consumer.RPCConnectionContext;
 import org.hawkular.bus.common.producer.ProducerConnectionContext;
 
 import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
 
 public class QueueSendServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -94,9 +95,8 @@ public class QueueSendServlet extends HttpServlet {
                     QUEUE_NAME));
 
             SimpleBasicMessage msg = new SimpleBasicMessage(userMessage);
-            ListenableFuture<BasicMessageWithExtraData<SimpleBasicMessage>> future = new MessageProcessor().sendRPC(
-                    pcc, msg, SimpleBasicMessage.class, RPC_HEADER);
-            Futures.addCallback(future, new SimpleFutureCallback());
+            RPCConnectionContext rpcConnectionContext =
+                    new MessageProcessor().sendAndListen(pcc, msg, new SimpleListener(ccf), RPC_HEADER);
 
             PrintWriter out = response.getWriter();
             out.println("<h1>RPC</h1>");
@@ -124,6 +124,26 @@ public class QueueSendServlet extends HttpServlet {
         @Override
         public void onFailure(Throwable t) {
             log("FAILURE! Did not get response from MDB", t);
+        }
+    }
+
+    public class SimpleListener extends BasicMessageListener<SimpleBasicMessage> {
+
+        private final ConnectionContextFactory connectionContextFactory;
+
+        public SimpleListener(ConnectionContextFactory ccf) {
+            this.connectionContextFactory = ccf;
+        }
+
+        @Override
+        public void onBasicMessage(SimpleBasicMessage message) {
+            getLog().infof("Response from MDB = %s", message.getMessage());
+
+            try {
+                connectionContextFactory.close();
+            } catch (JMSException e) {
+                getLog().error("Failed to close connectionContextFactory");
+            }
         }
     }
 }

@@ -64,7 +64,14 @@ public abstract class AbstractMessage implements BasicMessage {
      * @return the message object that was represented by the JSON string
      */
     public static <T extends BasicMessage> T fromJSON(String json, Class<T> clazz) {
+        ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
         try {
+            /**
+             * https://stackoverflow.com/questions/19694928/
+             * +jackson-jersey-deserialize-exception-for-id-type-id-class-no-such-class
+             */
+            Thread.currentThread().setContextClassLoader(AbstractMessage.class.getClassLoader());
+
             Method buildObjectMapperForDeserializationMethod = findBuildObjectMapperForDeserializationMethod(clazz);
 
             final ObjectMapper mapper = (ObjectMapper) buildObjectMapperForDeserializationMethod.invoke(null);
@@ -75,6 +82,8 @@ public abstract class AbstractMessage implements BasicMessage {
             return mapper.readValue(json, clazz);
         } catch (Exception e) {
             throw new IllegalStateException("JSON message cannot be converted to object of type [" + clazz + "]", e);
+        } finally {
+            Thread.currentThread().setContextClassLoader(contextClassLoader);
         }
     }
 
@@ -97,9 +106,16 @@ public abstract class AbstractMessage implements BasicMessage {
      *         can use to stream any additional data that came in the given input stream.
      */
     public static <T extends BasicMessage> BasicMessageWithExtraData<T> fromJSON(InputStream in, Class<T> clazz) {
-        final T obj;
-        final byte[] remainder;
+        ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
         try (JsonParser parser = new JsonFactory().configure(Feature.AUTO_CLOSE_SOURCE, false).createParser(in)) {
+            /**
+             * https://stackoverflow.com/questions/19694928/
+             * +jackson-jersey-deserialize-exception-for-id-type-id-class-no-such-class
+             */
+            Thread.currentThread().setContextClassLoader(AbstractMessage.class.getClassLoader());
+
+            final T obj;
+            final byte[] remainder;
             Method buildObjectMapperForDeserializationMethod = findBuildObjectMapperForDeserializationMethod(clazz);
 
             final ObjectMapper mapper = (ObjectMapper) buildObjectMapperForDeserializationMethod.invoke(null);
@@ -111,10 +127,13 @@ public abstract class AbstractMessage implements BasicMessage {
             final ByteArrayOutputStream remainderStream = new ByteArrayOutputStream();
             final int released = parser.releaseBuffered(remainderStream);
             remainder = (released > 0) ? remainderStream.toByteArray() : new byte[0];
+
+            return new BasicMessageWithExtraData<T>(obj, new BinaryData(remainder, in));
         } catch (Exception e) {
             throw new IllegalArgumentException("Stream cannot be converted to JSON object of type [" + clazz + "]", e);
+        } finally {
+            Thread.currentThread().setContextClassLoader(contextClassLoader);
         }
-        return new BasicMessageWithExtraData<T>(obj, new BinaryData(remainder, in));
     }
 
     private static Method findBuildObjectMapperForDeserializationMethod(Class<? extends BasicMessage> clazz) {

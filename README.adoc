@@ -1,13 +1,4 @@
-= hawkular-bus
+= This git repository is obsolete
 :source-language: java
 
-ifdef::env-github[]
-[link=https://travis-ci.org/hawkular/hawkular-bus]
-image::https://travis-ci.org/hawkular/hawkular-bus.svg?branch=master[Build Status,70,18]
-endif::[]
-
-Hawkular messaging framework used for communicating between Hawkular components.
-
-== Issue reporting
-
-Issues can be reported in the "Bus" component of the https://issues.jboss.org/browse/HAWKULAR[Hawkular Jira project]
+The sources from this git repository were moved to commons https://github.com/hawkular/hawkular-commons/tree/2acedc8832053cc0bcc145c3424478b415b9c95d/hawkular-bus .
